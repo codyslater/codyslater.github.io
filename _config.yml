@@ -1,6 +1,6 @@
 title: Cody Slater
 logo: /assets/img/logo.png
 description: A summary of my work and interests.
-show_downloads: true
+show_downloads: false
 google_analytics:
 theme: jekyll-theme-minimal
