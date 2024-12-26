@@ -2,6 +2,9 @@
 layout: default
 ---
 
+My current focus is on building tools that can converge RNA biology, neural computation, and control theory.
+
+<!-->
 Text can be **bold**, _italic_, or ~~strikethrough~~.
 
 [Link to another page](./another-page.html).
@@ -121,3 +124,4 @@ Long, single-line code blocks should not wrap. They should horizontally scroll i
 ```
 The final element.
 ```
+-->
