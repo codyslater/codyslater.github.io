@@ -1,5 +1,5 @@
 ---
 layout: default
 ---
-
-_My current focus is on building tools that can converge RNA biology, neural computation, and control theory._
+# What I am doing now 
+_My current focus is on building tools and approaches that can converge RNA biology, neural computation, and control theory._
