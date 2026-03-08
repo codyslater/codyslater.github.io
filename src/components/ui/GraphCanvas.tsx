@@ -575,16 +575,129 @@ export function GraphCanvas({ revealProgress, onRevealComplete, opacity = 1 }: G
       }
     }
 
+    // Touch interactions: drag nodes, tap to fire/add
+    const TOUCH_RADIUS = 40; // larger detection radius for fingers
+
+    function handleTouchStart(e: TouchEvent) {
+      if (e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      const ni = findClosestNode(touch.clientX, touch.clientY, nodesRef.current, TOUCH_RADIUS);
+      if (ni >= 0) {
+        dragRef.current = {
+          isDragging: true,
+          nodeIndex: ni,
+          startX: touch.clientX,
+          startY: touch.clientY,
+          hasMoved: false,
+        };
+        e.preventDefault(); // prevent scroll when grabbing a node
+      }
+    }
+
+    function handleTouchMove(e: TouchEvent) {
+      if (!dragRef.current.isDragging || e.touches.length !== 1) return;
+      const touch = e.touches[0];
+      mouseRef.current = { x: touch.clientX, y: touch.clientY };
+
+      const ddx = touch.clientX - dragRef.current.startX;
+      const ddy = touch.clientY - dragRef.current.startY;
+      if (Math.abs(ddx) > 3 || Math.abs(ddy) > 3) {
+        dragRef.current.hasMoved = true;
+      }
+
+      const node = nodesRef.current[dragRef.current.nodeIndex];
+      if (node) {
+        node.x = touch.clientX;
+        node.y = touch.clientY;
+      }
+
+      // Create edge on contact while dragging
+      for (let i = 0; i < nodesRef.current.length; i++) {
+        if (i === dragRef.current.nodeIndex) continue;
+        const n = nodesRef.current[i];
+        if (n.x < -9000) continue;
+        const cdx = n.x - touch.clientX;
+        const cdy = n.y - touch.clientY;
+        if (Math.sqrt(cdx * cdx + cdy * cdy) < 25) {
+          const exists = edgesRef.current.some(
+            (ed) => ed.opacity > 0 && ed.from === dragRef.current.nodeIndex && ed.to === i,
+          );
+          if (!exists) {
+            edgesRef.current.push({ from: dragRef.current.nodeIndex, to: i, opacity: 1 });
+            fireSignals(dragRef.current.nodeIndex, true, true);
+          }
+          break;
+        }
+      }
+
+      e.preventDefault(); // prevent scroll while dragging
+    }
+
+    function handleTouchEnd(e: TouchEvent) {
+      const drag = dragRef.current;
+      if (!drag.isDragging) {
+        // Tap on empty space — add node
+        if (e.changedTouches.length === 1) {
+          const touch = e.changedTouches[0];
+          const ni = findClosestNode(touch.clientX, touch.clientY, nodesRef.current, TOUCH_RADIUS);
+          if (ni < 0) {
+            addNode(touch.clientX, touch.clientY);
+          }
+        }
+        dragRef.current = { isDragging: false, nodeIndex: -1, startX: 0, startY: 0, hasMoved: false };
+        return;
+      }
+
+      if (drag.nodeIndex >= 0) {
+        if (drag.hasMoved && e.changedTouches.length === 1) {
+          const touch = e.changedTouches[0];
+          // Drop on another node — create edge
+          let dropTarget = -1;
+          let dropDist = 35;
+          for (let i = 0; i < nodesRef.current.length; i++) {
+            if (i === drag.nodeIndex) continue;
+            const n = nodesRef.current[i];
+            if (n.x < -9000) continue;
+            const ddx = n.x - touch.clientX;
+            const ddy = n.y - touch.clientY;
+            const dd = Math.sqrt(ddx * ddx + ddy * ddy);
+            if (dd < dropDist) { dropDist = dd; dropTarget = i; }
+          }
+          if (dropTarget >= 0) {
+            const exists = edgesRef.current.some(
+              (ed) => ed.opacity > 0 && ed.from === drag.nodeIndex && ed.to === dropTarget,
+            );
+            if (!exists) {
+              edgesRef.current.push({ from: drag.nodeIndex, to: dropTarget, opacity: 1 });
+              fireSignals(drag.nodeIndex, true, true);
+            }
+          }
+        } else {
+          // Tap on node — fire signals
+          fireSignals(drag.nodeIndex, true, true);
+        }
+      }
+
+      dragRef.current = { isDragging: false, nodeIndex: -1, startX: 0, startY: 0, hasMoved: false };
+      mouseRef.current = { x: -1000, y: -1000 }; // reset so hover effects don't stick
+    }
+
     canvas.addEventListener("mousemove", handleMouseMove);
     canvas.addEventListener("mousedown", handleMouseDown);
     window.addEventListener("mouseup", handleMouseUp);
     canvas.addEventListener("contextmenu", handleContextMenu);
+    canvas.addEventListener("touchstart", handleTouchStart, { passive: false });
+    canvas.addEventListener("touchmove", handleTouchMove, { passive: false });
+    canvas.addEventListener("touchend", handleTouchEnd);
 
     return () => {
       canvas.removeEventListener("mousemove", handleMouseMove);
       canvas.removeEventListener("mousedown", handleMouseDown);
       window.removeEventListener("mouseup", handleMouseUp);
       canvas.removeEventListener("contextmenu", handleContextMenu);
+      canvas.removeEventListener("touchstart", handleTouchStart);
+      canvas.removeEventListener("touchmove", handleTouchMove);
+      canvas.removeEventListener("touchend", handleTouchEnd);
     };
   }, [fireSignals]);
 
@@ -641,7 +754,7 @@ export function GraphCanvas({ revealProgress, onRevealComplete, opacity = 1 }: G
     <canvas
       ref={canvasRef}
       className="fixed inset-0 z-0"
-      style={{ transition: "opacity 800ms ease-out" }}
+      style={{ transition: "opacity 800ms ease-out", touchAction: "none" }}
     />
   );
 }
