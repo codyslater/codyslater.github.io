@@ -1,4 +1,5 @@
 import type { Metadata } from "next";
+import Script from "next/script";
 import { mono } from "@/lib/fonts";
 import { siteConfig } from "@/lib/constants";
 import { NavBar } from "@/components/layout/NavBar";
@@ -34,6 +35,12 @@ export default function RootLayout({
         <AnimatedFavicon />
         <NavBar />
         <main>{children}</main>
+        <Script
+          defer
+          src="https://static.cloudflareinsights.com/beacon.min.js"
+          data-cf-beacon='{"token": "028b62932c3a415697d884bff0bc75dc"}'
+          strategy="afterInteractive"
+        />
       </body>
     </html>
   );
