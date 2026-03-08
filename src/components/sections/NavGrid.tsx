@@ -56,12 +56,10 @@ export function NavGrid() {
         </FadeIn>
       </div>
 
-      {/* Middle cell: name fades in after creature builds */}
-      <FadeIn delay={0.5}>
-        <h1 className="text-4xl sm:text-5xl md:text-6xl font-mono font-bold text-accent-green tracking-tight">
-          {siteConfig.title}
-        </h1>
-      </FadeIn>
+      {/* Middle cell: name appears immediately */}
+      <h1 className="text-4xl sm:text-5xl md:text-6xl font-mono font-bold text-accent-green tracking-tight">
+        {siteConfig.title}
+      </h1>
 
       {/* Bottom cell: tagline + icons pinned to top */}
       <div className="flex flex-col items-center justify-start pt-8 gap-8">

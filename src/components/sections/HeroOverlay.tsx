@@ -103,7 +103,7 @@ export function HeroOverlay({ onTypingProgress, onContinue }: HeroOverlayProps) 
   }, [showPrompt, onContinue]);
 
   return (
-    <div className="relative z-10 flex flex-col items-center justify-center min-h-screen px-4 select-none pointer-events-none">
+    <div className="fixed inset-0 z-10 flex flex-col items-center justify-center px-4 select-none pointer-events-none">
       <div className="text-center">
         {/* Name with realistic typing */}
         <h1 className="text-4xl sm:text-5xl md:text-6xl font-mono font-bold text-accent-green tracking-tight">

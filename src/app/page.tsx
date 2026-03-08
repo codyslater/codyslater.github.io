@@ -25,7 +25,7 @@ function HomeContent() {
     if (phase !== "hero") return;
     setPhase("transitioning");
     setCanvasOpacity(0);
-    setTimeout(() => setPhase("nav"), 800);
+    setTimeout(() => setPhase("nav"), 400);
   }, [phase]);
 
   // Lock body overflow during hero/transitioning phases
@@ -46,7 +46,7 @@ function HomeContent() {
         <div
           style={{
             opacity: canvasOpacity,
-            transition: "opacity 800ms ease-out",
+            transition: "opacity 400ms ease-out",
           }}
         >
           <GraphCanvas

@@ -100,18 +100,18 @@ export function generateGraph(
   const rng = createRng(42); // seeded — same mosaic every load
   const cx = width / 2;
   const cy = height / 2;
-  const margin = 60;
+  const margin = -10; // negative so nodes can sit at/beyond screen edges
 
-  // Cluster centers — between center and corners
+  // Cluster centers — pushed further toward corners
   const clusterCenters = [
-    { x: cx * 0.45, y: cy * 0.45 },   // RNA - upper left
-    { x: cx * 1.55, y: cy * 0.45 },   // Neural - upper right
-    { x: cx * 0.45, y: cy * 1.55 },   // Synth bio - lower left
-    { x: cx * 1.55, y: cy * 1.55 },   // Organic-machine - lower right
+    { x: cx * 0.35, y: cy * 0.35 },   // RNA - upper left
+    { x: cx * 1.65, y: cy * 0.35 },   // Neural - upper right
+    { x: cx * 0.35, y: cy * 1.65 },   // Synth bio - lower left
+    { x: cx * 1.65, y: cy * 1.65 },   // Organic-machine - lower right
   ];
 
   const nodes: GraphNode[] = [];
-  const nodesPerCluster = [15, 15, 15, 15, 24]; // 24 orange (AI) scattered
+  const nodesPerCluster = [11, 11, 11, 11, 18]; // fewer per cluster, more dispersed
   const clusterIndices: number[][] = [[], [], [], [], []];
 
   for (let ci = 0; ci < CLUSTERS.length; ci++) {
@@ -131,12 +131,13 @@ export function generateGraph(
         } while (isInExclusionZone(x, y, cx, cy) && attempts < 10);
       } else {
         const center = clusterCenters[ci];
-        const spread = Math.min(width, height) * 0.55;
+        const spread = Math.min(width, height) * 0.7;
         do {
           const angle = rng() * Math.PI * 2;
-          const dist = rng() * spread * (0.15 + rng() * 0.85);
+          const dist = rng() * spread * (0.2 + rng() * 0.8);
           x = center.x + Math.cos(angle) * dist;
           y = center.y + Math.sin(angle) * dist;
+          // Allow nodes right up to (and slightly beyond) screen edges
           x = Math.max(margin, Math.min(width - margin, x));
           y = Math.max(margin, Math.min(height - margin, y));
           attempts++;
