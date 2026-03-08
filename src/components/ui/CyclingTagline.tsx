@@ -142,7 +142,7 @@ export function CyclingTagline({ onWordChange, onDeletingStart }: CyclingTagline
       e.preventDefault();
       const val = input.trim();
       // Autocomplete: "cd " prefix or just the dir name
-      const partial = val.startsWith("cd ") ? val.slice(3) : val;
+      const partial = val.toLowerCase().startsWith("cd ") ? val.slice(3) : val;
       if (partial.length > 0) {
         const match = DIRS.find((d) => d.startsWith(partial.toLowerCase()));
         if (match) {
@@ -152,7 +152,7 @@ export function CyclingTagline({ onWordChange, onDeletingStart }: CyclingTagline
     } else if (e.key === "Enter") {
       e.preventDefault();
       const val = input.trim();
-      const target = val.startsWith("cd ") ? val.slice(3).trim() : val.trim();
+      const target = val.toLowerCase().startsWith("cd ") ? val.slice(3).trim() : val.trim();
       const href = DIR_HREFS[target.toLowerCase()];
       if (href && href !== "#") {
         if (href.startsWith("http")) {
