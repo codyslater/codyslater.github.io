@@ -15,7 +15,7 @@ export function AboutContent() {
     <div className="max-w-3xl mx-auto">
       <FadeIn>
         <h1 className="text-2xl font-mono font-bold text-foreground mb-8">
-          <span className="text-accent-green">~/</span>about
+          about
         </h1>
       </FadeIn>
 
