@@ -6,6 +6,7 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { CyclingTagline } from "@/components/ui/CyclingTagline";
 import { PixelCreature } from "@/components/ui/PixelCreature";
 import { siteConfig } from "@/lib/constants";
+import { Footer } from "@/components/layout/Footer";
 
 const navItems = [
   {
@@ -48,6 +49,7 @@ export function NavGrid() {
   }, []);
 
   return (
+    <>
     <section className="min-h-screen grid grid-rows-[1fr_auto_1fr] justify-items-center px-4">
       {/* Top cell: creature pinned to bottom */}
       <div className="flex flex-col items-center justify-end pb-8">
@@ -97,5 +99,7 @@ export function NavGrid() {
         </div>
       </div>
     </section>
+    <Footer />
+    </>
   );
 }
