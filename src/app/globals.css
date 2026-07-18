@@ -1,0 +1,203 @@
+@import "tailwindcss";
+
+:root {
+  --bg-primary: #0a0a0a;
+  --bg-secondary: #111111;
+  --bg-tertiary: #1a1a1a;
+  --text-primary: #f0f0f0;
+  --text-secondary: #888888;
+  --text-muted: #444444;
+  --accent-green: #39ff14;
+  --accent-purple: #bf5af2;
+  --accent-pink: #ff2d78;
+  --accent-orange: #ff6a00;
+  --accent-cyan: #00e5ff;
+  --border: #222222;
+}
+
+@theme inline {
+  --color-background: var(--bg-primary);
+  --color-foreground: var(--text-primary);
+  --color-secondary: var(--text-secondary);
+  --color-muted: var(--text-muted);
+  --color-surface: var(--bg-secondary);
+  --color-surface-hover: var(--bg-tertiary);
+  --color-border: var(--border);
+  --color-accent-green: var(--accent-green);
+  --color-accent-purple: var(--accent-purple);
+  --color-accent-pink: var(--accent-pink);
+  --color-accent-orange: var(--accent-orange);
+  --color-accent-cyan: var(--accent-cyan);
+  --font-mono: var(--font-mono);
+}
+
+body {
+  background: var(--bg-primary);
+  color: var(--text-primary);
+  font-family: var(--font-mono), monospace;
+}
+
+/* Blinking cursor animation */
+@keyframes blink {
+  0%, 50% { opacity: 1; }
+  51%, 100% { opacity: 0; }
+}
+
+/* Subtle pulse for "press enter" prompt */
+@keyframes pulse-subtle {
+  0%, 100% { opacity: 0.6; }
+  50% { opacity: 1; }
+}
+
+/* Glow effect for links */
+.glow-hover {
+  transition: text-shadow 0.3s ease, color 0.3s ease;
+}
+.glow-hover:hover {
+  text-shadow: 0 0 8px currentColor;
+}
+
+/* Creature movement animations */
+@keyframes creature-jump {
+  0% { transform: translateY(0); }
+  40% { transform: translateY(-8px); }
+  100% { transform: translateY(0); }
+}
+@keyframes creature-wiggle {
+  0% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(4px); }
+  100% { transform: translateX(0); }
+}
+@keyframes creature-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+@keyframes creature-tilt {
+  0% { transform: rotate(0deg); }
+  30% { transform: rotate(8deg); }
+  70% { transform: rotate(-8deg); }
+  100% { transform: rotate(0deg); }
+}
+@keyframes creature-squash {
+  0% { transform: scale(1, 1); }
+  35% { transform: scale(1.18, 0.78); }
+  70% { transform: scale(0.92, 1.1); }
+  100% { transform: scale(1, 1); }
+}
+@keyframes creature-breathe {
+  0%, 100% { transform: scale(1); }
+  50% { transform: scale(var(--breath-scale, 1.03)); }
+}
+
+/* Selection color */
+::selection {
+  background: rgba(57, 255, 20, 0.2);
+  color: var(--text-primary);
+}
+
+/* Post body typography — the single place to change the reading experience */
+.prose-mono {
+  font-family: var(--font-mono), monospace;
+  color: var(--text-secondary);
+  font-size: 0.9375rem;
+  line-height: 1.8;
+}
+.prose-mono h2,
+.prose-mono h3,
+.prose-mono h4 {
+  color: var(--text-primary);
+  font-weight: 700;
+  margin: 2em 0 0.75em;
+}
+.prose-mono h2 { font-size: 1.25rem; }
+.prose-mono h3 { font-size: 1.05rem; }
+.prose-mono h4 { font-size: 1rem; }
+.prose-mono p { margin: 1.25em 0; }
+.prose-mono a {
+  color: var(--accent-green);
+  text-decoration: underline;
+  text-underline-offset: 3px;
+}
+.prose-mono a:hover { text-shadow: 0 0 8px currentColor; }
+.prose-mono ul,
+.prose-mono ol {
+  margin: 1.25em 0;
+  padding-left: 1.5em;
+}
+.prose-mono ul { list-style: disc; }
+.prose-mono ol { list-style: decimal; }
+.prose-mono li { margin: 0.4em 0; }
+.prose-mono blockquote {
+  border-left: 2px solid var(--accent-purple);
+  padding-left: 1em;
+  color: var(--text-muted);
+  margin: 1.5em 0;
+}
+.prose-mono code {
+  font-size: 0.875em;
+  background: var(--bg-secondary);
+  border: 1px solid var(--border);
+  border-radius: 4px;
+  padding: 0.15em 0.4em;
+}
+.prose-mono pre {
+  background: var(--bg-secondary); /* shiki's inline theme background wins when present */
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 1em;
+  overflow-x: auto;
+  margin: 1.5em 0;
+}
+.prose-mono pre code {
+  background: transparent;
+  border: none;
+  padding: 0;
+  font-size: 0.85em;
+}
+.prose-mono img {
+  max-width: 100%;
+  border-radius: 6px;
+  margin: 1.5em 0;
+}
+.prose-mono table {
+  width: 100%;
+  border-collapse: collapse;
+  margin: 1.5em 0;
+  font-size: 0.875em;
+}
+.prose-mono th,
+.prose-mono td {
+  border: 1px solid var(--border);
+  padding: 0.5em 0.75em;
+  text-align: left;
+}
+.prose-mono hr {
+  border: none;
+  border-top: 1px solid var(--border);
+  margin: 2.5em 0;
+}
+.prose-mono .katex-display {
+  margin: 1.5em 0;
+  overflow-x: auto;
+}
+
+/* /soup time slider — appearance-none removes the native thumb in
+   WebKit/Blink; supply an explicit round thumb. Neutral gray on purpose:
+   every accent hue including --accent-green is a soup block color. */
+.soup-slider::-webkit-slider-thumb {
+  -webkit-appearance: none;
+  appearance: none;
+  width: 12px;
+  height: 12px;
+  margin-top: -4px; /* center on the 4px track in WebKit */
+  border-radius: 50%;
+  background: #b0b0b0;
+}
+.soup-slider::-moz-range-thumb {
+  width: 12px;
+  height: 12px;
+  border: none;
+  border-radius: 50%;
+  background: #b0b0b0;
+}

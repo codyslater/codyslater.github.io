@@ -1,0 +1,34 @@
+---
+title: hello, world
+date: "2026-07-09"
+summary: A first post exercising the full pipeline — code, math, and a live component.
+tags: [meta]
+draft: true
+---
+
+## the pipeline
+
+This post exists to prove the machinery works. It is a draft: visible in
+dev, excluded from the production build.
+
+Inline math like $e^{i\pi} + 1 = 0$ renders with KaTeX, and so do blocks:
+
+$$
+\frac{\partial u}{\partial t} = D \nabla^2 u + f(u)
+$$
+
+Code gets highlighted at build time, with zero client-side JavaScript:
+
+```ts
+export function fib(n: number): number {
+  return n < 2 ? n : fib(n - 1) + fib(n - 2);
+}
+```
+
+And components are alive:
+
+<Counter />
+
+Images work too:
+
+![the site logo](/logo.png)
