@@ -13,7 +13,7 @@ cv:
   website: https://codyslater.github.io/
   sections:
     About:
-      - "MD student and PhD candidate working where biological and machine intelligence meet. I think the best way to understand a complex system is to learn to control it. I combine machine learning models with transcriptomic engineering to design molecular tools that measure and control cell-type-specific perturbations at scale. Each experiment retrains the models that design the next."
+      - "MD student and PhD candidate working where biological and machine intelligence meet. I think the best way to understand a complex system is to learn to control it. I combine machine learning models with transcriptomic engineering to design molecular tools that measure and control cell-type-specific perturbations at scale. Each experiment retrains the models that co-design the next."
     Education:
       - name: Doctor of Medicine
         summary: Columbia University
