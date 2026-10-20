@@ -12,7 +12,7 @@ cv:
   website: https://codyslater.github.io/
   sections:
     About:
-      - "My aim is closed-loop control of biology: designing each perturbation together with the model that learns from it, so that a cell type can be read, predicted, and steered. I came to it from aerospace, where control of a complex system is the whole problem."
+      - "MD student and PhD candidate. My goal is closed-loop control of biology: to read, predict, and steer a cell type by designing each perturbation together with the model that learns from it."
     Education:
       - name: Doctor of Medicine
         summary: Columbia University
