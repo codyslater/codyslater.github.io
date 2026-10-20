@@ -133,7 +133,7 @@ cv:
         journal: Clinical and Translational Medicine 11(4), e397 (2021)
         doi: 10.1002/ctm2.397
       - title: "Characterising the long-term clinical outcomes of 1190 hospitalised patients with COVID-19 in New York City: a retrospective case series"
-        authors: [S. M. Shoucri, et al.]
+        authors: [S. M. Shoucri, "…", "**C. L. Slater**", "…", J. E. Zucker]
         journal: BMJ Open 11(6), e049488 (2021)
         doi: 10.1136/bmjopen-2021-049488
       - title: "Characterization and clinical course of 1000 patients with coronavirus disease 2019 in New York: retrospective case series"
@@ -158,7 +158,7 @@ cv:
         date: "2026-10"
         location: New York, NY
         summary: Irving Institute for Cancer Dynamics Research Meeting, Columbia University. Speaker.
-      - name: Whole brain, cell type specific transcriptomic profiling of in vivo neurochemical perturbation
+      - name: Whole-brain, cell-type-specific transcriptomic profiling of in vivo neurochemical perturbation
         date: "2024-10"
         location: Chicago, IL
         summary: Society for Neuroscience. Presenting author.
@@ -178,7 +178,7 @@ cv:
         date: "2023-10"
         location: Seattle, WA
         summary: Biomedical Engineering Society. Contributing author.
-      - name: Noradrenergic dynamics in the sensory and prefrontal cortices during a perceptual decision making task
+      - name: Noradrenergic dynamics in the sensory and prefrontal cortices during a perceptual decision-making task
         date: "2022-11"
         location: San Diego, CA
         summary: Society for Neuroscience. Presenting author.
@@ -186,27 +186,27 @@ cv:
         date: "2022-10"
         location: New York, NY
         summary: Center of Excellence in the Neuroscience of Decision-Making Kickoff, Columbia University. Presenting author.
-      - name: Development of a Neural Network Architecture for Optimal Prediction of EEG Alpha Wave Power
+      - name: Development of a neural network architecture for optimal prediction of EEG alpha wave power
         date: "2022-04"
         location: New York, NY
         summary: Northeast Bioengineering Conference, Columbia University. Presenting author.
-      - name: Targeted Neural Stimulation to Improve Neuropathic Pain Treatment
+      - name: Targeted neural stimulation to improve neuropathic pain treatment
         date: "2022-04"
         location: New York, NY
         summary: Northeast Bioengineering Conference, Columbia University. Presenting author.
-      - name: MIDA-based Finite Element Modeling to Optimize Electrotherapy Configurations
+      - name: MIDA-based finite element modeling to optimize electrotherapy configurations
         date: "2022-04"
         location: New York, NY
         summary: Northeast Bioengineering Conference, Columbia University. Contributing author.
-      - name: Long-term Locus Coeruleus Stimulation reduces Aβ pathology in a Mouse Model of Neurodegeneration
+      - name: Long-term locus coeruleus stimulation reduces Aβ pathology in a mouse model of neurodegeneration
         date: "2021-05"
         location: New York, NY
         summary: Medical School Research Symposium, Columbia University. Awarded best session poster by panel of judges. Presenting author.
-      - name: Synthetic Neuromodulation as a Potential Treatment for Alzheimer’s Disease
+      - name: Synthetic neuromodulation as a potential treatment for Alzheimer’s disease
         date: "2019-08"
         location: New York, NY
         summary: NIH Summer Research Symposium, Columbia University.
-      - name: The Temporal Expression of Consciousness
+      - name: The temporal expression of consciousness
         date: "2017-03"
         location: Worcester, MA
         summary: Class of 1879 Award Ceremony and Reception, WPI.
