@@ -5,7 +5,9 @@ export function Authors({ names }: { names: string[] }) {
       {names.map((name, i) => (
         <span key={i}>
           {i > 0 && ", "}
-          <Inline text={name} />
+          <span className="whitespace-nowrap">
+            <Inline text={name} />
+          </span>
         </span>
       ))}
     </>

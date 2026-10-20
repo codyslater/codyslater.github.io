@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { Authors, Inline } from "@/components/ui/Inline";
 import { getCv, type CvEntry } from "@/lib/cv";
+import { DownloadIcon } from "@/components/ui/DownloadIcon";
 import { siteConfig } from "@/lib/constants";
 
 const description = "Curriculum vitae of Cody Slater.";
@@ -55,9 +56,9 @@ function Entry({ entry }: { entry: CvEntry }) {
                   href={href}
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="text-accent-green hover:underline glow-hover"
+                  className="whitespace-nowrap text-accent-green hover:underline glow-hover"
                 >
-                  -&gt; doi
+                  -&gt; {/biorxiv/i.test(entry.journal ?? "") ? "bioRxiv" : "doi"}
                 </a>
               </>
             )}
@@ -113,9 +114,11 @@ export default function CvPage() {
             <p className="text-sm mt-4">
               <a
                 href={siteConfig.links.cvPdf}
-                className="text-accent-green hover:underline glow-hover"
+                download
+                className="inline-flex items-center gap-2 text-accent-green hover:underline glow-hover"
               >
-                -&gt; download pdf
+                <DownloadIcon />
+                download pdf
               </a>
             </p>
           </header>
