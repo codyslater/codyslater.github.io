@@ -47,7 +47,7 @@ cv:
           - "Building a spatial transcriptomics toolset to model in vivo cell-type-specific genetic perturbations."
       - company: Department of Neurological Surgery, Columbia University
         position: Graduate Researcher
-        date: "2024 - present"
+        date: "2024 – present"
         location: New York, NY
         summary: "*intraoperative microneurography · DBS electrodes · human trigeminal ganglion · OR hardware design*"
         highlights:
@@ -145,17 +145,10 @@ cv:
         doi: 10.1093/sleepadvances/zpaa002
       - title: An Interprofessional Approach to Clinical Workflow Evaluation Focused on the Electronic Health Record Using Time Motion Study Methods
         authors: [J. Schwartz, J. Elias, "**C. Slater**", K. Cato, S. C. Rossetti]
-        journal: Paper presented at the AMIA Annual Symposium Proceedings, 1187–1196 (2019)
-      - title: Six-Axis Monopropellant Propulsion System for Picosatellites
-        authors: ["**C. Slater**", M. Creaghan, O. Lamce]
-        journal: Unpublished Major Qualifying Project. Worcester Polytechnic Institute (2016)
-      - title: Developing a Collaborative Process for the Application of Appropriate Technology on Farms in Mandi District
-        authors: [A. S. Konieczny, "**C. Slater**", S. M. Neeno]
-        journal: Unpublished Interactive Qualifying Project. Worcester Polytechnic Institute (2015)
+        journal: AMIA Annual Symposium Proceedings, 1187–1196 (2019)
     Fellowships & Grants:
       - name: Van C. Mow Fellowship
         date: "2021-09"
-        summary: Established in 2018 by Yuling Wei to provide fellowships to doctoral students enrolled in Columbia’s School of Engineering and Applied Science, who are or plan to be engaged in biomedical research.
       - name: National Institute on Aging T35AG044303
         date: "2019-03"
         summary: Brief Research in Aging and Interdisciplinary Neurosciences (BRAIN) Program
@@ -179,7 +172,7 @@ cv:
       - name: Lipid nanoparticle-mediated gene editing in the mouse brain via intracranial delivery
         date: "2023-10"
         location: Seattle, WA
-        summary: Biomedical engineering society. Contributing author.
+        summary: Biomedical Engineering Society. Contributing author.
       - name: Noradrenergic dynamics in the sensory and prefrontal cortices during a perceptual decision making task
         date: "2022-11"
         location: San Diego, CA
@@ -225,15 +218,10 @@ cv:
       - name: VP&S Curriculum & Education, Discover Subcommittee, Student Member
         start_date: "2020-01"
         end_date: present
-      - name: President of the WPI Fitness Club
-        start_date: "2015-01"
-        end_date: "2016-01"
       - name: Treasurer WPI Chapter of AIAA
         start_date: "2014-01"
         end_date: "2015-01"
     Honors & Awards:
-      - name: Van Mow Fellow
-        date: "2021 – 2022"
       - name: PS250 Roy and Diana Vagelos Scholarship Recipient
         date: "2018 – 2021"
       - name: D. & D. Merksamer Scholarship Recipient
@@ -244,12 +232,12 @@ cv:
         date: "2016-05"
       - name: WPI Presidential Scholarship Recipient
         date: "2012 – 2016"
-      - name: Mid-Plains Rural Telephone Cooperative Scholarship Recipient
-        date: "2012 – 2016"
       - name: Voted Most Impactful Interactive Socio-Technical Practicum by Panel of Judges
         date: "2015-05"
-      - name: WPI Dean’s List
-        date: Spring 2013 – Fall 2015
+locale:
+  language: english
+  # Three-letter month abbreviations throughout (RenderCV's default is "June", "July", "Sept").
+  month_abbreviations: [Jan, Feb, Mar, Apr, May, Jun, Jul, Aug, Sep, Oct, Nov, Dec]
 design:
   theme: classic
   # Compact layout. Settings only; no content is cut.
