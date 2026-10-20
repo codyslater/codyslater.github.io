@@ -5,6 +5,7 @@ import { siteConfig } from "@/lib/constants";
 
 const links = [
   { label: "github", href: siteConfig.links.github },
+  { label: "x", href: siteConfig.links.x },
   { label: "bluesky", href: siteConfig.links.bluesky },
   { label: "copying ourselves", href: siteConfig.links.substack, note: "substack" },
   { label: "cv", href: siteConfig.links.cv, note: "will be updated soon" },

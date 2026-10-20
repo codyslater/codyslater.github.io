@@ -29,6 +29,7 @@ export const siteConfig = {
   bio: "working on ideas that bridge organic and machine intelligence. where RNA, neural computation, synthetic biology, and AI converge.",
   links: {
     github: "https://github.com/codyslater",
+    x: "https://x.com/c0d3_s",
     bluesky: "https://bsky.app/profile/codyslater.bsky.social",
     substack: "https://copyingourselves.substack.com",
     cv: "#",
