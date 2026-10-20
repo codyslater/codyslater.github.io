@@ -22,7 +22,7 @@ export const siteConfig = {
   name: "Cody Slater",
   title: "cody_slater",
   description:
-    "MD/PhD. engineer. scientist. Building at the intersection of RNA, neural computation, synthetic biology, and AI.",
+    "MD/PhD candidate. engineer. scientist. Building at the intersection of RNA, neural computation, synthetic biology, and AI.",
   url: "https://codyslater.github.io",
   bio: "I am an MD student and PhD candidate working where biological and machine intelligence meet. I build large machine learning models and scalable experimental systems in parallel that improve each other across iterations. My underlying philosophy is that the best way to understand a complex system is to learn to control it.",
   links: {
