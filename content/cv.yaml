@@ -9,6 +9,7 @@
 cv:
   name: Cody Slater
   location: New York, NY
+  email: cody.slater@columbia.edu
   website: https://codyslater.github.io/
   sections:
     About:
@@ -268,7 +269,7 @@ design:
     date_and_location_width: 3.2cm
     allow_page_break: false
   templates:
-    footer: "CS -- PAGE_NUMBER/TOTAL_PAGES"
+    footer: "CS -- PAGE_NUMBER/TOTAL_PAGES  ·  † equal contribution"
     # The link is an inline tag ([DOI], [bioRxiv]) at the end of the venue line, not its own
     # line. LINK_TAG is added per paper by scripts/cv-link-tags.py during `npm run cv:pdf`.
     publication_entry:
