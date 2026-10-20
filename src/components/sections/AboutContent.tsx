@@ -8,7 +8,7 @@ const links = [
   { label: "x", href: siteConfig.links.x },
   { label: "bluesky", href: siteConfig.links.bluesky },
   { label: "copying ourselves", href: siteConfig.links.substack, note: "substack" },
-  { label: "cv", href: siteConfig.links.cv, note: "will be updated soon" },
+  { label: "cv", href: siteConfig.links.cv, note: "pdf available" },
 ];
 
 export function AboutContent() {
@@ -51,8 +51,9 @@ export function AboutContent() {
             <FadeIn key={link.label} delay={0.35 + 0.05 * i}>
               <a
                 href={link.href}
-                target="_blank"
-                rel="noopener noreferrer"
+                {...(link.href.startsWith("/")
+                  ? {}
+                  : { target: "_blank", rel: "noopener noreferrer" })}
                 className="group flex items-center gap-2 text-secondary hover:text-accent-green glow-hover transition-all"
               >
                 <span className="text-muted group-hover:translate-x-1 transition-transform duration-200">

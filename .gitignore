@@ -40,6 +40,19 @@ yarn-error.log*
 *.tsbuildinfo
 next-env.d.ts
 
+# thal-circuit runtime gateway + closure signal (never commit)
+.circuit/
+.autoresearch/
+
+# CV render
+/.venv/
+.cv-build/
+/rendercv_output/
+
 # unpublished writing (dev-only; see content/drafts/README.md)
 content/drafts/*
 !content/drafts/README.md
+
+# clone scratch
+.claude/
+CIRCUIT_TASK.md

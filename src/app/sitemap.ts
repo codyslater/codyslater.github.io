@@ -6,7 +6,7 @@ export const dynamic = "force-static";
 
 export default function sitemap(): MetadataRoute.Sitemap {
   // Pages are enumerated explicitly; hidden pages (/zoo, /soup) must stay unlisted.
-  const pages = ["", "/about/", "/writing/", "/projects/", "/graph/"].map(
+  const pages = ["", "/about/", "/writing/", "/projects/", "/cv/", "/publications/", "/graph/"].map(
     (p) => ({ url: `${siteConfig.url}${p}` }),
   );
   const posts = getPosts()
