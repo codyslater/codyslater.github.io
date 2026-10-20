@@ -61,6 +61,7 @@ function Entry({ entry }: { entry: CvEntry }) {
                 </a>
               </>
             )}
+            {entry.authors.some((a) => a.includes("†")) && " · † equal contribution"}
           </Meta>
         </>
       );
