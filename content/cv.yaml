@@ -278,7 +278,7 @@ design:
     space_between_text_based_entries: 0.15em
   entries:
     date_and_location_width: 3.2cm
-    allow_page_break: true
+    allow_page_break: false
   templates:
     footer: "CS -- PAGE_NUMBER/TOTAL_PAGES"
     # The link is an inline tag ([DOI], [bioRxiv]) at the end of the venue line, not its own
