@@ -2,14 +2,14 @@ import type { Metadata } from "next";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { Authors } from "@/components/ui/Inline";
 import { getCv, type CvEntry } from "@/lib/cv";
-import { siteConfig } from "@/lib/constants";
+import { ogImage, siteConfig } from "@/lib/constants";
 
 const description = "Publications and preprints by Cody Slater.";
 
 export const metadata: Metadata = {
   title: "publications",
   description,
-  openGraph: { title: "publications", description, url: "/publications/" },
+  openGraph: { title: "publications", description, url: "/publications/", images: [ogImage] },
 };
 
 type Pub = Extract<CvEntry, { kind: "publication" }>;

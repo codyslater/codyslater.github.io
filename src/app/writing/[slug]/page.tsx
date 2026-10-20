@@ -2,6 +2,7 @@ import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote-client/rsc";
 import { getPost, getPosts } from "@/lib/content";
+import { ogImage } from "@/lib/constants";
 import { mdxRemoteOptions } from "@/lib/mdx";
 import { mdxComponents } from "@/components/mdx";
 import { ThemeToggle } from "@/components/writing/ThemeToggle";
@@ -32,12 +33,13 @@ export async function generateMetadata({
       description: post.summary,
       type: "article",
       url: `/writing/${slug}/`,
-      ...(post.cover ? { images: [post.cover] } : {}),
+      images: [post.cover ?? ogImage],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: post.title,
       description: post.summary,
+      images: [post.cover ?? ogImage.url],
     },
   };
 }

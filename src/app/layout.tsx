@@ -1,7 +1,7 @@
 import type { Metadata } from "next";
 import Script from "next/script";
 import { mono } from "@/lib/fonts";
-import { siteConfig } from "@/lib/constants";
+import { ogImage, siteConfig } from "@/lib/constants";
 import { NavBar } from "@/components/layout/NavBar";
 import { AnimatedFavicon } from "@/components/ui/AnimatedFavicon";
 
@@ -20,11 +20,13 @@ export const metadata: Metadata = {
     url: siteConfig.url,
     siteName: siteConfig.name,
     type: "website",
+    images: [ogImage],
   },
   twitter: {
-    card: "summary",
+    card: "summary_large_image",
     title: siteConfig.name,
     description: siteConfig.description,
+    images: [ogImage.url],
   },
   alternates: {
     types: {

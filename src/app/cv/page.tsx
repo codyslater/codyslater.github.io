@@ -3,14 +3,14 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { Authors, Inline } from "@/components/ui/Inline";
 import { getCv, type CvEntry } from "@/lib/cv";
 import { DownloadIcon } from "@/components/ui/DownloadIcon";
-import { siteConfig } from "@/lib/constants";
+import { ogImage, siteConfig } from "@/lib/constants";
 
 const description = "Curriculum vitae of Cody Slater.";
 
 export const metadata: Metadata = {
   title: "cv",
   description,
-  openGraph: { title: "cv", description, url: "/cv/" },
+  openGraph: { title: "cv", description, url: "/cv/", images: [ogImage] },
 };
 
 function Meta({ children }: { children: React.ReactNode }) {

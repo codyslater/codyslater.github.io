@@ -75,7 +75,13 @@ interface HeroOverlayProps {
 export function HeroOverlay({ onTypingProgress, onContinue }: HeroOverlayProps) {
   const [typingDone, setTypingDone] = useState(false);
   const [showPrompt, setShowPrompt] = useState(false);
+  const [coarse, setCoarse] = useState(false);
   const typosRef = useRef(generateRandomTypos());
+
+  // Set in an effect so the first render matches the static HTML
+  useEffect(() => {
+    setCoarse(window.matchMedia("(pointer: coarse)").matches);
+  }, []);
 
   const handleComplete = useCallback(() => {
     setTypingDone(true);
@@ -89,17 +95,31 @@ export function HeroOverlay({ onTypingProgress, onContinue }: HeroOverlayProps) 
     }
   }, [onTypingProgress, showPrompt]);
 
+  // A swipe or scroll skips the intro at any point, even mid-typing
+  useEffect(() => {
+    const skip = () => onContinue?.();
+    const events = ["wheel", "touchmove"] as const;
+    events.forEach((e) => window.addEventListener(e, skip, { passive: true }));
+    return () => events.forEach((e) => window.removeEventListener(e, skip));
+  }, [onContinue]);
+
   useEffect(() => {
     if (!showPrompt) return;
 
-    function handleKeyDown(e: KeyboardEvent) {
-      if (e.key === "Enter" && document.activeElement?.tagName !== "INPUT") {
-        onContinue?.();
-      }
+    function handleKeyDown() {
+      if (document.activeElement?.tagName !== "INPUT") onContinue?.();
     }
+    const handleAny = () => onContinue?.();
+    const events = ["pointerdown", "click"] as const;
 
     window.addEventListener("keydown", handleKeyDown);
-    return () => window.removeEventListener("keydown", handleKeyDown);
+    events.forEach((e) => window.addEventListener(e, handleAny, { passive: true }));
+    const timer = setTimeout(handleAny, 3000);
+    return () => {
+      window.removeEventListener("keydown", handleKeyDown);
+      events.forEach((e) => window.removeEventListener(e, handleAny));
+      clearTimeout(timer);
+    };
   }, [showPrompt, onContinue]);
 
   return (
@@ -124,11 +144,10 @@ export function HeroOverlay({ onTypingProgress, onContinue }: HeroOverlayProps) 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
-            onClick={() => onContinue?.()}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-muted text-xs font-mono cursor-pointer hover:text-secondary transition-colors pointer-events-auto"
             style={{ animation: "pulse-subtle 2s ease-in-out infinite" }}
           >
-            <span>press enter to continue</span>
+            <span>{coarse ? "tap to continue" : "press enter to continue"}</span>
             <span className="text-base">&#x25BE;&#x25BE;&#x25BE;</span>
           </motion.button>
         )}

@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { serif } from "@/lib/fonts";
 import { getProjects } from "@/lib/content";
+import { ogImage } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "projects",
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
     title: "projects",
     description: "Projects by Cody Slater.",
     url: "/projects/",
+    images: [ogImage],
   },
 };
 

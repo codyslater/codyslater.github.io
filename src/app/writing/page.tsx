@@ -3,6 +3,7 @@ import Link from "next/link";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { serif } from "@/lib/fonts";
 import { getPosts } from "@/lib/content";
+import { ogImage } from "@/lib/constants";
 
 export const metadata: Metadata = {
   title: "writing",
@@ -11,6 +12,7 @@ export const metadata: Metadata = {
     title: "writing",
     description: "Essays and notes by Cody Slater.",
     url: "/writing/",
+    images: [ogImage],
   },
 };
 

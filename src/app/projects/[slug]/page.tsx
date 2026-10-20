@@ -3,6 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote-client/rsc";
 import { getProject, getProjects, LINK_LABELS } from "@/lib/content";
+import { ogImage } from "@/lib/constants";
 import { mdxRemoteOptions } from "@/lib/mdx";
 import { mdxComponents } from "@/components/mdx";
 import { ThemeToggle } from "@/components/writing/ThemeToggle";
@@ -32,11 +33,13 @@ export async function generateMetadata({
       description: project.summary,
       type: "website",
       url: `/projects/${slug}/`,
+      images: [project.cover ?? ogImage],
     },
     twitter: {
-      card: "summary",
+      card: "summary_large_image",
       title: project.title,
       description: project.summary,
+      images: [project.cover ?? ogImage.url],
     },
   };
 }

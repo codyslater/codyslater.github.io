@@ -1,7 +1,15 @@
 import type { Metadata } from "next";
 import { AboutContent } from "@/components/sections/AboutContent";
+import { ogImage } from "@/lib/constants";
 
-export const metadata: Metadata = { title: "about" };
+export const metadata: Metadata = {
+  title: "about",
+  openGraph: {
+    title: "about",
+    url: "/about/",
+    images: [ogImage],
+  },
+};
 
 export default function AboutPage() {
   return (

@@ -15,6 +15,9 @@ const nav: NavItem[] = [
   { label: "writing", href: "/writing", icon: ">>" },
 ];
 
+// Share-card image for every page (page-level openGraph replaces the layout's, so each page lists it).
+export const ogImage = { url: "/og.png", width: 1200, height: 630, alt: "cody_slater" };
+
 export const siteConfig = {
   name: "Cody Slater",
   title: "cody_slater",
