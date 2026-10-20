@@ -1,6 +1,9 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FadeIn } from "@/components/ui/FadeIn";
+import { ThemeToggle } from "@/components/writing/ThemeToggle";
+import { ThemeScript } from "@/components/writing/ThemeScript";
+import { serif } from "@/lib/fonts";
 import { getProjects } from "@/lib/content";
 
 export const metadata: Metadata = {
@@ -17,12 +20,16 @@ export default function ProjectsPage() {
   const projects = getProjects();
 
   return (
-    <div className="min-h-screen pt-20 pb-20 px-4">
-      <div className="max-w-3xl mx-auto">
+    <div
+      className={`writing-literary min-h-screen pt-20 pb-20 px-4 ${serif.variable}`}
+    >
+      <ThemeScript />
+      <div className="max-w-5xl mx-auto">
         <FadeIn>
-          <h1 className="text-2xl font-mono font-bold text-foreground mb-10">
-            projects
-          </h1>
+          <div className="lit-bar mb-10">
+            <h1 className="lit-heading">projects</h1>
+            <ThemeToggle />
+          </div>
         </FadeIn>
 
         {projects.length === 0 ? (
@@ -35,28 +42,33 @@ export default function ProjectsPage() {
             </div>
           </FadeIn>
         ) : (
-          <div className="grid gap-4 sm:grid-cols-2">
+          <ul className="grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-2">
             {projects.map((project, i) => (
-              <FadeIn key={project.slug} delay={0.1 + 0.05 * i}>
-                <div className="h-full border border-border rounded p-5 bg-surface font-mono">
-                  <Link
-                    href={`/projects/${project.slug}/`}
-                    className="text-base font-bold text-foreground hover:text-accent-green glow-hover transition-colors"
-                  >
-                    {project.title}
+              <li key={project.slug}>
+                <FadeIn delay={0.1 + 0.05 * i}>
+                  <Link href={`/projects/${project.slug}/`} className="lit-card">
+                    {project.cover ? (
+                      // eslint-disable-next-line @next/next/no-img-element
+                      <img src={project.cover} alt="" className="lit-cover" />
+                    ) : (
+                      <div className="lit-cover lit-cover-fallback">
+                        <span className="lit-cover-title">{project.title}</span>
+                      </div>
+                    )}
+                    <span className="lit-card-text">
+                      <span className="lit-entry-title">{project.title}</span>
+                      <span className="lit-summary">{project.summary}</span>
+                      {project.tags.length > 0 && (
+                        <span className="lit-date lit-tags">
+                          {project.tags.join(" · ")}
+                        </span>
+                      )}
+                    </span>
                   </Link>
-                  <p className="text-sm text-secondary mt-2">
-                    {project.summary}
-                  </p>
-                  {project.tags.length > 0 && (
-                    <p className="text-xs text-secondary mt-3">
-                      {project.tags.map((t) => `#${t}`).join(" ")}
-                    </p>
-                  )}
-                </div>
-              </FadeIn>
+                </FadeIn>
+              </li>
             ))}
-          </div>
+          </ul>
         )}
       </div>
     </div>

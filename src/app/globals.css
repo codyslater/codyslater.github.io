@@ -377,6 +377,103 @@ body {
 .literary-prose blockquote { color: var(--lit-muted); }
 .literary-prose a { color: var(--lit-link); }
 
+/* Projects: a sibling of the writing look. Same serif, cards and toggle, but
+   on the ANSI Noir ground of the project animations (pure black / pure white, cool
+   greys), so project media made in that system sits on the page seamlessly.
+   The orange rule under the heading is the Prospectus title rule. */
+.writing-literary.projects-noir {
+  --lit-bg: #000000;
+  --lit-text: #e9eef0;
+  --lit-muted: #9aa3a6;
+  --lit-link: #ffff55;
+  --lit-rule: #1b1f21;
+  --lit-hue: #ff8700;
+}
+:root[data-writing-theme="light"] .writing-literary.projects-noir {
+  --lit-bg: #ffffff;
+  --lit-text: #14181a;
+  --lit-muted: #5f6669;
+  --lit-link: #aa8800;
+  --lit-rule: #d0d5d8;
+}
+.projects-noir .lit-bar { position: relative; padding-bottom: 0.9rem; }
+.projects-noir .lit-bar::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  bottom: 0;
+  width: min(60%, 18rem);
+  height: 3px;
+  background: var(--lit-hue);
+}
+.projects-noir .lit-cover { border: 1px solid var(--lit-rule); }
+
+/* Project detail pages (both looks): hero media, lede, links */
+.writing-literary .lit-back { color: var(--lit-muted); }
+.writing-literary .lit-back:hover { color: var(--lit-link); }
+.writing-literary .lit-hero,
+.writing-literary .lit-video,
+.writing-literary .lit-figure {
+  display: block;
+  width: 100%;
+  height: auto;
+  border-radius: 0;
+}
+.writing-literary .lit-video { background: #000; }
+:root[data-writing-theme="light"] .writing-literary .lit-video { background: #fff; }
+.writing-literary .lit-figure { margin: 2rem 0; }
+.writing-literary .lit-lede {
+  font-family: var(--lit-serif);
+  font-size: 1.25rem;
+  line-height: 1.45;
+  color: var(--lit-muted);
+}
+/* Project bodies have sections, which posts rarely do: serif headings in the
+   page's own ink (the shared mono rule hard-codes the dark text colour), and
+   inline code tinted from the page ground so it reads in both themes. */
+.writing-literary .project-prose h2,
+.writing-literary .project-prose h3 {
+  font-family: var(--lit-serif);
+  color: var(--lit-text);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 2.2em 0 0.6em;
+}
+.writing-literary .project-prose h2 { font-size: 1.6rem; }
+.writing-literary .project-prose h3 { font-size: 1.3rem; }
+.writing-literary .project-prose strong { color: var(--lit-text); }
+.writing-literary .project-prose ol li::marker,
+.writing-literary .project-prose ul li::marker { color: var(--lit-muted); }
+.writing-literary .project-prose :not(pre) > code {
+  background: color-mix(in srgb, var(--lit-text) 9%, var(--lit-bg));
+  border: 1px solid color-mix(in srgb, var(--lit-text) 16%, var(--lit-bg));
+  border-radius: 0;
+  color: var(--lit-text);
+}
+/* fenced code keeps shiki's light-on-dark tokens, on a warm dark ground that
+   belongs to the page in both themes (shiki's own navy is set inline) */
+.writing-literary .project-prose pre {
+  border-radius: 0;
+  background: color-mix(in srgb, var(--lit-text) 7%, var(--lit-bg)) !important;
+  border-color: color-mix(in srgb, var(--lit-text) 16%, var(--lit-bg));
+}
+:root[data-writing-theme="light"] .writing-literary .project-prose pre {
+  background: #1d1b18 !important;
+  border-color: #1d1b18;
+}
+.writing-literary .lit-hero,
+.writing-literary .lit-video,
+.writing-literary .lit-figure {
+  border: 1px solid color-mix(in srgb, var(--lit-text) 18%, var(--lit-bg));
+}
+.writing-literary .lit-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
+.writing-literary .lit-links a { color: var(--lit-link); }
+.writing-literary .lit-links a:hover { text-decoration: underline; }
+.projects-noir .lit-cover-fallback {
+  background: var(--lit-bg);
+  border-color: var(--lit-rule);
+}
+
 /* /soup time slider — appearance-none removes the native thumb in
    WebKit/Blink; supply an explicit round thumb. Neutral gray on purpose:
    every accent hue including --accent-green is a soup block color. */

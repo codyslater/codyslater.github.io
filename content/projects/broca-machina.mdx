@@ -1,38 +1,66 @@
 ---
 title: broca-machina
-summary: a bridge that lets any text "brain" listen and talk inside a discord voice channel.
+summary: A voice for my assistant, so computational work continues while I am at the bench.
 tags: [voice, discord, mcp, whisper]
 links:
   github: https://github.com/codyslater/broca-machina
 order: 1
 hero: /projects/broca-machina/logo.svg
+cover: /projects/broca-machina/cover.webp
+video: /projects/broca-machina/route
 draft: false
 ---
 
-you talk in a discord voice channel. broca-machina transcribes it, hands the text to
-whatever you want answering (an llm, an agent, a shell command), and speaks the reply
-back into the channel. i built it to talk to my own assistant out loud instead of typing.
+My research is split between the wet lab and computation. A model trains on one cluster while
+an analysis runs on another. Much of that work needs a decision from me while I am at the bench
+with gloves on, running a gel or checking the mouse colony. However, every way of
+reaching the computational side assumed free hands and a keyboard. I built broca-machina so
+that the work continues through conversation.
 
-## how it works
+broca-machina gives a text model a voice in a Discord voice channel. It transcribes what I say,
+passes the text to my assistant, and speaks the reply. The assistant routes each request to the
+agent that should do the work (the training run, the analysis) and answers the rest itself. The
+name comes from Broca's area, the region of the left frontal lobe involved in speech production.
 
-<FlowDiagram steps={["you speak", "speech to text", "your brain", "text to speech", "you hear"]} highlight={2} />
+The same channel serves the bench. I document an experiment while I run it, log a new litter or
+a cage change for the colony, and ask a troubleshooting question when a step fails, all of it
+hands free.
 
-the brain is just a small interface, so the same bridge runs a one-line `echo` toy or a
-full agent. three ways to connect one:
+Speech runs on the GPU in my desk machine, but the answers come from cluster jobs that can take
+a minute. A minute of silence on a voice call reads as a failure. A small local model therefore
+speaks a short, relevant "acknowledgment" 3.5 seconds after I stop talking, and the real answer
+follows when it lands.
 
-- **file** — transcripts land in a folder, a reply file becomes the voice. any language works.
-- **command** — each transcript goes to a command, whatever it prints is spoken.
-- **mcp** — the bridge becomes an mcp server, so a host like claude code hears the channel and answers with a `speak` tool.
+## The video follows five requests through the system
 
-## what's in it
+Two of the five come from the computational side and three from the bench. The assistant routes
+four of them to another agent and answers the troubleshooting question itself. The panel in the
+corner shows what I hear after I stop talking, with the acknowledgment and without it.
 
-- local speech in and out: faster-whisper for transcription, piper for the voice. nothing leaves the machine.
-- you can interrupt it mid-sentence. a short noise ducks the volume, real speech cuts it off.
-- it only listens to the speaker you name, and refuses to start without one set.
-- runs under discord's end-to-end voice encryption, which most voice libraries can't negotiate yet. that is why it runs on bun.
-- optional latency tricks: voice-activity endpointing, sentence-by-sentence speech, a short "one moment" filler while a slow brain thinks.
+## The assistant hears me by default, and any session can take over
 
-## try it
+<ThemedImage base="/projects/broca-machina/hub" alt="A hub diagram: me at the centre, wired through broca to my assistant, and to agents on a GPU cluster, an HPC cluster, a second model and a helper." />
+
+Saying "connect me to" and a session's name routes my voice straight into that session, and one
+phrase returns it to the assistant. The second model takes typed requests only.
+
+## A request takes six steps from speech to answer
+
+1. **Listen.** broca joins the channel and records only the speaker it was told to hear. A voiceprint check stops it from answering anyone else.
+2. **Transcribe.** A warm faster-whisper server turns the clip into text on the local GPU.
+3. **Decide whether it was addressed.** A wake word passes at once, and so does anything said right after a reply. The small local model judges the rest: was I talking to the bot, or to someone in the room?
+4. **Deliver.** The text goes to the brain. Here the brain is my assistant, a Claude Code session, and broca reaches it as an MCP channel.
+5. **Acknowledge.** If the answer is slow, the small model speaks a short line tied to what I asked.
+6. **Speak.** broca strips the markdown from the reply and speaks it a sentence at a time, so the first words play while the rest is still being written.
+
+## The bridge runs locally, and the brain is one small interface
+
+- Transcription (faster-whisper) and the voice (Kokoro or Piper) run on the local GPU. No audio goes to a cloud speech service.
+- I can interrupt it mid-sentence. A short noise only ducks the volume, real speech stops playback, and the brain learns what I did not hear.
+- It runs under Discord's end-to-end voice encryption, which most voice libraries cannot negotiate yet. That requirement is why it runs on Bun.
+- The brain is a small interface. The same bridge drives a one-line `echo` toy or a full agent, over files, a command, or an MCP server for a host like Claude Code.
+
+## Setup needs a bot token, ffmpeg and a Python environment
 
 ```bash
 bun install
@@ -40,5 +68,5 @@ cp config.example.json config.json   # discord ids, stt, tts, transport
 bun src/voice_loop.js config.json
 ```
 
-you need a dedicated discord bot token, ffmpeg, and a python env with faster-whisper and piper.
-setup is in the repo's `SETUP.md`.
+The Python environment carries faster-whisper and Piper; the repo's `SETUP.md` covers the
+rest.

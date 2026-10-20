@@ -21,7 +21,11 @@ export type ProjectLinks = {
   github?: string;
   paper?: string;
   demo?: string;
+  openvsx?: string; // an Open VSX listing, for extensions
 };
+
+// How each link is labelled on a project page; a key with no label shows as itself.
+export const LINK_LABELS: Partial<Record<keyof ProjectLinks, string>> = { openvsx: "open vsx" };
 
 export type Project = {
   slug: string;
@@ -31,11 +35,14 @@ export type Project = {
   links: ProjectLinks;
   order?: number;
   hero?: string; // path under public/, e.g. /projects/foo/logo.svg
+  cover?: string; // 4:3 gallery thumbnail under public/, e.g. /projects/foo/cover.webp
+  video?: string; // hero video base, e.g. /projects/foo/route -> route_dark.mp4 (see ThemedVideo)
+  videoThemed: boolean; // false: one cut for both themes, <base>.mp4 (frontmatter video_themed)
   draft: boolean;
   body: string;
 };
 
-const LINK_KEYS = ["github", "paper", "demo"] as const;
+const LINK_KEYS = ["github", "paper", "demo", "openvsx"] as const;
 
 function isProd(): boolean {
   return process.env.NODE_ENV === "production";
@@ -134,6 +141,15 @@ function optionalDraft(data: Record<string, unknown>, file: string): boolean {
   if (v === undefined) return false;
   if (typeof v !== "boolean") {
     throw new Error(`${file}: frontmatter field "draft" must be true or false`);
+  }
+  return v;
+}
+
+function optionalVideoThemed(data: Record<string, unknown>, file: string): boolean {
+  const v = data.video_themed;
+  if (v === undefined) return true;
+  if (typeof v !== "boolean") {
+    throw new Error(`${file}: frontmatter field "video_themed" must be true or false`);
   }
   return v;
 }
@@ -258,6 +274,9 @@ export function getProjects(): Project[] {
         links,
         order: order as number | undefined,
         hero: optionalImagePath(data, file, "hero"),
+        cover: optionalImagePath(data, file, "cover"),
+        video: optionalImagePath(data, file, "video"),
+        videoThemed: optionalVideoThemed(data, file),
         draft: optionalDraft(data, file),
         body,
       };

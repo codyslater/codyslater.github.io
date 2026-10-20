@@ -1,0 +1,65 @@
+---
+title: Control Channel
+summary: My Discord server inside VS Code, so an agent's report is one click from the code it changed.
+tags: [vs code, discord, agents, typescript]
+links:
+  github: https://github.com/codyslater/control-channel-for-discord
+  openvsx: https://open-vsx.org/extension/c0d3s/control-channel-for-discord
+order: 2
+cover: /projects/control-channel/cover.webp
+video: /projects/control-channel/loop
+draft: false
+---
+
+My agents report to a private Discord server. It is the one channel a phone, a laptop and a
+cluster job can all reach, so finished work arrives there, usually with a link to the file that
+changed. However, I write and review code in VS Code, and each message cost a switch to another
+window, a search for the file it named, and a switch back. Discord's own app knows nothing about
+the editor, so a file path in a message is only text there.
+
+Control Channel puts the server inside the editor. Channels and threads sit in the sidebar, and
+my replies go out as me. A file path in a message opens that file at that line, on the machine
+where it lives, which matters because much of my code runs on a remote cluster. I built it for
+my own setup and then hardened it enough to publish.
+
+## Discord's channels and threads sit beside the code
+
+- **Live channels and threads** in the sidebar, a bottom dock, the right dock or a pop-out tab. Any channel can be dragged to any of them.
+- **Messages go out as me**, with my name and avatar, through a webhook. They stay silent unless they mention someone.
+- **An activity feed** lists mentions first, then unread, then newest. Any channel can be pinned or silenced.
+- **Code references are links.** A file path, a traceback line or a notebook cell in a message opens at that line, locally or over Remote-SSH.
+- **Links reach back into the editor.** An agent can post a link that opens a file, a folder and a chat on a named host, in Cursor, Windsurf and VSCodium as well as VS Code.
+- **Slash commands share context.** `/loc` sends the cursor position, `/snippet` the selection and `/diff` the uncommitted changes; `/thread` starts a thread.
+
+## An agent's report is one click from the line it changed
+
+An agent finishes a job and posts in its thread with a link to the file it changed. The message
+appears in my editor, and one click lands me on the line. I reply in the same window, the agent
+reads the reply as a message from me, and it continues.
+
+## The recording runs on the demo server
+
+The extension's demo mode drives this recording: the activity feed, a thread in the right dock,
+a channel popped out beside the code, and a link in a message opening its line.
+
+<ThemedVideo base="/projects/control-channel/demo" themed={false} ratio="1440 / 694" autoplay={false} label="A one-minute screen recording of Control Channel in VS Code." />
+
+## The extension sends data only to Discord
+
+- It has no telemetry and no account, and it runs no server of mine.
+- The bot token lives in VS Code's secret storage and nowhere else.
+- A link that would open a remote tunnel asks first, and so does opening a file outside the workspace.
+- A demo mode runs a made-up server with no token at all.
+
+## Open VSX carries it for the VS Code forks
+
+Cursor, Windsurf and VSCodium install it from
+[Open VSX](https://open-vsx.org/extension/c0d3s/control-channel-for-discord). VS Code installs the
+`.vsix` from the GitHub releases page:
+
+```bash
+code --install-extension control-channel-for-discord-1.0.3.vsix
+```
+
+Then make a Discord bot, run **Discord: Set Bot Token**, and set your user ID; the README walks
+through each step. Control Channel is unofficial and not affiliated with Discord.

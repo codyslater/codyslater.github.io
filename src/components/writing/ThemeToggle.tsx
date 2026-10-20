@@ -19,8 +19,13 @@ function getServerSnapshot(): Theme {
   return "dark";
 }
 
+// The current writing/projects theme, kept in step with the toggle.
+export function useLitTheme(): Theme {
+  return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+}
+
 export function ThemeToggle() {
-  const theme = useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
+  const theme = useLitTheme();
 
   function toggle() {
     const next: Theme = theme === "light" ? "dark" : "light";
