@@ -95,31 +95,47 @@ export function HeroOverlay({ onTypingProgress, onContinue }: HeroOverlayProps) 
     }
   }, [onTypingProgress, showPrompt]);
 
-  // A swipe or scroll skips the intro at any point, even mid-typing
+  // Taps and drags belong to the graph, so only a scroll or an upward flick skips the intro.
+  // A flick that starts on a node is a node drag (the canvas calls preventDefault), not a skip.
   useEffect(() => {
+    let start: { x: number; y: number; t: number } | null = null;
     const skip = () => onContinue?.();
-    const events = ["wheel", "touchmove"] as const;
-    events.forEach((e) => window.addEventListener(e, skip, { passive: true }));
-    return () => events.forEach((e) => window.removeEventListener(e, skip));
+    function handleWheel(e: WheelEvent) {
+      if (e.deltaY > 0) skip();
+    }
+    function handleTouchStart(e: TouchEvent) {
+      const t = e.touches[0];
+      start = e.defaultPrevented || e.touches.length !== 1 ? null : { x: t.clientX, y: t.clientY, t: e.timeStamp };
+    }
+    function handleTouchEnd(e: TouchEvent) {
+      if (!start) return;
+      const t = e.changedTouches[0];
+      const dy = start.y - t.clientY;
+      const dx = Math.abs(t.clientX - start.x);
+      if (dy > 60 && dy > dx && e.timeStamp - start.t < 600) skip();
+      start = null;
+    }
+    window.addEventListener("wheel", handleWheel, { passive: true });
+    window.addEventListener("touchstart", handleTouchStart, { passive: true });
+    window.addEventListener("touchend", handleTouchEnd, { passive: true });
+    return () => {
+      window.removeEventListener("wheel", handleWheel);
+      window.removeEventListener("touchstart", handleTouchStart);
+      window.removeEventListener("touchend", handleTouchEnd);
+    };
   }, [onContinue]);
 
   useEffect(() => {
     if (!showPrompt) return;
 
-    function handleKeyDown() {
-      if (document.activeElement?.tagName !== "INPUT") onContinue?.();
+    function handleKeyDown(e: KeyboardEvent) {
+      if (["Enter", "ArrowDown", "PageDown"].includes(e.key) && document.activeElement?.tagName !== "INPUT") {
+        onContinue?.();
+      }
     }
-    const handleAny = () => onContinue?.();
-    const events = ["pointerdown", "click"] as const;
 
     window.addEventListener("keydown", handleKeyDown);
-    events.forEach((e) => window.addEventListener(e, handleAny, { passive: true }));
-    const timer = setTimeout(handleAny, 3000);
-    return () => {
-      window.removeEventListener("keydown", handleKeyDown);
-      events.forEach((e) => window.removeEventListener(e, handleAny));
-      clearTimeout(timer);
-    };
+    return () => window.removeEventListener("keydown", handleKeyDown);
   }, [showPrompt, onContinue]);
 
   return (
@@ -144,10 +160,11 @@ export function HeroOverlay({ onTypingProgress, onContinue }: HeroOverlayProps) 
             initial={{ opacity: 0 }}
             animate={{ opacity: 1 }}
             transition={{ duration: 0.6 }}
+            onClick={() => onContinue?.()}
             className="fixed bottom-8 left-1/2 -translate-x-1/2 flex flex-col items-center gap-1 text-muted text-xs font-mono cursor-pointer hover:text-secondary transition-colors pointer-events-auto"
             style={{ animation: "pulse-subtle 2s ease-in-out infinite" }}
           >
-            <span>{coarse ? "tap to continue" : "press enter to continue"}</span>
+            <span>{coarse ? "swipe up or tap here" : "press enter to continue"}</span>
             <span className="text-base">&#x25BE;&#x25BE;&#x25BE;</span>
           </motion.button>
         )}
