@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { Authors } from "@/components/ui/Inline";
-import { ThemeToggle } from "@/components/writing/ThemeToggle";
-import { ThemeScript } from "@/components/writing/ThemeScript";
 import { getCv, type CvEntry } from "@/lib/cv";
 import { siteConfig } from "@/lib/constants";
 
@@ -99,14 +97,10 @@ export default function PublicationsPage() {
 
   return (
     <div className="min-h-screen pt-20 pb-20 px-4">
-      <ThemeScript />
       <div className="max-w-3xl mx-auto font-mono">
         <FadeIn>
           <header className="mb-10">
-            <div className="flex items-center justify-between gap-4">
-              <h1 className="text-2xl font-bold text-foreground">publications</h1>
-              <ThemeToggle />
-            </div>
+            <h1 className="text-2xl font-bold text-foreground">publications</h1>
             <p className="text-xs text-secondary mt-3">† equal contribution</p>
           </header>
         </FadeIn>
