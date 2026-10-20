@@ -1,0 +1,299 @@
+# The single source of truth for Cody Slater's CV.
+# Edit here only. The site's /cv/ page and the PDF both render from this file.
+#   PDF:   npm run cv:pdf     (RenderCV; writes public/cv/cody-slater-cv.pdf)
+#   Site:  picked up automatically by `npm run dev` / `npm run build`.
+# Publication years go inside "journal" (RenderCV would render a bare year as "Jan YYYY").
+# Dates are quoted strings: "YYYY-MM" or free text. A single bare year must be UNQUOTED (date: 2018); quoted "2018" renders as "Jan 2018". Use "present" for open-ended.
+# Ranges with months use start_date/end_date; year-only ranges are free text "YYYY – YYYY" (en dash;
+# RenderCV would invent "Jan" months from a year-only start_date/end_date).
+cv:
+  name: Cody Slater
+  location: New York, NY
+  website: https://codyslater.github.io/
+  sections:
+    About:
+      - "My aim is closed-loop control of biology: designing each perturbation together with the model that learns from it, so that a cell type can be read, predicted, and steered. I came to it from aerospace, where control of a complex system is the whole problem."
+    Education:
+      - name: Doctor of Medicine
+        summary: Columbia University
+        date: Expected 2027
+        location: New York, NY
+      - name: Doctor of Philosophy, Biomedical Engineering
+        summary: Columbia University
+        date: Expected 2027
+        location: New York, NY
+      - name: Master of Philosophy, Biomedical Engineering
+        summary: Columbia University
+        date: Expected 2026
+        location: New York, NY
+      - name: Master of Science, Biomedical Engineering
+        summary: Columbia University
+        date: "2023-05"
+        location: New York, NY
+      - name: Bachelor of Science, Aerospace Engineering
+        summary: Worcester Polytechnic Institute
+        date: "2016-05"
+        location: Worcester, MA
+    Research & Teaching Experience:
+      - company: Vicković Technology Innovation Lab, New York Genome Center
+        position: Graduate Researcher (Ph.D.)
+        date: "2023 – present"
+        location: New York, NY
+        summary: "*deep learning · PyTorch · GPU HPC · single-cell & spatial transcriptomics · lentivirus · AAV · Cas9 · Cas13*"
+        highlights:
+          - "Leading development of large specialized models for RNA modification prediction and generative design."
+          - "Established the first selection-based functional assay for RNA modifications; 10,000+ construct pools."
+          - "Engineering AAV vectors for cell-type-specific perturbation in mouse brain, from prep to tissue processing."
+          - "Building a spatial transcriptomics toolset to model in vivo cell-type-specific genetic perturbations."
+      - company: Department of Neurological Surgery, Columbia University
+        position: Graduate Researcher
+        date: "2024 - present"
+        location: New York, NY
+        summary: "*intraoperative microneurography · DBS electrodes · human trigeminal ganglion · OR hardware design*"
+        highlights:
+          - "Built the intraoperative recording setup for human trigeminal ganglion, using DBS electrodes."
+      - company: Trends in Genomics, Columbia University
+        position: Teaching Assistant
+        date: "Spring 2025 & 2026"
+        location: New York, NY
+        highlights:
+          - Co-designed the course for its first offering (2025).
+      - company: Neural Engineering and Control Lab, Columbia University
+        position: Graduate Researcher (M.S.)
+        date: "2018 – 2023"
+        location: New York, NY
+        summary: "*Neuropixels · GRAB sensors · 2-photon · optogenetics · chemogenetics · stereotaxic surgery · histology · behavior*"
+        highlights:
+          - "Co-created [neurOS](https://github.com/codyslater/neurOS), a Simulink Real-Time platform for multimodal closed-loop experiment control."
+          - "Designed and implanted brain interfaces for Neuropixels, fiber photometry and 2-photon imaging."
+          - "Developed the lab's in vivo perturbation assay and its [cell-type-specific transcriptomic readout](https://github.com/timlantin/Neurochemical-transcriptomics)."
+          - Launched a longitudinal locus coeruleus stimulation study in an Alzheimer’s model; basis of an R01 line.
+      - company: Department of Biomedical Informatics, Columbia University
+        position: Student Researcher
+        date: 2020
+        location: New York, NY
+        summary: "*retrospective case series · clinical data analysis*"
+        highlights:
+          - "Co-led 30 medical students and 18 clinicians characterizing the first COVID-19 wave in New York."
+    Professional History:
+      - company: MIT Lincoln Laboratory / MIT Haystack Observatory
+        position: Engineer, Advanced Sensors and Techniques Group
+        date: "2016 – 2018"
+        location: Westford, MA
+        summary: "*radar systems · RF hardware · thermal design · field deployment · computer vision*"
+        highlights:
+          - "Designed the structure and cooling for a solid-state radar transmitter, fielded in the Marshall Islands."
+          - "Built a stand-alone traveling-wave-tube test facility; led the Millstone 84-foot azimuth encoder upgrade."
+          - "Led a team adapting computer vision for autonomous UAV flight through an obstacle course."
+      - company: MIT Lincoln Laboratory
+        position: Student Researcher, Systems Engineering Group
+        date: "2015 – 2016"
+        location: Lexington, MA
+        summary: "*systems design · spacecraft propulsion · vacuum testing*"
+        highlights:
+          - "Designed, built and characterized an experimental pico-satellite monopropellant thruster in vacuum."
+      - company: GE Aviation / Unison Industries
+        position: Aerospace Engineering Intern
+        date: 2014
+        location: Jacksonville, FL
+        summary: "*manufacturing engineering · design automation*"
+        highlights:
+          - "Automated the build instructions for jet-engine cable harnesses, generated from the design files."
+    Publications & Papers:
+      - title: Intraoperative microneurographic recording from the human trigeminal ganglion using standard deep brain stimulation electrodes
+        authors: ["**C. Slater**", "…", R. F. Sekula Jr.]
+        journal: Submitted (2026)
+      - title: Intracranial delivery of neuron-preferential lipid nanoparticles for gene-editing activity in mouse brain
+        authors: [S. S. Cai, "**C. Slater**†", "…", K. W. Leong]
+        journal: Cell Reports Physical Science 7(9), 103514 (2026)
+        doi: 10.1016/j.xcrp.2026.103514
+      - title: Behavioral state-dependent norepinephrine dynamics in the primary somatosensory and prefrontal cortices during tactile detection tasks
+        authors: [C. Kelley, T. Lantin, "**C. Slater**", "…", Q. Wang]
+        journal: bioRxiv preprint (2026)
+        doi: 10.64898/2026.01.16.699887
+      - title: Alpha modulation of spiking activity across multiple brain regions in mice performing a tactile selective detection task
+        authors: [C. Kelley, "**C. Slater**", "…", Q. Wang]
+        journal: European Journal of Neuroscience 62(12), e70356 (2025)
+        doi: 10.1111/ejn.70356
+      - title: Bidirectional modulation of somatostatin-expressing interneurons in the basolateral amygdala reduces neuropathic pain perception in mice
+        authors: [A. Apte, J. Fernald, "**C. Slater**", "…", Q. Wang]
+        journal: Frontiers in Pain Research 6, 1602036 (2025)
+        doi: 10.3389/fpain.2025.1602036
+      - title: Brain-wide cell-type-specific noradrenergic modulation of the transcriptome
+        authors: ["**C. Slater**", "…", Q. Wang]
+        journal: bioRxiv preprint (2025)
+        doi: 10.1101/2025.05.09.653136
+      - title: "The Neuromodulatory Role of the Noradrenergic and Cholinergic Systems and Their Interplay in Cognitive Functions: A Focused Review"
+        authors: ["**C. Slater**", "…", Q. Wang]
+        journal: Brain Sciences 12(7), 890 (2022)
+        doi: 10.3390/brainsci12070890
+      - title: "Alzheimer's disease: An evolving understanding of noradrenergic involvement and the promising future of electroceutical therapies"
+        authors: ["**C. Slater**", Q. Wang]
+        journal: Clinical and Translational Medicine 11(4), e397 (2021)
+        doi: 10.1002/ctm2.397
+      - title: "Characterising the long-term clinical outcomes of 1190 hospitalised patients with COVID-19 in New York City: a retrospective case series"
+        authors: [S. M. Shoucri, et al.]
+        journal: BMJ Open 11(6), e049488 (2021)
+        doi: 10.1136/bmjopen-2021-049488
+      - title: "Characterization and clinical course of 1000 patients with coronavirus disease 2019 in New York: retrospective case series"
+        authors: [M. G. Argenziano, S. L. Bruce, "**C. L. Slater**†", "…", R. Chen]
+        journal: BMJ 369, m1996 (2020)
+        doi: 10.1136/bmj.m1996
+      - title: "Interventions to reduce short-wavelength (“blue”) light exposure at night and their effects on sleep: A systematic review and meta-analysis"
+        authors: [A. Shechter, K. A. Quispe, J. S. Mizhquiri Barbecho, "**C. Slater**", L. Falzon]
+        journal: Sleep Advances 1(1), zpaa002 (2020)
+        doi: 10.1093/sleepadvances/zpaa002
+      - title: An Interprofessional Approach to Clinical Workflow Evaluation Focused on the Electronic Health Record Using Time Motion Study Methods
+        authors: [J. Schwartz, J. Elias, "**C. Slater**", K. Cato, S. C. Rossetti]
+        journal: Paper presented at the AMIA Annual Symposium Proceedings, 1187–1196 (2019)
+      - title: Six-Axis Monopropellant Propulsion System for Picosatellites
+        authors: ["**C. Slater**", M. Creaghan, O. Lamce]
+        journal: Unpublished Major Qualifying Project. Worcester Polytechnic Institute (2016)
+      - title: Developing a Collaborative Process for the Application of Appropriate Technology on Farms in Mandi District
+        authors: [A. S. Konieczny, "**C. Slater**", S. M. Neeno]
+        journal: Unpublished Interactive Qualifying Project. Worcester Polytechnic Institute (2015)
+    Fellowships & Grants:
+      - name: Van C. Mow Fellowship
+        date: "2021-09"
+        summary: Established in 2018 by Yuling Wei to provide fellowships to doctoral students enrolled in Columbia’s School of Engineering and Applied Science, who are or plan to be engaged in biomedical research.
+      - name: National Institute on Aging T35AG044303
+        date: "2019-03"
+        summary: Brief Research in Aging and Interdisciplinary Neurosciences (BRAIN) Program
+    Presentations:
+      - name: Whole brain, cell type specific transcriptomic profiling of in vivo neurochemical perturbation
+        date: "2024-10"
+        location: Chicago, IL
+        summary: Society for Neuroscience. Presenting author.
+      - name: Leveraging large-scale electrophysiology array recording to identify neural biomarkers for improved closed-loop neuromodulation for chronic pain
+        date: "2024-10"
+        location: Chicago, IL
+        summary: Society for Neuroscience. Contributing author.
+      - name: Noradrenergic modulation of population activity in the primary somatosensory cortex, striatum, and amygdala in a tactile selective detection task
+        date: "2024-10"
+        location: Chicago, IL
+        summary: Society for Neuroscience. Contributing author.
+      - name: Locus coeruleus modulation of population activity in the awake somatosensory cortex
+        date: "2023-11"
+        location: Washington, DC
+        summary: Society for Neuroscience. Contributing author.
+      - name: Lipid nanoparticle-mediated gene editing in the mouse brain via intracranial delivery
+        date: "2023-10"
+        location: Seattle, WA
+        summary: Biomedical engineering society. Contributing author.
+      - name: Noradrenergic dynamics in the sensory and prefrontal cortices during a perceptual decision making task
+        date: "2022-11"
+        location: San Diego, CA
+        summary: Society for Neuroscience. Presenting author.
+      - name: Functional noradrenergic regulation of the transcriptome during decision making under varying uncertainty
+        date: "2022-10"
+        location: New York, NY
+        summary: Center of Excellence in the Neuroscience of Decision-Making Kickoff, Columbia University. Presenting author.
+      - name: Development of a Neural Network Architecture for Optimal Prediction of EEG Alpha Wave Power
+        date: "2022-04"
+        location: New York, NY
+        summary: Northeast Bioengineering Conference, Columbia University. Presenting author.
+      - name: Targeted Neural Stimulation to Improve Neuropathic Pain Treatment
+        date: "2022-04"
+        location: New York, NY
+        summary: Northeast Bioengineering Conference, Columbia University. Presenting author.
+      - name: MIDA-based Finite Element Modeling to Optimize Electrotherapy Configurations
+        date: "2022-04"
+        location: New York, NY
+        summary: Northeast Bioengineering Conference, Columbia University. Contributing author.
+      - name: Long-term Locus Coeruleus Stimulation reduces Aβ pathology in a Mouse Model of Neurodegeneration
+        date: "2021-05"
+        location: New York, NY
+        summary: Medical School Research Symposium, Columbia University. Awarded best session poster by panel of judges. Presenting author.
+      - name: Synthetic Neuromodulation as a Potential Treatment for Alzheimer’s Disease
+        date: "2019-08"
+        location: New York, NY
+        summary: NIH Summer Research Symposium, Columbia University.
+      - name: The Temporal Expression of Consciousness
+        date: "2017-03"
+        location: Worcester, MA
+        summary: Class of 1879 Award Ceremony and Reception, WPI.
+      - name: The Importance of Biological Processes in Learning
+        date: "2016-02"
+        location: Worcester, MA
+        summary: New England Peer Tutor Association Conference.
+      - name: Analysis and Design of a Solar Powered Cooling System
+        date: "2015-08"
+        location: Lexington, MA
+        summary: Technology Office Challenge Poster Presentation, MIT Lincoln Laboratory.
+      - name: Developing a Collaborative Process for the Application of Appropriate Technology
+        date: "2015-05"
+        location: Mandi, India
+        summary: Interactive Qualifying Project Symposium, Indian Institute of Technology.
+      - name: "Solar Re-Revolution: Engineering the Future in Solar Sustainability"
+        date: "2012-12"
+        location: Worcester, MA
+        summary: Grand Challenges Seminar Poster Presentation, WPI.
+    Leadership:
+      - name: Innovative Medicine Club Senior Advisor
+        start_date: "2020-08"
+        end_date: "2022-08"
+      - name: President of Columbia Health Tech Assembly
+        start_date: "2020-06"
+        end_date: "2022-08"
+      - name: Medical School Class Council Ethics Representative
+        start_date: "2018-08"
+        end_date: "2021-07"
+      - name: VP&S Curriculum & Education, Discover Subcommittee, Student Member
+        start_date: "2020-01"
+        end_date: present
+      - name: President of the WPI Fitness Club
+        start_date: "2015-01"
+        end_date: "2016-01"
+      - name: Treasurer WPI Chapter of AIAA
+        start_date: "2014-01"
+        end_date: "2015-01"
+    Honors & Awards:
+      - name: Van Mow Fellow
+        date: "2021 – 2022"
+      - name: PS250 Roy and Diana Vagelos Scholarship Recipient
+        date: "2018 – 2021"
+      - name: D. & D. Merksamer Scholarship Recipient
+        date: "2018 – 2021"
+      - name: WPI Class of 1879 Prize for Outstanding Original Work in the Humanities and Arts
+        date: "2017-03"
+      - name: WPI Graduation with Honors and High Distinction
+        date: "2016-05"
+      - name: WPI Presidential Scholarship Recipient
+        date: "2012 – 2016"
+      - name: Mid-Plains Rural Telephone Cooperative Scholarship Recipient
+        date: "2012 – 2016"
+      - name: Voted Most Impactful Interactive Socio-Technical Practicum by Panel of Judges
+        date: "2015-05"
+      - name: WPI Dean’s List
+        date: Spring 2013 – Fall 2015
+design:
+  theme: classic
+  # Compact layout. Settings only; no content is cut.
+  page:
+    top_margin: 0.5in
+    bottom_margin: 0.5in
+    left_margin: 0.55in
+    right_margin: 0.55in
+  typography:
+    line_spacing: 0.5em
+    font_size:
+      body: 9.5pt
+      name: 26pt
+      headline: 9.5pt
+      connections: 9.5pt
+      section_titles: 1.25em
+  header:
+    space_below_name: 0.3cm
+    space_below_headline: 0.3cm
+    space_below_connections: 0.2cm
+  section_titles:
+    space_above: 0.35cm
+    space_below: 0.15cm
+  sections:
+    space_between_regular_entries: 0.5em
+    space_between_text_based_entries: 0.15em
+  entries:
+    date_and_location_width: 3.2cm
+    allow_page_break: true
+  templates:
+    footer: "CS -- PAGE_NUMBER/TOTAL_PAGES"

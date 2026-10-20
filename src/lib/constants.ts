@@ -32,7 +32,9 @@ export const siteConfig = {
     x: "https://x.com/c0d3_s",
     bluesky: "https://bsky.app/profile/codyslater.bsky.social",
     substack: "https://copyingourselves.substack.com",
-    cv: "#",
+    cv: "/cv/",
+    cvPdf: "/cv/cody-slater-cv.pdf",
+    scholar: "https://scholar.google.com/citations?user=2iMWaGAAAAAJ&hl=en",
   },
   nav,
   interests: [
