@@ -26,7 +26,7 @@ export const siteConfig = {
   description:
     "MD/PhD. engineer. scientist. Building at the intersection of RNA, neural computation, synthetic biology, and AI.",
   url: "https://codyslater.github.io",
-  bio: "working on ideas that bridge organic and machine intelligence. where RNA, neural computation, synthetic biology, and AI converge.",
+  bio: "I am an MD student and PhD candidate working where biological and machine intelligence meet. I build large machine learning models and scalable experimental systems in parallel, that can synergistically self-improve across iterations. My underlying philosophy is that the best way to understand a complex system is to learn to control it.",
   links: {
     github: "https://github.com/codyslater",
     x: "https://x.com/c0d3_s",
