@@ -51,7 +51,7 @@ export function AboutContent() {
         <div className="mt-12 space-y-3 font-mono text-sm">
           {links.map((link, i) => (
             <FadeIn key={link.label} delay={0.35 + 0.05 * i}>
-              <div className="flex items-center gap-3">
+              <div className="flex items-center gap-1">
                 <a
                   href={link.href}
                   {...(link.href.startsWith("/")

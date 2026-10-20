@@ -101,7 +101,12 @@ export default function PublicationsPage() {
         <FadeIn>
           <header className="mb-10">
             <h1 className="text-2xl font-bold text-foreground">publications</h1>
-            <p className="text-xs text-secondary mt-3">† equal contribution</p>
+            <p className="text-sm text-secondary mt-3">
+              also on{" "}
+              <a href={siteConfig.links.scholar} target="_blank" rel="noopener noreferrer" className={linkClass}>
+                google scholar
+              </a>
+            </p>
           </header>
         </FadeIn>
 
@@ -110,12 +115,7 @@ export default function PublicationsPage() {
           <Block key={year} title={year} pubs={list} />
         ))}
 
-        <p className="text-sm text-secondary">
-          also on{" "}
-          <a href={siteConfig.links.scholar} target="_blank" rel="noopener noreferrer" className={linkClass}>
-            google scholar
-          </a>
-        </p>
+        <p className="text-xs text-secondary">† equal contribution</p>
       </div>
     </div>
   );
