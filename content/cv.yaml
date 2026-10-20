@@ -13,7 +13,7 @@ cv:
   website: https://codyslater.github.io/
   sections:
     About:
-      - "MD student and PhD candidate. I build models that predict and design RNA modifications, and the assays and in vivo tools that test those designs in cells and the mouse brain."
+      - "MD student and PhD candidate working where biological and machine intelligence meet. I think the best way to understand a complex system is to learn to control it. I build models that predict and design RNA modifications, and the assays and in vivo tools that test those designs in cells and the mouse brain."
     Education:
       - name: Doctor of Medicine
         summary: Columbia University
