@@ -29,7 +29,7 @@ npm run dev
 
 ## Adding content
 
-- **Post:** copy `content/writing/2026-07-09-hello-world.mdx`, set real frontmatter (`title`, `date` as "YYYY-MM-DD", `summary`), remove `draft: true` when ready, push. Images go in `public/` and are referenced by absolute path (e.g. `/logo.png`).
+- **Post:** copy `content/writing/2026-07-09-hello-world.mdx`, set real frontmatter (`title`, `date` as "YYYY-MM-DD", `summary`), remove `draft: true` when ready, push. For work in progress, write it in the git-ignored `content/drafts/` instead (shown by `npm run dev`, never built for production, never reaches the public repo) and move it to `content/writing/` to publish; `draft: true` in `content/writing/` still works for a post you are fine having in the public repo. Images go in `public/` and are referenced by absolute path (e.g. `/logo.png`). Optional frontmatter: `updated` ("YYYY-MM-DD", not earlier than `date`) shows an "updated" date, and `cover` (an absolute image path, kept under `public/writing/<slug>/`) renders above the title and is used as the social preview image.
 - **Project:** add a file to `content/projects/` with `title`, `summary`, optional `tags`/`links` (github/paper/demo) and `order`.
 
 ## Deployment

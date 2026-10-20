@@ -1,0 +1,44 @@
+---
+title: broca-machina
+summary: a bridge that lets any text "brain" listen and talk inside a discord voice channel.
+tags: [voice, discord, mcp, whisper]
+links:
+  github: https://github.com/codyslater/broca-machina
+order: 1
+hero: /projects/broca-machina/logo.svg
+draft: false
+---
+
+you talk in a discord voice channel. broca-machina transcribes it, hands the text to
+whatever you want answering (an llm, an agent, a shell command), and speaks the reply
+back into the channel. i built it to talk to my own assistant out loud instead of typing.
+
+## how it works
+
+<FlowDiagram steps={["you speak", "speech to text", "your brain", "text to speech", "you hear"]} highlight={2} />
+
+the brain is just a small interface, so the same bridge runs a one-line `echo` toy or a
+full agent. three ways to connect one:
+
+- **file** — transcripts land in a folder, a reply file becomes the voice. any language works.
+- **command** — each transcript goes to a command, whatever it prints is spoken.
+- **mcp** — the bridge becomes an mcp server, so a host like claude code hears the channel and answers with a `speak` tool.
+
+## what's in it
+
+- local speech in and out: faster-whisper for transcription, piper for the voice. nothing leaves the machine.
+- you can interrupt it mid-sentence. a short noise ducks the volume, real speech cuts it off.
+- it only listens to the speaker you name, and refuses to start without one set.
+- runs under discord's end-to-end voice encryption, which most voice libraries can't negotiate yet. that is why it runs on bun.
+- optional latency tricks: voice-activity endpointing, sentence-by-sentence speech, a short "one moment" filler while a slow brain thinks.
+
+## try it
+
+```bash
+bun install
+cp config.example.json config.json   # discord ids, stt, tts, transport
+bun src/voice_loop.js config.json
+```
+
+you need a dedicated discord bot token, ffmpeg, and a python env with faster-whisper and piper.
+setup is in the repo's `SETUP.md`.

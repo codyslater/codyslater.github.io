@@ -12,14 +12,14 @@ export function NavBar() {
 
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 backdrop-blur-sm bg-background/30">
-      <div className="max-w-5xl mx-auto px-6 py-4 flex items-center justify-between font-mono text-sm">
+      <div className="max-w-5xl mx-auto px-4 sm:px-6 py-4 flex items-center justify-between gap-4 font-mono text-sm">
         <Link
           href="/?skip=1"
           className="text-foreground hover:text-accent-green transition-colors"
         >
           ~/
         </Link>
-        <div className="flex items-center gap-6">
+        <div className="flex flex-wrap items-center justify-end gap-x-4 gap-y-1 sm:gap-6">
           {siteConfig.nav.map((item) =>
             item.external ? (
               <a

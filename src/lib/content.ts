@@ -8,9 +8,12 @@ export type Post = {
   slug: string;
   title: string;
   date: string; // YYYY-MM-DD
+  updated?: string; // YYYY-MM-DD, never earlier than date
+  cover?: string; // path under public/, e.g. /writing/foo/cover.png
   summary: string;
   tags: string[];
   draft: boolean;
+  external?: string; // http(s) URL; the post lives there, so it has no page here
   body: string; // raw MDX
 };
 
@@ -27,6 +30,7 @@ export type Project = {
   tags: string[];
   links: ProjectLinks;
   order?: number;
+  hero?: string; // path under public/, e.g. /projects/foo/logo.svg
   draft: boolean;
   body: string;
 };
@@ -75,8 +79,7 @@ function requireString(
 }
 
 // YAML parses unquoted dates as Date objects; accept both forms.
-function requireDate(data: Record<string, unknown>, file: string): string {
-  const v = data.date;
+function parseDate(v: unknown): string | undefined {
   if (v instanceof Date && !Number.isNaN(v.getTime())) {
     return v.toISOString().slice(0, 10);
   }
@@ -87,9 +90,32 @@ function requireDate(data: Record<string, unknown>, file: string): string {
   ) {
     return v;
   }
-  throw new Error(
-    `${file}: frontmatter field "date" must be a valid YYYY-MM-DD date`,
-  );
+  return undefined;
+}
+
+function requireDate(data: Record<string, unknown>, file: string): string {
+  const d = parseDate(data.date);
+  if (d === undefined) {
+    throw new Error(
+      `${file}: frontmatter field "date" must be a valid YYYY-MM-DD date`,
+    );
+  }
+  return d;
+}
+
+function optionalDate(
+  data: Record<string, unknown>,
+  file: string,
+  field: string,
+): string | undefined {
+  if (data[field] === undefined) return undefined;
+  const d = parseDate(data[field]);
+  if (d === undefined) {
+    throw new Error(
+      `${file}: frontmatter field "${field}" must be a valid YYYY-MM-DD date`,
+    );
+  }
+  return d;
 }
 
 function optionalTags(data: Record<string, unknown>, file: string): string[] {
@@ -112,17 +138,75 @@ function optionalDraft(data: Record<string, unknown>, file: string): boolean {
   return v;
 }
 
+function optionalImagePath(
+  data: Record<string, unknown>,
+  file: string,
+  field: string,
+): string | undefined {
+  const v = data[field];
+  if (v === undefined) return undefined;
+  if (typeof v !== "string" || !v.startsWith("/")) {
+    throw new Error(
+      `${file}: frontmatter field "${field}" must be a path starting with /`,
+    );
+  }
+  return v;
+}
+
+function optionalExternal(
+  data: Record<string, unknown>,
+  file: string,
+): string | undefined {
+  const v = data.external;
+  if (v === undefined) return undefined;
+  if (typeof v !== "string" || !/^https?:\/\//.test(v)) {
+    throw new Error(
+      `${file}: frontmatter field "external" must be an http(s) URL`,
+    );
+  }
+  return v;
+}
+
 export function getPosts(): Post[] {
-  return readContentDir("writing")
-    .map(({ slug, file, data, body }) => ({
-      slug,
-      title: requireString(data, file, "title"),
-      date: requireDate(data, file),
-      summary: requireString(data, file, "summary"),
-      tags: optionalTags(data, file),
-      draft: optionalDraft(data, file),
-      body,
-    }))
+  const published = readContentDir("writing");
+  // Unpublished work in content/drafts is git-ignored and dev-only: every file
+  // there is a draft regardless of its frontmatter.
+  const drafts = isProd()
+    ? []
+    : readContentDir("drafts").map((e) => ({
+        ...e,
+        data: { ...e.data, draft: true },
+      }));
+  const taken = new Set(published.map((e) => e.slug));
+  for (const d of drafts) {
+    if (taken.has(d.slug)) {
+      throw new Error(
+        `${d.file}: slug "${d.slug}" collides with content/writing/${d.slug}.mdx`,
+      );
+    }
+  }
+  return [...published, ...drafts]
+    .map(({ slug, file, data, body }) => {
+      const date = requireDate(data, file);
+      const updated = optionalDate(data, file, "updated");
+      if (updated !== undefined && updated < date) {
+        throw new Error(
+          `${file}: frontmatter field "updated" must not be earlier than "date"`,
+        );
+      }
+      return {
+        slug,
+        title: requireString(data, file, "title"),
+        date,
+        updated,
+        cover: optionalImagePath(data, file, "cover"),
+        summary: requireString(data, file, "summary"),
+        tags: optionalTags(data, file),
+        draft: optionalDraft(data, file),
+        external: optionalExternal(data, file),
+        body,
+      };
+    })
     .filter((p) => !isProd() || !p.draft)
     .sort((a, b) =>
       a.date === b.date
@@ -173,6 +257,7 @@ export function getProjects(): Project[] {
         tags: optionalTags(data, file),
         links,
         order: order as number | undefined,
+        hero: optionalImagePath(data, file, "hero"),
         draft: optionalDraft(data, file),
         body,
       };
@@ -183,6 +268,14 @@ export function getProjects(): Project[] {
         (a.order ?? Infinity) - (b.order ?? Infinity) ||
         a.title.localeCompare(b.title),
     );
+}
+
+export function getProject(slug: string): Project {
+  const project = getProjects().find((p) => p.slug === slug);
+  if (!project) {
+    throw new Error(`content/projects/${slug}.mdx: project not found`);
+  }
+  return project;
 }
 
 export function projectPrimaryLink(project: Project): string | null {

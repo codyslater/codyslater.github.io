@@ -14,7 +14,7 @@ function esc(s: string): string {
 export function GET() {
   const items = getPosts()
     .map((post) => {
-      const url = `${siteConfig.url}/writing/${post.slug}/`;
+      const url = post.external ?? `${siteConfig.url}/writing/${post.slug}/`;
       return [
         "<item>",
         `<title>${esc(post.title)}</title>`,

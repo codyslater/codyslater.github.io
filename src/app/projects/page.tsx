@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
+import Link from "next/link";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { getProjects, projectPrimaryLink } from "@/lib/content";
+import { getProjects } from "@/lib/content";
 
 export const metadata: Metadata = {
   title: "projects",
@@ -35,52 +36,26 @@ export default function ProjectsPage() {
           </FadeIn>
         ) : (
           <div className="grid gap-4 sm:grid-cols-2">
-            {projects.map((project, i) => {
-              const primary = projectPrimaryLink(project);
-              return (
-                <FadeIn key={project.slug} delay={0.1 + 0.05 * i}>
-                  <div className="h-full border border-border rounded p-5 bg-surface font-mono">
-                    {primary ? (
-                      <a
-                        href={primary}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        className="text-base font-bold text-foreground hover:text-accent-green glow-hover transition-colors"
-                      >
-                        {project.title}
-                      </a>
-                    ) : (
-                      <span className="text-base font-bold text-foreground">
-                        {project.title}
-                      </span>
-                    )}
-                    <p className="text-sm text-secondary mt-2">
-                      {project.summary}
+            {projects.map((project, i) => (
+              <FadeIn key={project.slug} delay={0.1 + 0.05 * i}>
+                <div className="h-full border border-border rounded p-5 bg-surface font-mono">
+                  <Link
+                    href={`/projects/${project.slug}/`}
+                    className="text-base font-bold text-foreground hover:text-accent-green glow-hover transition-colors"
+                  >
+                    {project.title}
+                  </Link>
+                  <p className="text-sm text-secondary mt-2">
+                    {project.summary}
+                  </p>
+                  {project.tags.length > 0 && (
+                    <p className="text-xs text-secondary mt-3">
+                      {project.tags.map((t) => `#${t}`).join(" ")}
                     </p>
-                    {project.tags.length > 0 && (
-                      <p className="text-xs text-muted mt-3">
-                        {project.tags.map((t) => `#${t}`).join(" ")}
-                      </p>
-                    )}
-                    {Object.keys(project.links).length > 0 && (
-                      <p className="text-xs mt-3 space-x-3">
-                        {Object.entries(project.links).map(([key, href]) => (
-                          <a
-                            key={key}
-                            href={href}
-                            target="_blank"
-                            rel="noopener noreferrer"
-                            className="text-secondary hover:text-accent-green glow-hover transition-colors"
-                          >
-                            -&gt; {key}
-                          </a>
-                        ))}
-                      </p>
-                    )}
-                  </div>
-                </FadeIn>
-              );
-            })}
+                  )}
+                </div>
+              </FadeIn>
+            ))}
           </div>
         )}
       </div>

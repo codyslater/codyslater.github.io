@@ -39,3 +39,7 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# unpublished writing (dev-only; see content/drafts/README.md)
+content/drafts/*
+!content/drafts/README.md

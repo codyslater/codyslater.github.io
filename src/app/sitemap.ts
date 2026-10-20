@@ -9,7 +9,9 @@ export default function sitemap(): MetadataRoute.Sitemap {
   const pages = ["", "/about/", "/writing/", "/projects/", "/graph/"].map(
     (p) => ({ url: `${siteConfig.url}${p}` }),
   );
-  const posts = getPosts().map((post) => ({
+  const posts = getPosts()
+    .filter((post) => !post.external)
+    .map((post) => ({
     url: `${siteConfig.url}/writing/${post.slug}/`,
     lastModified: post.date,
   }));

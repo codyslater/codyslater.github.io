@@ -149,6 +149,14 @@ body {
   overflow-x: auto;
   margin: 1.5em 0;
 }
+/* On phones, wrap long code lines rather than clip them behind a scroll
+   nobody sees; desktop keeps horizontal scroll. */
+@media (max-width: 639px) {
+  .prose-mono pre {
+    white-space: pre-wrap;
+    overflow-wrap: anywhere;
+  }
+}
 .prose-mono pre code {
   background: transparent;
   border: none;
@@ -181,6 +189,193 @@ body {
   margin: 1.5em 0;
   overflow-x: auto;
 }
+
+/* Writing section: dark literary look (serif on warm off-black), shared by
+   the index and post pages. Scoped to .writing-literary. */
+.writing-literary {
+  --lit-bg: #141210;
+  --lit-text: #e8e2d5;
+  --lit-muted: #9a9288;
+  --lit-link: #d9b77e;
+  --lit-rule: transparent;
+  --lit-serif: var(--font-serif), Georgia, serif;
+  background: var(--lit-bg);
+  color: var(--lit-text);
+}
+/* Light ("paper") mode, switched by the toggle via an attribute on <html> */
+:root[data-writing-theme="light"] .writing-literary {
+  --lit-bg: #f6f1e7;
+  --lit-text: #1d1b18;
+  --lit-muted: #7a7266;
+  --lit-link: #2f6b3a;
+  --lit-rule: #1d1b18;
+}
+/* the site nav stays dark and solid over the cream page */
+:root[data-writing-theme="light"] body:has(.writing-literary) nav {
+  background: var(--bg-primary);
+}
+:root[data-writing-theme="light"] .writing-literary .lit-header {
+  padding-bottom: 1.25rem;
+  border-bottom: 1px solid var(--lit-rule);
+}
+.writing-literary .lit-toggle {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  width: 1.75rem;
+  height: 1.75rem;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  color: var(--lit-muted);
+  opacity: 0.6;
+  cursor: pointer;
+  transition: opacity 150ms, color 150ms;
+}
+.writing-literary .lit-toggle:hover,
+.writing-literary .lit-toggle:focus-visible { opacity: 1; color: var(--lit-link); }
+.writing-literary .lit-toggle svg {
+  width: 1rem;
+  height: 1rem;
+  fill: none;
+  stroke: currentColor;
+  stroke-width: 1.75;
+  stroke-linecap: round;
+  stroke-linejoin: round;
+}
+.writing-literary .lit-toggle-moon { display: none; }
+[data-writing-theme="light"] .writing-literary .lit-toggle-sun { display: none; }
+[data-writing-theme="light"] .writing-literary .lit-toggle-moon { display: block; }
+.writing-literary .lit-bar {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 1rem;
+}
+.writing-literary .lit-heading,
+.writing-literary .lit-title {
+  font-family: var(--lit-serif);
+  color: var(--lit-text);
+  line-height: 1.15;
+  font-weight: 600;
+  text-transform: none;
+  letter-spacing: -0.01em;
+}
+.writing-literary .lit-heading { font-size: 2.25rem; }
+.writing-literary .lit-title { font-size: 2.25rem; }
+.writing-literary .lit-date {
+  font-family: var(--lit-serif);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+  font-size: 0.95rem;
+  color: var(--lit-muted);
+}
+.writing-literary .lit-card {
+  display: flex;
+  flex-direction: row;
+  align-items: flex-start;
+  gap: 1rem;
+}
+.writing-literary .lit-card > .lit-cover {
+  flex: 0 0 7.5rem;
+  width: 7.5rem;
+  aspect-ratio: 4 / 3;
+  margin-bottom: 0;
+}
+@media (min-width: 768px) {
+  .writing-literary .lit-card > .lit-cover { flex-basis: 10rem; width: 10rem; }
+}
+.writing-literary .lit-card > .lit-cover-fallback { padding: 0.75rem; }
+.writing-literary .lit-card > .lit-cover-fallback .lit-cover-title { font-size: 1rem; }
+.writing-literary .lit-card > .lit-cover-fallback .lit-corner { display: none; }
+.writing-literary .lit-card-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  min-width: 0;
+}
+.writing-literary .lit-card:hover .lit-entry-title { color: var(--lit-link); }
+.writing-literary .lit-cover {
+  display: block;
+  width: 100%;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  border-radius: 0;
+  margin-bottom: 0.65rem;
+}
+.writing-literary .lit-cover-fallback {
+  position: relative;
+  display: flex;
+  align-items: center;
+  padding: 2.25rem 1.25rem 1.25rem;
+  background: color-mix(in srgb, var(--lit-text) 6%, var(--lit-bg));
+  border: 1px solid color-mix(in srgb, var(--lit-text) 22%, var(--lit-bg));
+  overflow: hidden;
+}
+.writing-literary .lit-cover-title {
+  font-family: var(--lit-serif);
+  font-size: 1.6rem;
+  line-height: 1.15;
+  font-weight: 600;
+  letter-spacing: -0.01em;
+  color: var(--lit-text);
+  display: -webkit-box;
+  -webkit-line-clamp: 4;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.writing-literary .lit-corner {
+  position: absolute;
+  top: 0.6rem;
+  left: 0.8rem;
+  font-family: var(--lit-serif);
+  font-variant-caps: all-small-caps;
+  letter-spacing: 0.08em;
+  font-size: 0.9rem;
+  color: var(--lit-muted);
+}
+.writing-literary .lit-entry-title {
+  font-family: var(--lit-serif);
+  font-size: 1.375rem;
+  line-height: 1.25;
+  color: var(--lit-text);
+  transition: color 0.15s;
+}
+.writing-literary .lit-entry-title:hover { color: var(--lit-link); }
+.writing-literary .lit-summary {
+  font-family: var(--lit-serif);
+  font-size: 1.0625rem;
+  line-height: 1.5;
+  color: var(--lit-muted);
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+.writing-literary .lit-tags { font-size: 0.85rem; }
+
+/* Post body */
+.literary-prose {
+  font-family: var(--lit-serif);
+  color: var(--lit-text);
+  font-size: 1.125rem;
+  line-height: 1.7;
+  max-width: 65ch;
+}
+@media (min-width: 640px) {
+  .literary-prose { font-size: 1.1875rem; }
+}
+.literary-prose p { margin: 1.1em 0; }
+.literary-prose h2,
+.literary-prose h3,
+.literary-prose h4,
+.literary-prose code,
+.literary-prose pre,
+.literary-prose table {
+  font-family: var(--font-mono), monospace;
+}
+.literary-prose blockquote { color: var(--lit-muted); }
+.literary-prose a { color: var(--lit-link); }
 
 /* /soup time slider — appearance-none removes the native thumb in
    WebKit/Blink; supply an explicit round thumb. Neutral gray on purpose:
