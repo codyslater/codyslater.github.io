@@ -6,7 +6,7 @@
   --bg-tertiary: #1a1a1a;
   --text-primary: #f0f0f0;
   --text-secondary: #888888;
-  --text-muted: #444444;
+  --text-muted: #7a7a7a;
   --accent-green: #39ff14;
   --accent-purple: #bf5af2;
   --accent-pink: #ff2d78;
@@ -190,10 +190,10 @@ body {
   overflow-x: auto;
 }
 
-/* Writing section: dark literary look (serif on warm off-black), shared by
+/* Writing section: dark literary look (serif on the site-wide near-black), shared by
    the index and post pages. Scoped to .writing-literary. */
 .writing-literary {
-  --lit-bg: #141210;
+  --lit-bg: var(--bg-primary);
   --lit-text: #e8e2d5;
   --lit-muted: #9a9288;
   --lit-link: #d9b77e;
@@ -202,8 +202,10 @@ body {
   background: var(--lit-bg);
   color: var(--lit-text);
 }
-/* Light ("paper") mode, switched by the toggle via an attribute on <html> */
-:root[data-writing-theme="light"] .writing-literary {
+/* Light ("paper") mode is a per-article reading mode, not a site theme: the toggle
+   sets an attribute on <html>, but only a page that also carries .reading (single
+   posts and single project pages) reacts to it. Indexes and every other page stay dark. */
+:root[data-writing-theme="light"] .writing-literary.reading {
   --lit-bg: #f6f1e7;
   --lit-text: #1d1b18;
   --lit-muted: #7a7266;
@@ -211,10 +213,10 @@ body {
   --lit-rule: #1d1b18;
 }
 /* the site nav stays dark and solid over the cream page */
-:root[data-writing-theme="light"] body:has(.writing-literary) nav {
+:root[data-writing-theme="light"] body:has(.writing-literary.reading) nav {
   background: var(--bg-primary);
 }
-:root[data-writing-theme="light"] .writing-literary .lit-header {
+:root[data-writing-theme="light"] .writing-literary.reading .lit-header {
   padding-bottom: 1.25rem;
   border-bottom: 1px solid var(--lit-rule);
 }
@@ -244,8 +246,8 @@ body {
   stroke-linejoin: round;
 }
 .writing-literary .lit-toggle-moon { display: none; }
-[data-writing-theme="light"] .writing-literary .lit-toggle-sun { display: none; }
-[data-writing-theme="light"] .writing-literary .lit-toggle-moon { display: block; }
+[data-writing-theme="light"] .writing-literary.reading .lit-toggle-sun { display: none; }
+[data-writing-theme="light"] .writing-literary.reading .lit-toggle-moon { display: block; }
 .writing-literary .lit-bar {
   display: flex;
   align-items: baseline;
@@ -420,7 +422,7 @@ body {
   border-radius: 0;
 }
 .writing-literary .lit-video { background: #000; }
-:root[data-writing-theme="light"] .writing-literary .lit-video { background: #fff; }
+:root[data-writing-theme="light"] .writing-literary.reading .lit-video { background: #fff; }
 .writing-literary .lit-figure { margin: 2rem 0; }
 .writing-literary .lit-lede {
   font-family: var(--lit-serif);
@@ -457,7 +459,7 @@ body {
   background: color-mix(in srgb, var(--lit-text) 7%, var(--lit-bg)) !important;
   border-color: color-mix(in srgb, var(--lit-text) 16%, var(--lit-bg));
 }
-:root[data-writing-theme="light"] .writing-literary .project-prose pre {
+:root[data-writing-theme="light"] .writing-literary.reading .project-prose pre {
   background: #1d1b18 !important;
   border-color: #1d1b18;
 }

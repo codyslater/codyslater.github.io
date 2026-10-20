@@ -1,8 +1,6 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { ThemeToggle } from "@/components/writing/ThemeToggle";
-import { ThemeScript } from "@/components/writing/ThemeScript";
 import { serif } from "@/lib/fonts";
 import { getProjects } from "@/lib/content";
 
@@ -23,12 +21,10 @@ export default function ProjectsPage() {
     <div
       className={`writing-literary min-h-screen pt-20 pb-20 px-4 ${serif.variable}`}
     >
-      <ThemeScript />
       <div className="max-w-5xl mx-auto">
         <FadeIn>
           <div className="lit-bar mb-10">
             <h1 className="lit-heading">projects</h1>
-            <ThemeToggle />
           </div>
         </FadeIn>
 

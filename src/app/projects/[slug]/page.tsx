@@ -53,7 +53,7 @@ export default async function ProjectPage({
 
   return (
     <div
-      className={`writing-literary min-h-screen pt-20 pb-20 px-4 ${serif.variable}`}
+      className={`writing-literary reading min-h-screen pt-20 pb-20 px-4 ${serif.variable}`}
     >
       <ThemeScript />
       <article className="max-w-2xl mx-auto">
