@@ -12,7 +12,7 @@ cv:
   website: https://codyslater.github.io/
   sections:
     About:
-      - "MD student and PhD candidate. My goal is closed-loop control of biology: to read, predict, and steer a cell type by designing each perturbation together with the model that learns from it."
+      - "MD student and PhD candidate. I build models that predict and design RNA modifications, and the assays and in vivo tools that test those designs in cells and the mouse brain."
     Education:
       - name: Doctor of Medicine
         summary: Columbia University
@@ -212,22 +212,6 @@ cv:
         date: "2017-03"
         location: Worcester, MA
         summary: Class of 1879 Award Ceremony and Reception, WPI.
-      - name: The Importance of Biological Processes in Learning
-        date: "2016-02"
-        location: Worcester, MA
-        summary: New England Peer Tutor Association Conference.
-      - name: Analysis and Design of a Solar Powered Cooling System
-        date: "2015-08"
-        location: Lexington, MA
-        summary: Technology Office Challenge Poster Presentation, MIT Lincoln Laboratory.
-      - name: Developing a Collaborative Process for the Application of Appropriate Technology
-        date: "2015-05"
-        location: Mandi, India
-        summary: Interactive Qualifying Project Symposium, Indian Institute of Technology.
-      - name: "Solar Re-Revolution: Engineering the Future in Solar Sustainability"
-        date: "2012-12"
-        location: Worcester, MA
-        summary: Grand Challenges Seminar Poster Presentation, WPI.
     Leadership:
       - name: Innovative Medicine Club Senior Advisor
         start_date: "2020-08"
@@ -297,3 +281,7 @@ design:
     allow_page_break: true
   templates:
     footer: "CS -- PAGE_NUMBER/TOTAL_PAGES"
+    # The link is an inline tag ([DOI], [bioRxiv]) at the end of the venue line, not its own
+    # line. LINK_TAG is added per paper by scripts/cv-link-tags.py during `npm run cv:pdf`.
+    publication_entry:
+      main_column: "**TITLE**\nAUTHORS\nJOURNAL LINK_TAG"
