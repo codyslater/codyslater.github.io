@@ -1,6 +1,6 @@
 "use client";
 
-import { useSyncExternalStore } from "react";
+import { useEffect, useSyncExternalStore } from "react";
 
 type Theme = "dark" | "light";
 const KEY = "writing-theme";
@@ -19,13 +19,30 @@ function getServerSnapshot(): Theme {
   return "dark";
 }
 
-// The current writing/projects theme, kept in step with the toggle.
+// The current reading theme (single posts and project pages only), kept in step with the toggle.
 export function useLitTheme(): Theme {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
 export function ThemeToggle() {
   const theme = useLitTheme();
+
+  // ThemeScript only runs on a hard load; arriving here by client-side navigation
+  // (index -> post) skips it, so apply the saved choice once on mount.
+  useEffect(() => {
+    try {
+      const saved = localStorage.getItem(KEY);
+      if (
+        (saved === "light" || saved === "dark") &&
+        document.documentElement.dataset.writingTheme !== saved
+      ) {
+        document.documentElement.dataset.writingTheme = saved;
+        window.dispatchEvent(new Event(EVENT));
+      }
+    } catch {
+      // storage unavailable: stay on the default
+    }
+  }, []);
 
   function toggle() {
     const next: Theme = theme === "light" ? "dark" : "light";
