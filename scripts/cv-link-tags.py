@@ -44,6 +44,9 @@ def main(src: str, dst: str) -> None:
         if href:
             tag = label(href, str(entry.get("journal", "")))
             entry["link_tag"] = f"[\\[{tag}\\]]({href})"
+        # Explain the dagger on the paper that uses it, not in the page footer.
+        if any("†" in str(a) for a in entry.get("authors", [])):
+            entry["dagger_note"] = "*† equal contribution*"
     with open(dst, "w", encoding="utf8") as f:
         yaml.dump(doc, f)
 
