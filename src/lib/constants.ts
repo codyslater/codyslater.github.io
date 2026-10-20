@@ -10,13 +10,8 @@ export type NavItem = {
 // and CyclingTagline (terminal autocomplete).
 const nav: NavItem[] = [
   { label: "about", href: "/about", icon: "~", color: "#39ff14" },
+  { label: "publications", href: "/publications", icon: "[]" },
   { label: "projects", href: "/projects", icon: "/>" },
-  {
-    label: "publications",
-    href: "https://scholar.google.com/citations?user=2iMWaGAAAAAJ&hl=en",
-    icon: "[]",
-    external: true,
-  },
   { label: "writing", href: "/writing", icon: ">>" },
 ];
 
