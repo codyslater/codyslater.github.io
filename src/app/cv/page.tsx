@@ -3,7 +3,8 @@ import { FadeIn } from "@/components/ui/FadeIn";
 import { Authors, Inline } from "@/components/ui/Inline";
 import { getCv, type CvEntry } from "@/lib/cv";
 import { DownloadIcon } from "@/components/ui/DownloadIcon";
-import { ogImage, siteConfig } from "@/lib/constants";
+import { CvDownloadLink } from "@/components/ui/CvDownloadLink";
+import { ogImage } from "@/lib/constants";
 
 const description = "Curriculum vitae of Cody Slater.";
 
@@ -112,14 +113,10 @@ export default function CvPage() {
               {[cv.name, cv.location].filter(Boolean).join(" · ")}
             </p>
             <p className="text-sm mt-4">
-              <a
-                href={siteConfig.links.cvPdf}
-                download
-                className="inline-flex items-center gap-2 text-accent-green hover:underline glow-hover"
-              >
+              <CvDownloadLink className="inline-flex items-center gap-2 text-accent-green hover:underline glow-hover">
                 <DownloadIcon />
                 download pdf
-              </a>
+              </CvDownloadLink>
             </p>
           </header>
         </FadeIn>

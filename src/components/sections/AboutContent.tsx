@@ -2,16 +2,17 @@
 
 import { FadeIn } from "@/components/ui/FadeIn";
 import { DownloadIcon } from "@/components/ui/DownloadIcon";
+import { CvDownloadLink } from "@/components/ui/CvDownloadLink";
 import { siteConfig } from "@/lib/constants";
 
-type AboutLink = { label: string; href: string; note?: string; download?: string };
+type AboutLink = { label: string; href: string; note?: string; download?: boolean };
 
 const links: AboutLink[] = [
   { label: "github", href: siteConfig.links.github },
   { label: "x", href: siteConfig.links.x },
   { label: "bluesky", href: siteConfig.links.bluesky },
   { label: "copying ourselves", href: siteConfig.links.substack, note: "substack" },
-  { label: "cv", href: siteConfig.links.cv, download: siteConfig.links.cvPdf },
+  { label: "cv", href: siteConfig.links.cv, download: true },
 ];
 
 export function AboutContent() {
@@ -69,15 +70,13 @@ export function AboutContent() {
                   )}
                 </a>
                 {link.download && (
-                  <a
-                    href={link.download}
-                    download
+                  <CvDownloadLink
                     aria-label={`download ${link.label} as pdf`}
                     title="download pdf"
                     className="p-1 text-muted hover:text-accent-green glow-hover transition-all"
                   >
                     <DownloadIcon />
-                  </a>
+                  </CvDownloadLink>
                 )}
               </div>
             </FadeIn>
