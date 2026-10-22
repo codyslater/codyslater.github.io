@@ -66,7 +66,7 @@ cv:
         summary: "*Neuropixels · GRAB sensors · 2-photon · optogenetics · chemogenetics · stereotaxic surgery · histology · behavior*"
         highlights:
           - "Co-created [neurOS](https://github.com/codyslater/neurOS), a Simulink Real-Time platform for multimodal closed-loop experiment control."
-          - "Designed and implanted brain interfaces for Neuropixels, fiber photometry and 2-photon imaging."
+          - "Designed and implanted brain interfaces for Neuropixels, fiber photometry, and 2-photon imaging."
           - "Developed the lab's in vivo perturbation assay and its [cell-type-specific transcriptomic readout](https://github.com/timlantin/Neurochemical-transcriptomics)."
           - Launched a longitudinal locus coeruleus stimulation study in an Alzheimer’s model; basis of an R01 line.
       - company: Department of Biomedical Informatics, Columbia University
@@ -92,7 +92,7 @@ cv:
         location: Lexington, MA
         summary: "*systems design · spacecraft propulsion · vacuum testing*"
         highlights:
-          - "Designed, built and characterized an experimental pico-satellite monopropellant thruster in vacuum."
+          - "Designed, built, and characterized an experimental pico-satellite monopropellant thruster in vacuum."
       - company: GE Aviation / Unison Industries
         position: Aerospace Engineering Intern
         date: 2014
