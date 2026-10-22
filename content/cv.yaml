@@ -154,6 +154,10 @@ cv:
         date: "2019-03"
         summary: Brief Research in Aging and Interdisciplinary Neurosciences (BRAIN) Program
     Presentations:
+      - name: Building on RNA foundation models to predict A-to-I editing across the transcriptome
+        date: "2026-10"
+        location: New York, NY
+        summary: AI x Biology Summit, New York Genome Center. Flash talk speaker.
       - name: Grounding RNA prediction models in structure and function
         date: "2026-10"
         location: New York, NY
