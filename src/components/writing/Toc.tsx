@@ -21,10 +21,11 @@ function List({
         <li key={it.id} className={it.depth === 3 ? "lit-toc-sub" : undefined}>
           <a
             href={`#${it.id}`}
+            title={it.text}
             aria-current={active === it.id ? "location" : undefined}
             onClick={(e) => onPick(it.id, e)}
           >
-            {it.text}
+            <span className="lit-toc-label">{it.text}</span>
           </a>
         </li>
       ))}

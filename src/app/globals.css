@@ -719,3 +719,49 @@ body {
 @media (max-width: 639px) {
   .writing-literary .essay-figure { margin-left: 0; margin-right: 0; padding: 0.85rem 0.8rem; }
 }
+
+/* Collapsed rail: one tick per section, the current one lit; hover or focus opens the titles */
+@media (min-width: 1280px) {
+  .writing-literary .lit-toc-rail ol {
+    display: inline-block;
+    padding: 0.5rem 0.6rem;
+    border: 1px solid transparent;
+    border-radius: 4px;
+    transition: background 200ms, border-color 200ms;
+  }
+  .writing-literary .lit-toc-rail a { display: flex; align-items: center; white-space: nowrap; }
+  .writing-literary .lit-toc-rail a::before {
+    content: "";
+    flex: none;
+    width: 1rem;
+    height: 2px;
+    border-radius: 1px;
+    background: currentColor;
+    opacity: 0.45;
+  }
+  .writing-literary .lit-toc-rail .lit-toc-sub a { padding-left: 0; }
+  .writing-literary .lit-toc-rail .lit-toc-sub a::before { width: 0.55rem; margin-right: 0.45rem; }
+  .writing-literary .lit-toc-rail a[aria-current]::before { opacity: 1; }
+  .writing-literary .lit-toc-rail .lit-toc-label {
+    max-width: 0;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    opacity: 0;
+    transition: max-width 220ms ease, opacity 160ms, margin 220ms ease;
+  }
+  .writing-literary .lit-toc-rail:hover .lit-toc-label,
+  .writing-literary .lit-toc-rail:focus-within .lit-toc-label {
+    max-width: 13rem;
+    margin-left: 0.6rem;
+    opacity: 1;
+  }
+  .writing-literary .lit-toc-rail:hover ol,
+  .writing-literary .lit-toc-rail:focus-within ol {
+    background: color-mix(in srgb, var(--lit-text) 5%, var(--lit-bg));
+    border-color: color-mix(in srgb, var(--lit-text) 15%, transparent);
+  }
+}
+@media (min-width: 1280px) and (prefers-reduced-motion: reduce) {
+  .writing-literary .lit-toc-rail ol,
+  .writing-literary .lit-toc-rail .lit-toc-label { transition: none; }
+}
