@@ -609,3 +609,78 @@ body {
 .writing-literary .project-prose pre { position: relative; padding-top: 2.4rem !important; }
 .copy-code { position: absolute; top: 0.45rem; right: 0.5rem; font-family: var(--font-mono), monospace; font-size: 0.7rem; padding: 0.15rem 0.5rem; border: 1px solid rgb(255 255 255 / 0.25); border-radius: 4px; background: rgb(255 255 255 / 0.06); color: #c8c3b8; cursor: pointer; }
 .copy-code:hover { color: #fff; border-color: rgb(255 255 255 / 0.6); }
+/* Anchored things clear the fixed top nav (~80px) when jumped to */
+.literary-prose [id] { scroll-margin-top: 6rem; }
+
+/* Table of contents (posts with toc: true): a rail in the left margin on wide screens,
+   a <details> under the header otherwise */
+.writing-literary .lit-toc { font-family: var(--lit-serif); color: var(--lit-muted); font-size: 0.9rem; line-height: 1.35; }
+.writing-literary .lit-toc ol { list-style: none; margin: 0; padding: 0; }
+.writing-literary .lit-toc a { display: block; padding: 0.2rem 0; color: var(--lit-muted); text-decoration: none; transition: color 150ms; }
+.writing-literary .lit-toc a:hover,
+.writing-literary .lit-toc a:focus-visible,
+.writing-literary .lit-toc a[aria-current] { color: var(--lit-link); }
+.writing-literary .lit-toc .lit-toc-sub a { padding-left: 1rem; }
+.writing-literary .lit-toc-inline { margin: 0 0 2.25rem; }
+.writing-literary .lit-toc-inline summary { cursor: pointer; font-variant-caps: all-small-caps; letter-spacing: 0.08em; font-size: 0.95rem; }
+.writing-literary .lit-toc-inline summary:hover { color: var(--lit-link); }
+.writing-literary .lit-toc-inline ol { margin-top: 0.5rem; border-left: 1px solid color-mix(in srgb, var(--lit-text) 20%, transparent); padding-left: 0.75rem; }
+.writing-literary .lit-toc-rail { display: none; }
+@media (min-width: 1280px) {
+  .writing-literary .lit-toc-inline { display: none; }
+  .writing-literary .lit-toc-rail {
+    display: block;
+    position: fixed;
+    top: 6rem;
+    left: 1.5rem;
+    width: calc((100vw - 42rem) / 2 - 3rem);
+    max-height: calc(100vh - 8rem);
+    overflow-y: auto;
+    scrollbar-width: thin;
+    font-size: 0.85rem;
+  }
+}
+
+/* <Figure>: label line, art and caption; the quiet tint fades when a link lands on it */
+.writing-literary .essay-figure { margin: 2.5rem -0.75rem; padding: 0.75rem; }
+.writing-literary .essay-figure-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.writing-literary .essay-figure-label { margin: 0; color: var(--lit-text); }
+.writing-literary .essay-figure img { max-width: 100%; height: auto; }
+.writing-literary .essay-figure > :not(.essay-figure-head) { font-size: 0.92em; color: var(--lit-muted); }
+.writing-literary .fig-back { flex: none; font-size: 0.8rem; color: var(--lit-muted); text-decoration: none; white-space: nowrap; }
+.writing-literary .fig-back:hover,
+.writing-literary .fig-back:focus-visible { color: var(--lit-link); }
+.writing-literary .essay-figure:target,
+.writing-literary [data-footnotes] li:target { animation: lit-target-flash 2.4s ease-out; }
+@keyframes lit-target-flash {
+  from { background: color-mix(in srgb, var(--lit-link) 18%, transparent); }
+  to { background: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .writing-literary .essay-figure:target,
+  .writing-literary [data-footnotes] li:target {
+    animation: none;
+    background: color-mix(in srgb, var(--lit-link) 10%, transparent);
+  }
+}
+
+/* "Back to where you were" pill (BackPill) */
+.writing-literary .lit-back-pill {
+  position: fixed;
+  right: 1rem;
+  bottom: 1.25rem;
+  z-index: 40;
+  padding: 0.4rem 0.9rem;
+  font-family: var(--lit-serif);
+  font-size: 0.9rem;
+  color: var(--lit-text);
+  background: color-mix(in srgb, var(--lit-text) 10%, var(--lit-bg));
+  border: 1px solid color-mix(in srgb, var(--lit-text) 28%, var(--lit-bg));
+  border-radius: 999px;
+  cursor: pointer;
+  animation: lit-pill-in 200ms ease-out;
+}
+.writing-literary .lit-back-pill:hover,
+.writing-literary .lit-back-pill:focus-visible { color: var(--lit-link); border-color: var(--lit-link); }
+@keyframes lit-pill-in { from { opacity: 0; transform: translateY(0.5rem); } }
+@media (prefers-reduced-motion: reduce) { .writing-literary .lit-back-pill { animation: none; } }

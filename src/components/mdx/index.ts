@@ -1,5 +1,7 @@
 import { Counter } from "./Counter";
 import { Clip, ClipGrid } from "./ClipGrid";
+import { Figure } from "./Figure";
+import { TimescaleFigure } from "./TimescaleFigure";
 import { FlowDiagram } from "./FlowDiagram";
 import { HudCreatures } from "./HudCreatures";
 import { HudTerminal } from "./HudTerminal";
@@ -10,9 +12,11 @@ export const mdxComponents = {
   Clip,
   ClipGrid,
   Counter,
+  Figure,
   FlowDiagram,
   HudCreatures,
   HudTerminal,
   ThemedImage,
   ThemedVideo,
+  TimescaleFigure,
 };

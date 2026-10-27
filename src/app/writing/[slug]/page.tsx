@@ -7,6 +7,9 @@ import { mdxRemoteOptions } from "@/lib/mdx";
 import { mdxComponents } from "@/components/mdx";
 import { ThemeToggle } from "@/components/writing/ThemeToggle";
 import { ThemeScript } from "@/components/writing/ThemeScript";
+import { Toc } from "@/components/writing/Toc";
+import { BackPill } from "@/components/writing/BackPill";
+import { extractToc } from "@/lib/toc";
 import { serif } from "@/lib/fonts";
 import "katex/dist/katex.min.css";
 
@@ -52,6 +55,7 @@ export default async function PostPage({
   const { slug } = await params;
   if (slug === "__none__") notFound();
   const post = getPost(slug);
+  const toc = post.toc ? extractToc(post.body) : [];
 
   return (
     <div
@@ -79,6 +83,7 @@ export default async function PostPage({
             {post.title}
           </h1>
         </header>
+        {toc.length > 0 && <Toc items={toc} />}
         <div className="prose-mono literary-prose">
           <MDXRemote
             source={post.body}
@@ -87,6 +92,7 @@ export default async function PostPage({
           />
         </div>
       </article>
+      <BackPill />
     </div>
   );
 }
