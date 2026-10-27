@@ -633,7 +633,9 @@ body {
     position: fixed;
     top: 6rem;
     left: calc(50vw + 21rem + 2.5rem);
-    width: 15rem;
+    /* shrink to the ticks; open no wider than the margin, so the scroll box never clips the card */
+    width: max-content;
+    max-width: calc(50vw - 21rem - 3.5rem);
     max-height: calc(100vh - 8rem);
     overflow-y: auto;
     scrollbar-width: thin;
@@ -740,8 +742,11 @@ body {
     opacity: 0.45;
   }
   .writing-literary .lit-toc-rail .lit-toc-sub a { padding-left: 0; }
-  .writing-literary .lit-toc-rail .lit-toc-sub a::before { width: 0.55rem; margin-right: 0.45rem; }
-  .writing-literary .lit-toc-rail a[aria-current]::before { opacity: 1; }
+  .writing-literary .lit-toc-rail .lit-toc-sub a::before { width: 0.55rem; margin-left: 0.45rem; }
+  .writing-literary .lit-toc-rail a[aria-current]::before { opacity: 1; height: 3px; }
+  /* hover brightens to ink, so only the current section wears the accent */
+  .writing-literary .lit-toc-rail a:hover:not([aria-current]),
+  .writing-literary .lit-toc-rail a:focus-visible:not([aria-current]) { color: var(--lit-text); }
   .writing-literary .lit-toc-rail .lit-toc-label {
     max-width: 0;
     overflow: hidden;
@@ -751,7 +756,8 @@ body {
   }
   .writing-literary .lit-toc-rail:hover .lit-toc-label,
   .writing-literary .lit-toc-rail:focus-within .lit-toc-label {
-    max-width: 13rem;
+    /* the margin minus the card's padding, border and tick */
+    max-width: min(16rem, calc(50vw - 21rem - 3.5rem - 3rem));
     margin-left: 0.6rem;
     opacity: 1;
   }
