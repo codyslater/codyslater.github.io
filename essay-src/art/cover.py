@@ -744,10 +744,10 @@ VARIANTS = {
     "a": dict(  # three wired foreground neurons over a dim background plane
         B=5.0,
         fg=[
-            dict(name="A", at=(285, 335), scale=1.1, n_dend=7, max_nt=1900, axon="B", tint=GOLD, op=1.0),
-            dict(name="B", at=(890, 200), scale=1.0, n_dend=6, max_nt=1400, axon="C", tint="#e3cc9d", op=0.94),
+            dict(name="A", at=(285, 335), scale=1.1, n_dend=7, max_nt=1900, axon="B", tint="#e6c488", op=1.0),
+            dict(name="B", at=(890, 200), scale=1.0, n_dend=6, max_nt=1400, axon="C", tint="#ecd6a6", op=0.96),
             dict(name="C", at=(700, 545), scale=0.9, n_dend=5, max_nt=1000, axon=("exit", (1270, 700)),
-                 tint="#c99f63", op=0.86),
+                 tint="#d6ad70", op=0.9),
         ],
         bg=[
             dict(name="d", at=(70, 60), scale=1.0, n_dend=5, max_nt=520, axon="e"),
@@ -909,13 +909,13 @@ def svg_doc(scene, viewbox=None, out_w=W, out_h=H):
         f'<stop offset="1" stop-color="{BG}"/></radialGradient>'
     )
     o.append(
-        '<radialGradient id="soma"><stop offset="0" stop-color="#d9b77e" stop-opacity="0.16"/>'
-        '<stop offset="0.55" stop-color="#d9b77e" stop-opacity="0.07"/>'
+        '<radialGradient id="soma"><stop offset="0" stop-color="#d9b77e" stop-opacity="0.22"/>'
+        '<stop offset="0.55" stop-color="#d9b77e" stop-opacity="0.10"/>'
         '<stop offset="1" stop-color="#d9b77e" stop-opacity="0"/></radialGradient>'
     )
     o.append(
-        '<radialGradient id="syn"><stop offset="0" stop-color="#f3e6c8" stop-opacity="0.30"/>'
-        '<stop offset="0.5" stop-color="#d9b77e" stop-opacity="0.09"/>'
+        '<radialGradient id="syn"><stop offset="0" stop-color="#fff3d6" stop-opacity="0.75"/>'
+        '<stop offset="0.45" stop-color="#e8c98e" stop-opacity="0.24"/>'
         '<stop offset="1" stop-color="#d9b77e" stop-opacity="0"/></radialGradient>'
     )
     o.append('<filter id="glow" x="-10%" y="-10%" width="120%" height="120%"><feGaussianBlur stdDeviation="2.4"/></filter>')
@@ -934,6 +934,20 @@ def Y(p):
     return (p[0], H - p[1])
 
 
+def tapered(segs, base_w, exp, nbins=7):
+    """Group segments [(a, b, scale)] into scale bins; stroke width ~ scale**exp.
+
+    Render-only taper: distal stems (smaller scale) get thinner strokes, so at
+    thumbnail size dendrites read as tapering processes instead of beads.
+    Returns [(width, d-string)]."""
+    bins = {}
+    for a, b, sc in segs:
+        k = round(sc * nbins) / nbins
+        a, b = Y(a), Y(b)
+        bins.setdefault(k, []).append(f"M{f2(a[0])} {f2(a[1])}L{f2(b[0])} {f2(b[1])}")
+    return [(base_w * (k ** exp), "".join(v)) for k, v in sorted(bins.items())]
+
+
 def render_plane(plane):
     st = plane["style"]
     B = plane["B"]
@@ -945,42 +959,59 @@ def render_plane(plane):
         r = m["soma_R"] * 1.9
         o.append(f'<circle cx="{f2(c[0])}" cy="{f2(c[1])}" r="{f2(r)}" fill="url(#soma)"/>')
     # synapse halos
+    syn_r = st.get("syn_r", 7)
     for sy in plane["syn"]:
         c = Y(sy["c"])
-        o.append(f'<circle cx="{f2(c[0])}" cy="{f2(c[1])}" r="{f2(B * 7)}" fill="url(#syn)"/>')
-    # glow backbone
+        o.append(f'<circle cx="{f2(c[0])}" cy="{f2(c[1])}" r="{f2(B * syn_r)}" fill="url(#syn)"/>')
+        if st.get("syn_core"):
+            o.append(f'<circle cx="{f2(c[0])}" cy="{f2(c[1])}" r="{f2(B * syn_r * 0.35)}" fill="url(#syn)"/>')
+    exp = st.get("taper_exp", 0.0)
+
+    def bb_segs(m):
+        nts = m["nts"]
+        return [(nts[i][0], nts[i + 1][0], 0.5 * (nts[i][1] + nts[i + 1][1])) for i in range(len(nts) - 1)]
+
+    # glow backbone (tapered)
     if st.get("glow"):
         o.append(f'<g filter="url(#glow)" opacity="{st["glow"]}">')
         for m in plane["mols"]:
-            o.append(f'<path class="bb" stroke="{GOLD}" stroke-width="{f2(B * 0.9)}" d="{m["path"]}"/>')
+            for w, d in tapered(bb_segs(m), B * st.get("glow_w", 0.9), exp):
+                o.append(f'<path class="bb" stroke="{m["tint"] or GOLD}" stroke-width="{f2(w)}" d="{d}"/>')
         o.append("</g>")
     for m in plane["mols"]:
         nts, seq, pairs = m["nts"], m["seq"], m["pairs"]
         o.append(f'<g opacity="{m["op"]}">')
+        # ribbon: a flat, faint band under the chain (reads as the process at thumbnail)
+        if st.get("ribbon"):
+            # opaque strokes inside one translucent group: joints do not stack up
+            o.append(f'<g opacity="{st["ribbon"]}">')
+            for w, d in tapered(bb_segs(m), B * st["ribbon_w"], exp):
+                o.append(f'<path class="bb" stroke="{m["tint"] or GOLD}" stroke-width="{f2(w)}" d="{d}"/>')
+            o.append("</g>")
         # rungs
+        rk = st.get("rung_k", 1.0)
         for kind, col, wk, op in (("GC", CREAM, 0.30, 0.62), ("AU", CREAM, 0.22, 0.5), ("GU", CREAM, 0.16, 0.42)):
-            d = []
+            segs = []
             for i, j in pairs:
                 pk = "".join(sorted(seq[i] + seq[j]))
                 k = {"CG": "GC", "AU": "AU", "GU": "GU"}.get(pk, "AU")
-                if k != kind:
-                    continue
-                a, b = Y(nts[i][0]), Y(nts[j][0])
-                d.append(f"M{f2(a[0])} {f2(a[1])}L{f2(b[0])} {f2(b[1])}")
-            if d:
+                if k == kind:
+                    segs.append((nts[i][0], nts[j][0], nts[i][1]))
+            for w, d in tapered(segs, B * wk * rk, exp):
                 o.append(
-                    f'<path class="rg" stroke="{col}" stroke-opacity="{op}" '
-                    f'stroke-width="{f2(B * wk)}" d="{"".join(d)}"/>'
+                    f'<path class="rg" stroke="{col}" stroke-opacity="{min(1.0, op * st.get("rung_op", 1.0))}" '
+                    f'stroke-width="{f2(w)}" d="{d}"/>'
                 )
         # GU wobble marker
         for i, j in pairs:
             if "".join(sorted(seq[i] + seq[j])) == "GU":
                 a = Y(mul(add(nts[i][0], nts[j][0]), 0.5))
                 o.append(f'<circle cx="{f2(a[0])}" cy="{f2(a[1])}" r="{f2(B * 0.16 * nts[i][1])}" fill="{CREAM}" fill-opacity="0.7"/>')
-        o.append(
-            f'<path class="bb" stroke="{m["tint"] or st["backbone"]}" stroke-opacity="{st["bb_op"]}" '
-            f'stroke-width="{f2(B * 0.3)}" d="{m["path"]}"/>'
-        )
+        for w, d in tapered(bb_segs(m), B * st.get("bb_w", 0.3), exp):
+            o.append(
+                f'<path class="bb" stroke="{m["tint"] or st["backbone"]}" stroke-opacity="{st["bb_op"]}" '
+                f'stroke-width="{f2(w)}" d="{d}"/>'
+            )
         for k, ((p, s), ch) in enumerate(zip(nts, seq)):
             c = Y(p)
             o.append(
@@ -1093,7 +1124,9 @@ def make_scene(seed, variant="a"):
         stats["bg_collisions"] = wb.collisions
     wf, nf, sf = build_plane(rng, V["fg"], V["B"], V.get("order"))
     planes.append(plane_payload(rng, wf, nf, sf, V["B"], specs=V["fg"], style=dict(
-        opacity=1.0, blur=False, glow=0.18, backbone=GOLD, bb_op=0.92, nt_op=0.62, letters=True)))
+        opacity=1.0, blur=False, glow=0.34, glow_w=1.5, backbone=GOLD, bb_op=1.0, bb_w=0.44,
+        nt_op=0.8, letters=True, ribbon=0.17, ribbon_w=2.0, taper_exp=1.6, rung_k=1.35, rung_op=1.3,
+        syn_r=12, syn_core=True)))
     stats["fg_collisions"] = wf.collisions
     stats["axon_scores"] = wf.axon_scores
     stats["nts"] = {m["name"]: len(m["nts"]) for p in planes for m in p["mols"]}
