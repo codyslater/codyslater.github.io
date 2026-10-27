@@ -684,3 +684,26 @@ body {
 .writing-literary .lit-back-pill:focus-visible { color: var(--lit-link); border-color: var(--lit-link); }
 @keyframes lit-pill-in { from { opacity: 0; transform: translateY(0.5rem); } }
 @media (prefers-reduced-motion: reduce) { .writing-literary .lit-back-pill { animation: none; } }
+
+/* the light-theme rule that keeps the site nav dark matches every nav; the TOC rail is one */
+:root[data-writing-theme="light"] .writing-literary.reading nav.lit-toc-rail { background: transparent; }
+
+/* Essay section headings: serif in the page's own ink, as project bodies already do
+   (the shared mono rule hard-codes the dark text colour, invisible on cream) */
+.writing-literary .literary-prose > h2,
+.writing-literary .literary-prose > h3 {
+  font-family: var(--lit-serif);
+  color: var(--lit-text);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 2.2em 0 0.6em;
+}
+.writing-literary .literary-prose > h2 { font-size: 1.6rem; }
+.writing-literary .literary-prose > h3 { font-size: 1.3rem; }
+
+/* every figure sits on a quiet card, so it never reads as a quote */
+.writing-literary .essay-figure {
+  padding: 1rem 1.1rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--lit-text) 4%, transparent);
+}

@@ -21,14 +21,14 @@ const T_MAX = 50 * YEAR; // ~1.58e9 s
 const LOG_MIN = Math.log10(T_MIN);
 const LOG_RANGE = Math.log10(T_MAX) - LOG_MIN; // ~12.2 decades
 
-const TICKS: { t: number; label: string }[] = [
+const TICKS: { t: number; label: string; short?: string }[] = [
   { t: 1e-3, label: "1 ms" },
   { t: 1, label: "1 s" },
   { t: MIN, label: "1 min" },
   { t: HOUR, label: "1 h" },
   { t: DAY, label: "1 day" },
-  { t: YEAR, label: "1 year" },
-  { t: 10 * YEAR, label: "10 years" },
+  { t: YEAR, label: "1 year", short: "1 yr" },
+  { t: 10 * YEAR, label: "10 years", short: "10 yr" },
 ];
 
 type Glyph = "ap" | "raster" | "nucleus" | "growth" | "held";
@@ -140,7 +140,7 @@ function GlyphShape({ kind }: { kind: Glyph }): ReactNode {
       // double nuclear envelope with two pores; a beaded transcript starts inside,
       // leaves through the right-hand pore and ends a short way outside
       const pores: [number, number][] = [
-        [-14, 14],
+        [-24, 24],
         [118, 136],
       ];
       const beads = beadsPath([-13, 6], [12, 2], [38, -7], 11);
@@ -150,7 +150,7 @@ function GlyphShape({ kind }: { kind: Glyph }): ReactNode {
           <path className={styles.ink} d={ringPath(-10, 2, 20.5, 18.5, pores)} />
           <circle className={styles.inkSoft} cx="-19" cy="-3" r="4.5" />
           {beads.map(([x, y], i) => (
-            <circle key={i} className={styles.dot} cx={x.toFixed(2)} cy={y.toFixed(2)} r={i === 0 ? 1.9 : 1.4} />
+            <circle key={i} className={styles.dot} cx={x.toFixed(2)} cy={y.toFixed(2)} r="1.5" />
           ))}
         </>
       );
@@ -165,14 +165,14 @@ function GlyphShape({ kind }: { kind: Glyph }): ReactNode {
         </>
       );
     case "held":
-      // one enlarged spine, unchanged, with a ruler of ticks beneath for time passing
+      // one enlarged spine, unchanged, with a faint row of hatch ticks beneath for time passing
       return (
         <>
           <path className={styles.ink} d={shaftPath([0])} />
           <path className={styles.ink} d={spinePath(0, 14, 8)} />
           <path
-            className={styles.inkSoft}
-            d={`M-38 43 H37 M33 39.5 L37.5 43 L33 46.5 ${Array.from({ length: 10 }, (_, i) => `M${-36 + i * 8} 40 V46`).join(" ")}`}
+            className={`${styles.inkSoft} ${styles.faint}`}
+            d={Array.from({ length: 10 }, (_, i) => `M${-36 + i * 8} 40 V46`).join(" ")}
           />
         </>
       );
@@ -217,7 +217,7 @@ function Horizontal({ bridge }: { bridge: boolean }) {
         <g key={k.label}>
           <line className={styles.axis} x1={x(k.t)} x2={x(k.t)} y1={AXIS_Y - 4} y2={AXIS_Y + 5} />
           <text className={styles.tick} x={x(k.t)} y={AXIS_Y + 24} textAnchor="middle">
-            {k.label}
+            {k.short ?? k.label}
           </text>
         </g>
       ))}
@@ -236,7 +236,7 @@ function Horizontal({ bridge }: { bridge: boolean }) {
             <text className={styles.letter} x={cx} y={16} textAnchor="middle">
               {s.id}
             </text>
-            <g transform={`translate(${cx} ${GLYPH_Y})`}>
+            <g transform={`translate(${cx} ${GLYPH_Y})${s.glyph === "nucleus" ? " scale(1.15)" : ""}`}>
               <GlyphShape kind={s.glyph} />
             </g>
             <text className={styles.text} textAnchor="middle">
