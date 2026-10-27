@@ -707,3 +707,9 @@ body {
   border-radius: 4px;
   background: color-mix(in srgb, var(--lit-text) 4%, transparent);
 }
+/* captions sit between muted and ink: plain muted on the card is ~3.9:1 in light */
+.writing-literary .essay-figure > :not(.essay-figure-head) { color: color-mix(in srgb, var(--lit-text) 40%, var(--lit-muted)); }
+/* the card only reaches past the text column where there is room for it */
+@media (max-width: 639px) {
+  .writing-literary .essay-figure { margin-left: 0; margin-right: 0; padding: 0.85rem 0.8rem; }
+}
