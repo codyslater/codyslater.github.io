@@ -632,7 +632,7 @@ body {
     display: block;
     position: fixed;
     top: 6rem;
-    left: calc(50vw - 21rem - 2.5rem - 15rem);
+    left: calc(50vw + 21rem + 2.5rem);
     width: 15rem;
     max-height: calc(100vh - 8rem);
     overflow-y: auto;

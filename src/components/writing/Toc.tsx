@@ -33,7 +33,7 @@ function List({
 }
 
 // Contents for a post: a collapsible block under the header on every screen, plus, on wide
-// screens, a rail beside the text column (with scrollspy) once that block has scrolled away.
+// screens, a rail right of the text column (with scrollspy) once that block has scrolled away.
 export function Toc({ items }: { items: TocItem[] }) {
   const [active, setActive] = useState<string | null>(null);
   const [railShown, setRailShown] = useState(false);
