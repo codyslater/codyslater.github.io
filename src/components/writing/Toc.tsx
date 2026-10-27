@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import type { TocItem } from "@/lib/toc";
 
 // Share of the viewport height above which a heading counts as "reached".
@@ -32,18 +32,34 @@ function List({
   );
 }
 
-// Contents for a post: a fixed rail in the left margin on wide screens (with scrollspy),
-// a collapsible block under the header on narrow ones. CSS shows one of the two.
+// Contents for a post: a collapsible block under the header on every screen, plus, on wide
+// screens, a rail beside the text column (with scrollspy) once that block has scrolled away.
 export function Toc({ items }: { items: TocItem[] }) {
   const [active, setActive] = useState<string | null>(null);
+  const [railShown, setRailShown] = useState(false);
+  const inlineRef = useRef<HTMLDetailsElement>(null);
+
+  // the rail would repeat the inline block while that block is still on screen
+  useEffect(() => {
+    const el = inlineRef.current;
+    if (!el) return;
+    const io = new IntersectionObserver(([e]) => setRailShown(!e.isIntersecting), {
+      rootMargin: "-80px 0px 0px 0px",
+    });
+    io.observe(el);
+    return () => io.disconnect();
+  }, []);
 
   useEffect(() => {
     const heads = items
       .map((it) => document.getElementById(it.id))
       .filter((el): el is HTMLElement => el !== null);
     if (heads.length === 0) return;
-    // The observer is only the trigger: whenever a heading crosses the band, re-read all positions.
+    // Re-read positions once per frame on scroll: a jump (figure link, back pill) can skip
+    // past every heading without any of them crossing an observer band.
+    let frame = 0;
     const update = () => {
+      frame = 0;
       const line = window.innerHeight * READ_LINE + 2;
       let cur: string | null = null;
       for (const h of heads) {
@@ -51,11 +67,17 @@ export function Toc({ items }: { items: TocItem[] }) {
       }
       setActive(cur);
     };
-    const io = new IntersectionObserver(update, {
-      rootMargin: `-80px 0px -${100 - READ_LINE * 100}% 0px`,
-    });
-    heads.forEach((h) => io.observe(h));
-    return () => io.disconnect();
+    const onScroll = () => {
+      if (!frame) frame = requestAnimationFrame(update);
+    };
+    update();
+    window.addEventListener("scroll", onScroll, { passive: true });
+    window.addEventListener("resize", onScroll);
+    return () => {
+      window.removeEventListener("scroll", onScroll);
+      window.removeEventListener("resize", onScroll);
+      if (frame) cancelAnimationFrame(frame);
+    };
   }, [items]);
 
   function pick(id: string, e: React.MouseEvent<HTMLAnchorElement>) {
@@ -66,11 +88,16 @@ export function Toc({ items }: { items: TocItem[] }) {
 
   return (
     <>
-      <details className="lit-toc lit-toc-inline">
+      <details ref={inlineRef} className="lit-toc lit-toc-inline">
         <summary>Contents</summary>
         <List items={items} active={active} onPick={pick} />
       </details>
-      <nav className="lit-toc lit-toc-rail" aria-label="Contents">
+      <nav
+        className="lit-toc lit-toc-rail"
+        aria-label="Contents"
+        data-shown={railShown || undefined}
+        inert={!railShown}
+      >
         <List items={items} active={active} onPick={pick} />
       </nav>
     </>

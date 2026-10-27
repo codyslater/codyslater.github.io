@@ -626,19 +626,25 @@ body {
 .writing-literary .lit-toc-inline summary:hover { color: var(--lit-link); }
 .writing-literary .lit-toc-inline ol { margin-top: 0.5rem; border-left: 1px solid color-mix(in srgb, var(--lit-text) 20%, transparent); padding-left: 0.75rem; }
 .writing-literary .lit-toc-rail { display: none; }
+/* the rail hugs the 42rem text column, fading in once the inline block has scrolled away */
 @media (min-width: 1280px) {
-  .writing-literary .lit-toc-inline { display: none; }
   .writing-literary .lit-toc-rail {
     display: block;
     position: fixed;
     top: 6rem;
-    left: 1.5rem;
-    width: calc((100vw - 42rem) / 2 - 3rem);
+    left: calc(50vw - 21rem - 2.5rem - 15rem);
+    width: 15rem;
     max-height: calc(100vh - 8rem);
     overflow-y: auto;
     scrollbar-width: thin;
     font-size: 0.85rem;
+    opacity: 0;
+    transition: opacity 250ms;
   }
+  .writing-literary .lit-toc-rail[data-shown] { opacity: 1; }
+}
+@media (min-width: 1280px) and (prefers-reduced-motion: reduce) {
+  .writing-literary .lit-toc-rail { transition: none; }
 }
 
 /* <Figure>: label line, art and caption; the quiet tint fades when a link lands on it */
