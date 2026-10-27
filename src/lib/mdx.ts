@@ -10,5 +10,7 @@ export const mdxRemoteOptions = {
       rehypeKatex,
       [rehypeShiki, { theme: "poimandres" }] as unknown as typeof rehypeKatex,
     ],
+    // GFM footnotes ([^id]) hold citations, so label the list as references
+    remarkRehypeOptions: { footnoteLabel: "References" },
   },
 };
