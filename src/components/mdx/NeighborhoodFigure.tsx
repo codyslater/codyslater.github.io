@@ -64,7 +64,6 @@ function sub(s: Seg, t0: number, t1: number): Seg {
   const [, right] = split(s, t0);
   return split(right, (t1 - t0) / (1 - t0))[0];
 }
-const rev = (s: Seg): Seg => [s[3], s[2], s[1], s[0]];
 const dSeg = (s: Seg, move = true) =>
   `${move ? `M${f(s[0][0])} ${f(s[0][1])} ` : ""}C${f(s[1][0])} ${f(s[1][1])} ${f(s[2][0])} ${f(s[2][1])} ${f(s[3][0])} ${f(s[3][1])}`;
 
