@@ -117,7 +117,10 @@ type Ring = { c: P; r: number };
 type Label = { x: number; y: number; lines: string[]; cls: "text" | "flow"; anchor?: "start" | "middle" };
 type Scene = {
   w: number;
+  y0: number;
   h: number;
+  gs: number; // mRNA glyph scale
+  g4s: number; // G4 glyph scale
   soma: { cx: number; cy: number; rx: number; ry: number };
   nuc: { cx: number; cy: number; r: number };
   bulb: { cx: number; cy: number; rx: number; ry: number };
@@ -144,91 +147,91 @@ function spine(cv: Curve, arc: number, dir: P, len: number, hr: number): Spine &
   return { d: `M${f(p[0])} ${f(p[1])} Q${f(mid[0])} ${f(mid[1])} ${f(head[0])} ${f(head[1])}`, head, hr, n };
 }
 
-const RING_R = 42;
-const RING_BACK = 30; // ring centre sits this far (arc) behind the dendrite tip
-
-// a ribosome neighborhood at the tip of a twig: ring, glyphs along the shaft, one spine whose head holds a ribosome
-function neighborhood(cv: Curve, state: "g4" | "plain" | "edit", spineDir: P) {
-  const c0 = cv.len - RING_BACK;
-  const ring: Ring = { c: cv.at(c0).p, r: RING_R };
+// a ribosome neighborhood at the tip of a twig: a dashed ring, three ribosomes and one mRNA along the shaft, and a spine
+// (its head is left empty so no ribosome sits inside a second circle)
+function neighborhood(
+  cv: Curve,
+  state: "g4" | "plain" | "edit",
+  spineDir: P,
+  o: { r: number; back: number; rib: number[]; spineAt: number },
+) {
+  const c0 = cv.len - o.back;
+  const ring: Ring = { c: cv.at(c0).p, r: o.r };
   const g = (s: number, k: GlyphKind): Glyph => {
     const q = cv.at(c0 + s);
     return { k, p: q.p, a: q.a };
   };
-  const glyphs: Glyph[] = [g(-30, "rib"), g(-16, "rib"), g(13, state === "g4" ? "g4" : state === "edit" ? "edit" : "plain")];
-  const sp = spine(cv, c0 - 3, spineDir, 11, 8);
-  glyphs.push({ k: "rib", p: sp.head, a: Math.atan2(sp.n[0], -sp.n[1]) });
+  const glyphs: Glyph[] = [...o.rib.map((s) => g(s, "rib")), g(14, state)];
+  const sp = spine(cv, c0 + o.spineAt, spineDir, 11, 8);
   return { ring, glyphs, spine: sp as Spine, at: (s: number) => cv.at(c0 + s) };
 }
 
+// shared helpers for leaders
+const wallOff = (s: Seg, t: number, dir: P, half: number): P => {
+  const p = pt(s, t);
+  const tg = tan(s, t);
+  let n: P = [-tg[1], tg[0]];
+  if (n[0] * dir[0] + n[1] * dir[1] < 0) n = [-n[0], -n[1]];
+  return [p[0] + n[0] * (half + 3), p[1] + n[1] * (half + 3)];
+};
+const toward = (c: P, from: P, r: number): P => {
+  const d = dist(from, c);
+  return [c[0] + ((from[0] - c[0]) / d) * r, c[1] + ((from[1] - c[1]) / d) * r];
+};
+
 // ---- wide scene (dendrites left, axon right) ---------------------------------
 function wideScene(): Scene {
-  const soma = { cx: 455, cy: 224, rx: 54, ry: 46 };
-  const nuc = { cx: 455, cy: 226, r: 27 };
+  const soma = { cx: 455, cy: 224, rx: 62, ry: 48 };
+  const nuc = { cx: 438, cy: 226, r: 27 };
   const nucC: P = [nuc.cx, nuc.cy];
-  const P1 = S([440, 208, 405, 190, 372, 170, 338, 152]);
-  const A1 = S([338, 152, 310, 136, 268, 116, 232, 92]);
-  const A2 = S([338, 152, 318, 174, 280, 200, 232, 216]);
-  const P2 = S([440, 240, 405, 262, 375, 285, 345, 302]);
-  const B1 = S([345, 302, 318, 318, 276, 338, 232, 342]);
-  const AX = S([500, 223, 550, 213, 610, 236, 664, 222]);
+  // one shared trunk leaves the soma and splits at J into three twigs
+  const TR = S([440, 226, 410, 228, 378, 222, 346, 224]);
+  const A1 = S([346, 224, 332, 190, 300, 120, 240, 70]);
+  const A2 = S([346, 224, 320, 224, 285, 224, 232, 224]);
+  const B1 = S([346, 224, 332, 258, 300, 328, 240, 378]);
+  const AX = S([515, 224, 560, 214, 625, 236, 674, 222]);
   const cA1 = curve(A1);
   const cA2 = curve(A2);
   const cB1 = curve(B1);
   const cAX = curve(AX);
+  const o = { r: 56, back: 36, rib: [-46, -33, -20], spineAt: -26 };
 
-  const n1 = neighborhood(cA1, "g4", [0, -1]);
-  const n2 = neighborhood(cA2, "plain", [0, -1]);
-  const n3 = neighborhood(cB1, "edit", [0, 1]);
+  const n1 = neighborhood(cA1, "g4", [1, -0.5], o);
+  const n2 = neighborhood(cA2, "plain", [0, -1], o);
+  const n3 = neighborhood(cB1, "edit", [1, 0.5], o);
 
   const spines: Spine[] = [n1.spine, n2.spine, n3.spine];
-  const extra = (cv: Curve, frac: number, dir: P, len = 11, hr = 6) => spines.push(spine(cv, cv.len * frac, dir, len, hr));
-  extra(cA1, 0.38, [0, -1]);
-  extra(cA1, 0.55, [0, 1]);
-  extra(cA2, 0.3, [0, 1]);
-  extra(cB1, 0.2, [0, -1]);
+  spines.push(spine(cA1, cA1.len * 0.3, [1, 0], 11, 6));
+  spines.push(spine(cB1, cB1.len * 0.3, [1, 0], 11, 6));
 
-  // arrows live on the dendrite centre lines
-  const t0 = scanT(P1, (p) => dist(p, nucC) >= nuc.r + 7);
-  const tEnd = scanT(A1, (p) => dist(p, n1.ring.c) <= n1.ring.r - 3);
-  const release = [sub(P1, t0, 1), sub(A1, 0, tEnd)];
-  const tS = scanT(B1, (p) => dist(p, n3.ring.c) >= n3.ring.r - 3, 1, 0);
-  const tE = scanT(P2, (p) => dist(p, nucC) <= nuc.r + 7, 1, 0);
-  const back = [rev(sub(B1, 0, tS)), rev(sub(P2, tE, 1))];
-  const spike = [sub(AX, cAX.at(34).t, cAX.at(cAX.len - 10).t)];
+  // release: nucleus ring -> the shared trunk (stops at the split, not at any ring)
+  const t0 = scanT(TR, (p) => dist(p, nucC) >= nuc.r + 3);
+  const t1 = scanT(TR, (p) => p[0] <= 354);
+  const release = [sub(TR, t0, t1)];
+  // return: from the axon hillock, where the spike starts, to the nucleus ring
+  const back = [lineSeg([510, 231], [nuc.cx + nuc.r + 3, 230])];
+  const spike = [sub(AX, cAX.at(26).t, cAX.at(cAX.len - 10).t)];
 
-  const wallOff = (s: Seg, t: number, dir: P, half: number): P => {
-    const p = pt(s, t);
-    const tg = tan(s, t);
-    let n: P = [-tg[1], tg[0]];
-    if (n[0] * dir[0] + n[1] * dir[1] < 0) n = [-n[0], -n[1]];
-    return [p[0] + n[0] * (half + 3), p[1] + n[1] * (half + 3)];
-  };
-  const circleEdge = (from: P, c: P, r: number): P => {
-    const d = dist(from, c);
-    return [c[0] + ((from[0] - c[0]) / d) * r, c[1] + ((from[1] - c[1]) / d) * r];
-  };
-
-  const releaseT = scanT(P1, (p) => p[0] <= 372);
-  const returnT = scanT(P2, (p) => p[0] <= 385, 1, 0);
-  const spikeT = scanT(AX, (p) => p[0] >= 585);
-
-  const g4 = n1.at(24).p;
-  const ed = n3.at(24).p;
+  const spikeT = scanT(AX, (p) => p[0] >= 605);
+  const g4 = n1.at(14).p;
+  const ed = n3.at(14).p;
+  const releaseT = scanT(TR, (p) => p[0] <= 372);
 
   return {
     w: 720,
-    h: 408,
+    y0: 10,
+    h: 410,
+    gs: 1.7,
+    g4s: 1.4,
     soma,
     nuc,
-    bulb: { cx: 676, cy: 222, rx: 16, ry: 14 },
+    bulb: { cx: 686, cy: 222, rx: 16, ry: 14 },
     tubes: [
-      { d: dSeg(P1), w: 24 },
-      { d: dSeg(P2), w: 24 },
-      { d: dSeg(A1), w: 20 },
-      { d: dSeg(A2), w: 20 },
-      { d: dSeg(B1), w: 20 },
-      { d: dSeg(AX), w: 12 },
+      { d: dSeg(TR), w: 32 },
+      { d: dSeg(A1), w: 26 },
+      { d: dSeg(A2), w: 26 },
+      { d: dSeg(B1), w: 26 },
+      { d: dSeg(AX), w: 14 },
     ],
     spines,
     rings: [n1.ring, n2.ring, n3.ring],
@@ -236,78 +239,68 @@ function wideScene(): Scene {
     arrows: [release, back, spike],
     lh: 18,
     labels: [
-      { x: 8, y: 34, lines: ["ribosome neighborhood"], cls: "text" },
-      { x: 8, y: 104, lines: ["structure gates", "translation"], cls: "text" },
-      { x: 8, y: 347, lines: ["edits accumulate"], cls: "text" },
-      { x: 345, y: 90, lines: ["released and spliced", "on demand"], cls: "flow" },
-      { x: 585, y: 148, lines: ["spike: passes context", "to the network"], cls: "flow", anchor: "middle" },
-      { x: 500, y: 318, lines: ["pre-made RNAs held", "in the nucleus"], cls: "text" },
-      { x: 335, y: 366, lines: ["signals which RNAs", "to release"], cls: "flow" },
+      { x: 16, y: 30, lines: ["ribosome neighborhood"], cls: "text" },
+      { x: 16, y: 88, lines: ["structure gates", "translation"], cls: "text" },
+      { x: 16, y: 361, lines: ["edits accumulate"], cls: "text" },
+      { x: 355, y: 120, lines: ["released and spliced", "on demand"], cls: "flow" },
+      { x: 605, y: 142, lines: ["spike: passes context", "to the network"], cls: "flow", anchor: "middle" },
+      { x: 346, y: 322, lines: ["pre-made RNAs held", "in the nucleus"], cls: "text" },
+      { x: 505, y: 322, lines: ["spike also signals", "which RNAs to replenish"], cls: "flow" },
     ],
     leaders: [
-      [[176, 31], circleEdge([176, 31], n1.ring.c, n1.ring.r + 2)],
-      [[128, 99], [g4[0] + 4, g4[1] - 1]],
-      [[124, 342], [ed[0] + 4, ed[1]]],
-      [[372, 126], wallOff(P1, releaseT, [0, -1], 12)],
-      [[585, 176], wallOff(AX, spikeT, [0, -1], 6)],
-      [[506, 313], circleEdge([506, 313], nucC, nuc.r + 2)],
-      [[385, 352], wallOff(P2, returnT, [0, 1], 12)],
+      [[176, 27], toward(n1.ring.c, [176, 27], n1.ring.r + 2)],
+      [[122, 84], toward(g4, [122, 84], 22)],
+      [[126, 356], toward(ed, [126, 356], 22)],
+      [[372, 152], wallOff(TR, releaseT, [0, -1], 16)],
+      [[605, 166], wallOff(AX, spikeT, [0, -1], 7)],
+      [[410, 306], toward(nucC, [410, 306], nuc.r + 2)],
+      [[512, 306], [494, 240]],
     ],
   };
 }
 
 // ---- tall scene (nucleus on top, dendrites below, axon off the right) --------
 function tallScene(): Scene {
-  const soma = { cx: 76, cy: 76, rx: 52, ry: 44 };
-  const nuc = { cx: 76, cy: 78, r: 26 };
+  const soma = { cx: 66, cy: 76, rx: 54, ry: 46 };
+  const nuc = { cx: 52, cy: 80, r: 24 };
   const nucC: P = [nuc.cx, nuc.cy];
-  const TR = S([76, 100, 70, 200, 82, 330, 76, 470]);
-  const A = S([82, 240, 90, 262, 116, 278, 152, 326]);
-  const B = S([70, 404, 78, 426, 104, 442, 150, 490]);
-  const AX = S([126, 68, 170, 56, 230, 70, 282, 52]);
+  const TR = S([64, 100, 60, 230, 68, 370, 64, 500]);
+  const A = S([70, 250, 82, 276, 108, 296, 150, 348]);
+  const B = S([66, 400, 78, 428, 106, 450, 148, 500]);
+  const AX = S([118, 66, 160, 54, 220, 68, 274, 50]);
   const cTR = curve(TR);
   const cA = curve(A);
   const cB = curve(B);
   const cAX = curve(AX);
+  const o = { r: 46, back: 30, rib: [-36, -24, -12], spineAt: -20 };
 
-  const nA = neighborhood(cA, "g4", [1, 0]);
-  const nB = neighborhood(cB, "edit", [1, 0]);
+  const nA = neighborhood(cA, "g4", [1, 0], o);
+  const nB = neighborhood(cB, "edit", [1, 0], o);
 
   const spines: Spine[] = [nA.spine, nB.spine];
   for (const fr of [0.2, 0.31, 0.5, 0.64, 0.8, 0.93]) spines.push(spine(cTR, cTR.len * fr, [-1, 0], 11, 6));
 
-  const tEnd = scanT(A, (p) => dist(p, nA.ring.c) <= nA.ring.r - 3);
-  const release = [lineSeg([82, 112], [82, 240]), sub(A, 0, tEnd)];
-  const tS = scanT(B, (p) => dist(p, nB.ring.c) >= nB.ring.r - 3, 1, 0);
-  const back = [rev(sub(B, 0, tS)), lineSeg([70, 404], [70, 112])];
+  const release = [lineSeg([62, 110], [66, 242])];
+  const back = [lineSeg([108, 94], [nuc.cx + 21 + 3, 92])];
   const spike = [sub(AX, cAX.at(30).t, cAX.at(cAX.len - 10).t)];
-
-  const wallOff = (s: Seg, t: number, dir: P, half: number): P => {
-    const p = pt(s, t);
-    const tg = tan(s, t);
-    let n: P = [-tg[1], tg[0]];
-    if (n[0] * dir[0] + n[1] * dir[1] < 0) n = [-n[0], -n[1]];
-    return [p[0] + n[0] * (half + 3), p[1] + n[1] * (half + 3)];
-  };
-  const circleEdge = (from: P, c: P, r: number): P => {
-    const d = dist(from, c);
-    return [c[0] + ((from[0] - c[0]) / d) * r, c[1] + ((from[1] - c[1]) / d) * r];
-  };
-  const g4 = nA.at(24).p;
-  const ed = nB.at(24).p;
-  const spikeT = scanT(AX, (p) => p[0] >= 236);
+  const g4 = nA.at(14).p;
+  const ed = nB.at(14).p;
+  const spikeT = scanT(AX, (p) => p[0] >= 222);
 
   return {
     w: 316,
+    y0: 2,
     h: 530,
+    gs: 1.35,
+    g4s: 1.3,
     soma,
     nuc,
-    bulb: { cx: 296, cy: 50, rx: 15, ry: 13 },
+    bulb: { cx: 288, cy: 48, rx: 14, ry: 13 },
     tubes: [
       { d: dSeg(TR), w: 26 },
-      { d: dSeg(A), w: 20 },
-      { d: dSeg(B), w: 20 },
-      { d: dSeg(AX), w: 12 },
+      { d: dSeg(A), w: 24 },
+      { d: dSeg(B), w: 24 },
+      { d: dSeg(AX), w: 14 },
     ],
     spines,
     rings: [nA.ring, nB.ring],
@@ -315,22 +308,22 @@ function tallScene(): Scene {
     arrows: [release, back, spike],
     lh: 17,
     labels: [
-      { x: 188, y: 104, lines: ["spike: passes", "context to", "the network"], cls: "flow" },
-      { x: 188, y: 158, lines: ["pre-made RNAs", "held in the", "nucleus"], cls: "text" },
-      { x: 188, y: 212, lines: ["released and", "spliced on", "demand"], cls: "flow" },
-      { x: 196, y: 292, lines: ["ribosome", "neighborhood"], cls: "text" },
-      { x: 196, y: 330, lines: ["structure gates", "translation"], cls: "text" },
-      { x: 188, y: 378, lines: ["signals which", "RNAs to release"], cls: "flow" },
+      { x: 150, y: 18, lines: ["spike: passes context", "to the network"], cls: "flow" },
+      { x: 188, y: 124, lines: ["spike also", "signals which", "RNAs to", "replenish"], cls: "flow" },
+      { x: 188, y: 209, lines: ["pre-made RNAs", "held in the", "nucleus"], cls: "text" },
+      { x: 188, y: 277, lines: ["released and", "spliced on", "demand"], cls: "flow" },
+      { x: 196, y: 345, lines: ["ribosome", "neighborhood"], cls: "text" },
+      { x: 196, y: 396, lines: ["structure gates", "translation"], cls: "text" },
       { x: 196, y: 472, lines: ["edits", "accumulate"], cls: "text" },
     ],
     leaders: [
-      [[236, 92], wallOff(AX, spikeT, [0, 1], 6)],
-      [[178, 152], circleEdge([178, 152], nucC, nuc.r + 2)],
-      [[182, 228], wallOff(A, 0.3, [1, -1], 10)],
-      [[190, 284], circleEdge([190, 284], nA.ring.c, nA.ring.r + 2)],
-      [[190, 324], [g4[0] + 3, g4[1] - 1]],
-      [[182, 392], wallOff(B, 0.25, [1, -1], 10)],
-      [[190, 462], [ed[0] + 3, ed[1]]],
+      [[222, 44], wallOff(AX, spikeT, [0, -1], 7)],
+      [[184, 118], [100, 99]],
+      [[182, 204], toward(nucC, [182, 204], nuc.r + 2)],
+      [[184, 272], [82, 236]],
+      [[192, 340], toward(nA.ring.c, [192, 340], nA.ring.r + 2)],
+      [[192, 392], toward(g4, [192, 392], 24)],
+      [[192, 468], toward(ed, [192, 468], 24)],
     ],
   };
 }
@@ -343,7 +336,7 @@ function arrowHead(seg: Seg): string {
   const tip = seg[3];
   const tg = tan(seg, 1);
   const a = Math.atan2(tg[1], tg[0]);
-  const L = 7.5;
+  const L = 11.25;
   const p1: P = [tip[0] - L * Math.cos(a + 0.5), tip[1] - L * Math.sin(a + 0.5)];
   const p2: P = [tip[0] - L * Math.cos(a - 0.5), tip[1] - L * Math.sin(a - 0.5)];
   return `M${f(p1[0])} ${f(p1[1])} L${f(tip[0])} ${f(tip[1])} L${f(p2[0])} ${f(p2[1])}`;
@@ -351,43 +344,43 @@ function arrowHead(seg: Seg): string {
 const arrowD = (segs: Seg[]) =>
   `M${f(segs[0][0][0])} ${f(segs[0][0][1])} ${segs.map((s) => dSeg(s, false)).join(" ")}`;
 
-function GlyphShape({ g }: { g: Glyph }): ReactNode {
-  const tf = `translate(${f(g.p[0])} ${f(g.p[1])}) rotate(${f((g.a * 180) / Math.PI)})`;
+function GlyphShape({ g, gs, g4s }: { g: Glyph; gs: number; g4s: number }): ReactNode {
+  const base = `translate(${f(g.p[0])} ${f(g.p[1])}) rotate(${f((g.a * 180) / Math.PI)})`;
   switch (g.k) {
     case "rib":
       // small subunit riding on the large one
       return (
-        <g transform={tf}>
+        <g transform={base}>
           <ellipse className={styles.ribL} cx="0" cy="1.2" rx="5.4" ry="3.8" />
           <ellipse className={styles.ribS} cx="0.4" cy="-3.5" rx="3.7" ry="2.5" />
         </g>
       );
     case "plain":
       return (
-        <g transform={tf}>
+        <g transform={`${base} scale(${gs})`}>
           <path className={styles.strand} d="M-10 0 q2.5 -3.4 5 0 t5 0 t5 0 t5 0" />
         </g>
       );
     case "edit":
       // the same strand, carrying accumulated marks
       return (
-        <g transform={tf}>
+        <g transform={`${base} scale(${gs})`}>
           <path className={styles.strand} d="M-11 0 q2.75 -3.4 5.5 0 t5.5 0 t5.5 0 t5.5 0" />
           {[-8.25, -2.75, 2.75, 8.25].map((x, i) => (
-            <circle key={x} className={styles.mark} cx={x} cy={i % 2 ? 1.7 : -1.7} r="2.1" />
+            <circle key={x} className={styles.mark} cx={x} cy={i % 2 ? 1.7 : -1.7} r="1.8" />
           ))}
         </g>
       );
     case "g4":
-      // a guanine quadruplex: stacked tetrads with the strand looping between them
+      // a guanine quadruplex: three stacked tetrads with the strand looping between them
       return (
-        <g transform={tf}>
+        <g transform={`${base} scale(${g4s})`}>
           <path
             className={styles.strand}
-            d="M-11 5 q1.9 -2.8 3.8 0 t3.6 0 M3.6 5 q4.5 -2.5 0 -5 M-3.6 0 q-4.5 -2.5 0 -5 M3.6 -5 q1.9 -2.8 3.8 0 t3.6 0"
+            d="M-12 5.6 q2 -3 4 0 t4 0 M4 5.6 q5 -2.8 0 -5.6 M-4 0 q-5 -2.8 0 -5.6 M4 -5.6 q2 -3 4 0 t4 0"
           />
-          {[-5, 0, 5].map((y) => (
-            <rect key={y} className={styles.quad} x="-3.6" y={y - 1.5} width="7.2" height="3" rx="0.7" />
+          {[-5.6, 0, 5.6].map((y) => (
+            <rect key={y} className={styles.quad} x="-4" y={y - 1.7} width="8" height="3.4" rx="0.7" />
           ))}
         </g>
       );
@@ -398,7 +391,7 @@ function SceneSvg({ sc, className, tall, aria }: { sc: Scene; className: string;
   const sfx = tall ? "V" : "";
   const outerW = (w: number) => w + 2 * WALL;
   return (
-    <svg viewBox={`0 0 ${sc.w} ${sc.h}`} className={className} role="img" aria-label={aria}>
+    <svg viewBox={`0 ${sc.y0} ${sc.w} ${sc.h}`} className={className} role="img" aria-label={aria}>
       <title>{aria}</title>
 
       {/* cell walls: every process is stroked wide in the wall color, then again narrower in the page color */}
@@ -443,7 +436,7 @@ function SceneSvg({ sc, className, tall, aria }: { sc: Scene; className: string;
       </g>
 
       {sc.glyphs.map((g, i) => (
-        <GlyphShape key={i} g={g} />
+        <GlyphShape key={i} g={g} gs={sc.gs} g4s={sc.g4s} />
       ))}
 
       {sc.arrows.map((a, i) => (
@@ -475,8 +468,8 @@ const ARIA =
   "The nucleus holds pre-made RNAs, short strands that keep an intron. " +
   "Along the dendrites, dashed rings mark ribosome neighborhoods, each holding ribosomes and local mRNAs. In one, an mRNA's structure gates its own translation; in another, an mRNA accumulates edits. " +
   "A spike runs down the axon and passes context to the network. " +
-  "A return signal from the dendrites to the nucleus says which RNAs to release. " +
-  "Those RNAs are released and spliced on demand.";
+  "The spike also signals back from the axon hillock to the nucleus which RNAs to replenish. " +
+  "Those RNAs are released from the nucleus to the shared dendritic trunk and spliced on demand.";
 
 export function NeighborhoodFigure() {
   return (
