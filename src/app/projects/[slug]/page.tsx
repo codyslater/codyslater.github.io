@@ -8,7 +8,9 @@ import { mdxRemoteOptions } from "@/lib/mdx";
 import { mdxComponents } from "@/components/mdx";
 import { ThemeToggle } from "@/components/writing/ThemeToggle";
 import { ThemeScript } from "@/components/writing/ThemeScript";
-import { ThemedVideo } from "@/components/writing/ThemedMedia";
+import { ThemedImage, ThemedVideo } from "@/components/writing/ThemedMedia";
+import { CopyCode } from "@/components/writing/CopyCode";
+import { MediaZoom } from "@/components/writing/MediaZoom";
 import { serif } from "@/lib/fonts";
 
 export function generateStaticParams() {
@@ -59,6 +61,8 @@ export default async function ProjectPage({
       className={`writing-literary reading min-h-screen pt-20 pb-20 px-4 ${serif.variable}`}
     >
       <ThemeScript />
+      <MediaZoom />
+      <CopyCode />
       <article className="max-w-2xl mx-auto">
         <p className="lit-date mb-6">
           <Link href="/projects/" className="lit-back">
@@ -71,17 +75,21 @@ export default async function ProjectPage({
               base={project.video}
               label={project.summary}
               themed={project.videoThemed}
+              ratio={project.videoRatio}
             />
           </div>
         ) : (
-          project.hero && (
+          project.hero &&
+          (project.heroThemed ? (
+            <ThemedImage base={project.hero} alt={project.title} className="lit-hero mb-8" />
+          ) : (
             // eslint-disable-next-line @next/next/no-img-element
             <img
               src={project.hero}
               alt={project.title}
               className="lit-hero mb-8"
             />
-          )
+          ))
         )}
         <header className="lit-header mb-10">
           <div className="lit-bar">

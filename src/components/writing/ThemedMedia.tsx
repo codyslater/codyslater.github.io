@@ -65,8 +65,16 @@ export function ThemedVideo({
   );
 }
 
-export function ThemedImage({ base, alt }: { base: string; alt: string }) {
+export function ThemedImage({
+  base,
+  alt,
+  className = "lit-figure",
+}: {
+  base: string;
+  alt: string;
+  className?: string;
+}) {
   const theme = useLitTheme();
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={`${base}_${theme}.webp`} alt={alt} className="lit-figure" />;
+  return <img src={`${base}_${theme}.webp`} alt={alt} className={className} />;
 }

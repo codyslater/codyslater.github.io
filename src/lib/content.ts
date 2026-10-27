@@ -35,9 +35,11 @@ export type Project = {
   links: ProjectLinks;
   order?: number;
   hero?: string; // path under public/, e.g. /projects/foo/logo.svg
+  heroThemed: boolean; // true: hero is a base with _dark/_light .webp cuts (frontmatter hero_themed)
   cover?: string; // 4:3 gallery thumbnail under public/, e.g. /projects/foo/cover.webp
   video?: string; // hero video base, e.g. /projects/foo/route -> route_dark.mp4 (see ThemedVideo)
   videoThemed: boolean; // false: one cut for both themes, <base>.mp4 (frontmatter video_themed)
+  videoRatio?: string; // CSS aspect-ratio of the hero video, default 4 / 3 (frontmatter video_ratio)
   draft: boolean;
   body: string;
 };
@@ -150,6 +152,24 @@ function optionalVideoThemed(data: Record<string, unknown>, file: string): boole
   if (v === undefined) return true;
   if (typeof v !== "boolean") {
     throw new Error(`${file}: frontmatter field "video_themed" must be true or false`);
+  }
+  return v;
+}
+
+function optionalHeroThemed(data: Record<string, unknown>, file: string): boolean {
+  const v = data.hero_themed;
+  if (v === undefined) return false;
+  if (typeof v !== "boolean") {
+    throw new Error(`${file}: frontmatter field "hero_themed" must be true or false`);
+  }
+  return v;
+}
+
+function optionalVideoRatio(data: Record<string, unknown>, file: string): string | undefined {
+  const v = data.video_ratio;
+  if (v === undefined) return undefined;
+  if (typeof v !== "string" || !/^\d+(\.\d+)?\s*\/\s*\d+(\.\d+)?$/.test(v)) {
+    throw new Error(`${file}: frontmatter field "video_ratio" must look like "16 / 9"`);
   }
   return v;
 }
@@ -274,9 +294,11 @@ export function getProjects(): Project[] {
         links,
         order: order as number | undefined,
         hero: optionalImagePath(data, file, "hero"),
+        heroThemed: optionalHeroThemed(data, file),
         cover: optionalImagePath(data, file, "cover"),
         video: optionalImagePath(data, file, "video"),
         videoThemed: optionalVideoThemed(data, file),
+        videoRatio: optionalVideoRatio(data, file),
         draft: optionalDraft(data, file),
         body,
       };

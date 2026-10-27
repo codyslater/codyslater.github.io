@@ -1,0 +1,72 @@
+---
+title: Claude Code HUD Statusline
+summary: A maximally transparent, fully customizable heads up display to improve interaction and interpretability between users and Claude Code terminal sessions.
+tags: [claude code, terminal, python, tui]
+links:
+  github: https://github.com/codyslater/ccstatusline_retro-hud
+order: 3
+hero: /projects/retro-hud/instruments
+hero_themed: true
+cover: /projects/retro-hud/cover.webp
+draft: false
+---
+
+One of the greatest challenges agentic coders are facing, in the short term, is control and insight over workflows that scale far beyond the capabilities of a 
+single individual in linear time. Many of us are working on interfaces that help alleviate this strain in our own work. This is one of my attempts: a custom 
+ccstatusline that provides as much high level information as possible, and full navigational connectivity to facilitate switching between many 
+tasks and sessions. The result is a more intuitive feel for those used to cd-ing around in the terminal, but, instead of directories, navigation is 
+across agent contexts.
+
+## Digestible information at all times
+
+Below you can see the typical layout. It is designed with a retro/sci-fi feel across two rows at the bottom of the terminal. The top row
+describes where an agent is performing its work. The bottom row gives usage and cost information. Each session is embodied by a unique creature that is intended
+to relay nuanced information about the status of each session, similar to reading emotional context from a human collaborator's face.
+
+<HudTerminal src="/projects/retro-hud/hud.json" />
+
+## A collaborator you can see
+
+Claude has rapidly become a near-constant work companion for many, yet in a terminal it has no physical 
+presence beyond scrolling text. We become familiar with the characteristics of a session by its behavior,
+but we could just as easily learn about it from a set of visual descriptors describing what it is doing,
+if it is stuck, if it has nothing to do. An embodied pixel creature in every session provides a simple
+version of this. It walks while Claude works, waves when the turn is mine, turns amber
+and then red as its context fills, and falls asleep when left alone. You can toggle through the states here.
+
+<HudCreatures src="/projects/retro-hud/creatures.json" />
+
+## A navigation bar for agents
+
+Each piece of information is a gateway to a set of controls.
+
+<ClipGrid cols={1}>
+  <Clip base="/projects/retro-hud/sessions" ratio="1600 / 922" caption="Click ▣ to list every Claude session and jump to one, like cd across agent contexts." />
+  <Clip base="/projects/retro-hud/click-model" ratio="1060 / 340" caption="Click the model to switch it." />
+  <Clip base="/projects/retro-hud/click-diff" ratio="1600 / 922" caption="Click the +/− count to see the agent's diff without interrupting it." />
+  <Clip base="/projects/retro-hud/reflow" ratio="1600 / 296" caption="Squeeze the pane and the bar sheds its least useful readings first." />
+</ClipGrid>
+
+## Watching it work
+
+Watch me use it in a typical interactive working session:
+
+<div className="lit-clips">
+  <ThemedVideo base="/projects/retro-hud/session" themed={false} ratio="1836 / 1058" autoplay={false} label="A five-minute screen recording of Claude Code with retro-hud, working on a lunar settlement planner." />
+</div>
+
+## Under the hood
+
+One file of standard-library Python, about 3,000 lines, no dependencies.
+
+- **Each creature is generated from its session id**, grown or built from parts, then packed into braille.
+- **Mood comes from the session's activity**, never the words in it.
+- **Every reading is a hyperlink.** A click goes through tmux to a small handler that checks it before acting:
+
+<FlowDiagram steps={["Claude Code", "statusline", "link", "tmux", "handler", "action"]} highlight={4} />
+
+```bash
+git clone https://github.com/codyslater/ccstatusline_retro-hud.git
+cd ccstatusline_retro-hud
+bash install.sh --hooks
+```
