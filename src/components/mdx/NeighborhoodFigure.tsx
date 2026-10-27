@@ -181,15 +181,15 @@ const toward = (c: P, from: P, r: number): P => {
 
 // ---- wide scene (dendrites left, axon right) ---------------------------------
 function wideScene(): Scene {
-  const soma = { cx: 455, cy: 224, rx: 62, ry: 48 };
-  const nuc = { cx: 438, cy: 226, r: 27 };
+  const soma = { cx: 471, cy: 224, rx: 62, ry: 48 };
+  const nuc = { cx: 454, cy: 226, r: 27 };
   const nucC: P = [nuc.cx, nuc.cy];
   // one shared trunk leaves the soma and splits at J into three twigs
-  const TR = S([440, 226, 410, 228, 378, 222, 346, 224]);
-  const A1 = S([346, 224, 332, 190, 300, 120, 240, 70]);
-  const A2 = S([346, 224, 320, 224, 285, 224, 232, 224]);
-  const B1 = S([346, 224, 332, 258, 300, 328, 240, 378]);
-  const AX = S([515, 224, 560, 214, 625, 236, 674, 222]);
+  const TR = S([456, 226, 426, 228, 394, 222, 330, 224]);
+  const A1 = S([330, 224, 318, 190, 288, 120, 226, 70]);
+  const A2 = S([330, 224, 306, 224, 270, 224, 218, 224]);
+  const B1 = S([330, 224, 318, 258, 288, 328, 226, 378]);
+  const AX = S([531, 224, 570, 214, 625, 236, 666, 222]);
   const cA1 = curve(A1);
   const cA2 = curve(A2);
   const cB1 = curve(B1);
@@ -204,33 +204,34 @@ function wideScene(): Scene {
   spines.push(spine(cA1, cA1.len * 0.3, [1, 0], 11, 6));
   spines.push(spine(cB1, cB1.len * 0.3, [1, 0], 11, 6));
 
-  // release: nucleus ring -> the shared trunk (stops at the split, not at any ring)
+  // release: nucleus ring -> partway along the shared trunk, well before the fork and pointing along its axis
   const t0 = scanT(TR, (p) => dist(p, nucC) >= nuc.r + 3);
-  const t1 = scanT(TR, (p) => p[0] <= 354);
+  const t1 = scanT(TR, (p) => p[0] <= 372);
   const release = [sub(TR, t0, t1)];
   // return: from the axon hillock, where the spike starts, to the nucleus ring
-  const back = [lineSeg([510, 231], [nuc.cx + nuc.r + 3, 230])];
+  const back = [lineSeg([526, 231], [nuc.cx + nuc.r + 3, 230])];
   const spike = [sub(AX, cAX.at(26).t, cAX.at(cAX.len - 10).t)];
 
-  const spikeT = scanT(AX, (p) => p[0] >= 605);
+  const spikeT = scanT(AX, (p) => p[0] >= 608);
   const g4 = n1.at(14).p;
   const ed = n3.at(14).p;
-  const releaseT = scanT(TR, (p) => p[0] <= 372);
+  const releaseT = scanT(TR, (p) => p[0] <= 392);
+  const relP = pt(TR, releaseT);
 
   return {
     w: 720,
-    y0: 10,
-    h: 410,
+    y0: 2,
+    h: 426,
     gs: 1.7,
-    g4s: 1.4,
+    g4s: 1.95,
     soma,
     nuc,
-    bulb: { cx: 686, cy: 222, rx: 16, ry: 14 },
+    bulb: { cx: 678, cy: 222, rx: 16, ry: 14 },
     tubes: [
-      { d: dSeg(TR), w: 32 },
-      { d: dSeg(A1), w: 26 },
-      { d: dSeg(A2), w: 26 },
-      { d: dSeg(B1), w: 26 },
+      { d: dSeg(TR), w: 34 },
+      { d: dSeg(A1), w: 30 },
+      { d: dSeg(A2), w: 30 },
+      { d: dSeg(B1), w: 30 },
       { d: dSeg(AX), w: 14 },
     ],
     spines,
@@ -239,35 +240,35 @@ function wideScene(): Scene {
     arrows: [release, back, spike],
     lh: 18,
     labels: [
-      { x: 16, y: 30, lines: ["ribosome neighborhood"], cls: "text" },
-      { x: 16, y: 88, lines: ["structure gates", "translation"], cls: "text" },
-      { x: 16, y: 361, lines: ["edits accumulate"], cls: "text" },
-      { x: 355, y: 120, lines: ["released and spliced", "on demand"], cls: "flow" },
-      { x: 605, y: 142, lines: ["spike: passes context", "to the network"], cls: "flow", anchor: "middle" },
-      { x: 346, y: 322, lines: ["pre-made RNAs held", "in the nucleus"], cls: "text" },
-      { x: 505, y: 322, lines: ["spike also signals", "which RNAs to replenish"], cls: "flow" },
+      { x: 24, y: 30, lines: ["ribosome neighborhood"], cls: "text" },
+      { x: 24, y: 88, lines: ["structure gates", "translation"], cls: "text" },
+      { x: 24, y: 361, lines: ["edits accumulate"], cls: "text" },
+      { x: 365, y: 120, lines: ["released and spliced", "on demand"], cls: "flow" },
+      { x: 608, y: 142, lines: ["spike: passes context", "to the network"], cls: "flow", anchor: "middle" },
+      { x: 360, y: 322, lines: ["pre-made RNAs held", "in the nucleus"], cls: "text" },
+      { x: 520, y: 322, lines: ["spike also signals", "which RNAs to replenish"], cls: "flow" },
     ],
     leaders: [
-      [[176, 27], toward(n1.ring.c, [176, 27], n1.ring.r + 2)],
-      [[122, 84], toward(g4, [122, 84], 22)],
-      [[126, 356], toward(ed, [126, 356], 22)],
-      [[372, 152], wallOff(TR, releaseT, [0, -1], 16)],
-      [[605, 166], wallOff(AX, spikeT, [0, -1], 7)],
-      [[410, 306], toward(nucC, [410, 306], nuc.r + 2)],
-      [[512, 306], [494, 240]],
+      [[184, 27], toward(n1.ring.c, [184, 27], n1.ring.r + 2)],
+      [[130, 84], toward(g4, [130, 84], 12)],
+      [[134, 356], toward(ed, [134, 356], 14)],
+      [[392, 152], [relP[0], relP[1] - 6]],
+      [[608, 166], wallOff(AX, spikeT, [0, -1], 7)],
+      [[424, 306], toward(nucC, [424, 306], nuc.r + 2)],
+      [[528, 306], [508, 238]],
     ],
   };
 }
 
 // ---- tall scene (nucleus on top, dendrites below, axon off the right) --------
 function tallScene(): Scene {
-  const soma = { cx: 66, cy: 76, rx: 54, ry: 46 };
+  const soma = { cx: 66, cy: 76, rx: 46, ry: 46 };
   const nuc = { cx: 52, cy: 80, r: 24 };
   const nucC: P = [nuc.cx, nuc.cy];
   const TR = S([64, 100, 60, 230, 68, 370, 64, 500]);
   const A = S([70, 250, 82, 276, 108, 296, 150, 348]);
   const B = S([66, 400, 78, 428, 106, 450, 148, 500]);
-  const AX = S([118, 66, 160, 54, 220, 68, 274, 50]);
+  const AX = S([112, 66, 150, 54, 205, 68, 266, 50]);
   const cTR = curve(TR);
   const cA = curve(A);
   const cB = curve(B);
@@ -280,8 +281,8 @@ function tallScene(): Scene {
   const spines: Spine[] = [nA.spine, nB.spine];
   for (const fr of [0.2, 0.31, 0.5, 0.64, 0.8, 0.93]) spines.push(spine(cTR, cTR.len * fr, [-1, 0], 11, 6));
 
-  const release = [lineSeg([62, 110], [66, 242])];
-  const back = [lineSeg([108, 94], [nuc.cx + 21 + 3, 92])];
+  const release = [lineSeg([62, 110], [64, 172])];
+  const back = [lineSeg([106, 73], [78, 73])];
   const spike = [sub(AX, cAX.at(30).t, cAX.at(cAX.len - 10).t)];
   const g4 = nA.at(14).p;
   const ed = nB.at(14).p;
@@ -289,13 +290,13 @@ function tallScene(): Scene {
 
   return {
     w: 316,
-    y0: 2,
-    h: 530,
+    y0: -6,
+    h: 546,
     gs: 1.35,
     g4s: 1.3,
     soma,
     nuc,
-    bulb: { cx: 288, cy: 48, rx: 14, ry: 13 },
+    bulb: { cx: 280, cy: 48, rx: 14, ry: 13 },
     tubes: [
       { d: dSeg(TR), w: 26 },
       { d: dSeg(A), w: 24 },
@@ -308,7 +309,7 @@ function tallScene(): Scene {
     arrows: [release, back, spike],
     lh: 17,
     labels: [
-      { x: 150, y: 18, lines: ["spike: passes context", "to the network"], cls: "flow" },
+      { x: 132, y: 18, lines: ["spike: passes context", "to the network"], cls: "flow" },
       { x: 188, y: 124, lines: ["spike also", "signals which", "RNAs to", "replenish"], cls: "flow" },
       { x: 188, y: 209, lines: ["pre-made RNAs", "held in the", "nucleus"], cls: "text" },
       { x: 188, y: 277, lines: ["released and", "spliced on", "demand"], cls: "flow" },
@@ -318,12 +319,12 @@ function tallScene(): Scene {
     ],
     leaders: [
       [[222, 44], wallOff(AX, spikeT, [0, -1], 7)],
-      [[184, 118], [100, 99]],
+      [[184, 118], [94, 81]],
       [[182, 204], toward(nucC, [182, 204], nuc.r + 2)],
-      [[184, 272], [82, 236]],
+      [[184, 272], [70, 146]],
       [[192, 340], toward(nA.ring.c, [192, 340], nA.ring.r + 2)],
-      [[192, 392], toward(g4, [192, 392], 24)],
-      [[192, 468], toward(ed, [192, 468], 24)],
+      [[192, 392], toward(g4, [192, 392], 9)],
+      [[192, 468], toward(ed, [192, 468], 10)],
     ],
   };
 }
