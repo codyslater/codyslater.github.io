@@ -619,7 +619,7 @@ body {
 .writing-literary .lit-toc a:hover,
 .writing-literary .lit-toc a:focus-visible { color: var(--lit-link); }
 .writing-literary .lit-toc .lit-toc-sub a { padding-left: 1rem; }
-.writing-literary .lit-toc-inline { margin: 0 0 2.25rem; }
+.writing-literary .lit-toc-inline { margin: 0 0 2.25rem; scroll-margin-top: 6rem; }
 .writing-literary .lit-toc-inline summary { cursor: pointer; font-variant-caps: all-small-caps; letter-spacing: 0.08em; font-size: 0.95rem; }
 .writing-literary .lit-toc-inline summary:hover { color: var(--lit-link); }
 .writing-literary .lit-toc-inline ol { margin-top: 0.5rem; border-left: 1px solid color-mix(in srgb, var(--lit-text) 20%, transparent); padding-left: 0.75rem; }
@@ -647,12 +647,18 @@ body {
   }
 }
 
-/* "Back to where you were" pill (BackPill) */
-.writing-literary .lit-back-pill {
+/* Reader pills (ReaderPills): "back to where you were" stacked over "contents" */
+.writing-literary .lit-pills {
   position: fixed;
   right: 1rem;
   bottom: 1.25rem;
   z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+.writing-literary .lit-pill {
   padding: 0.4rem 0.9rem;
   font-family: var(--lit-serif);
   font-size: 0.9rem;
@@ -663,10 +669,10 @@ body {
   cursor: pointer;
   animation: lit-pill-in 200ms ease-out;
 }
-.writing-literary .lit-back-pill:hover,
-.writing-literary .lit-back-pill:focus-visible { color: var(--lit-link); border-color: var(--lit-link); }
+.writing-literary .lit-pill:hover,
+.writing-literary .lit-pill:focus-visible { color: var(--lit-link); border-color: var(--lit-link); }
 @keyframes lit-pill-in { from { opacity: 0; transform: translateY(0.5rem); } }
-@media (prefers-reduced-motion: reduce) { .writing-literary .lit-back-pill { animation: none; } }
+@media (prefers-reduced-motion: reduce) { .writing-literary .lit-pill { animation: none; } }
 
 
 /* Essay section headings: serif in the page's own ink, as project bodies already do

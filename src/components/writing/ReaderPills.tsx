@@ -5,12 +5,15 @@ import { useEffect, useRef, useState } from "react";
 // Scrolling within this many px of where the reader came from counts as being back.
 const NEAR = 200;
 
-// After an in-article hash jump (footnote, figure, contents entry) a small pill returns the
-// reader to where they were. Links that already return (footnote backref, figure "back to text")
-// never arm it and disarm it.
-export function BackPill() {
+// Two small pills in the bottom-right corner of a post:
+// - "back to where you were", after an in-article hash jump (footnote, figure, contents entry)
+//   or the contents pill. Links that already return (footnote backref, figure "back to text")
+//   never arm it and disarm it.
+// - "contents" (or "top" on a post without one), once the reader is a screen past the top.
+export function ReaderPills({ hasToc }: { hasToc: boolean }) {
   const origin = useRef<number | null>(null);
-  const [visible, setVisible] = useState(false);
+  const [backShown, setBackShown] = useState(false);
+  const [topShown, setTopShown] = useState(false);
 
   useEffect(() => {
     function onClick(e: MouseEvent) {
@@ -23,17 +26,19 @@ export function BackPill() {
       if (a.hasAttribute("data-footnote-backref") || a.classList.contains("fig-back")) {
         // already a return trip: nothing left to go back to
         origin.current = null;
-        setVisible(false);
+        setBackShown(false);
         return;
       }
       // re-arm with the new origin; the pill appears once the jump has taken the reader away
       origin.current = window.scrollY;
-      setVisible(false);
+      setBackShown(false);
     }
     function onScroll() {
+      setTopShown(window.scrollY > window.innerHeight);
       if (origin.current === null) return;
-      setVisible(Math.abs(window.scrollY - origin.current) > NEAR);
+      setBackShown(Math.abs(window.scrollY - origin.current) > NEAR);
     }
+    onScroll();
     document.addEventListener("click", onClick);
     window.addEventListener("scroll", onScroll, { passive: true });
     return () => {
@@ -46,16 +51,37 @@ export function BackPill() {
     if (origin.current === null) return;
     const top = origin.current;
     origin.current = null;
-    setVisible(false);
+    setBackShown(false);
     // drop the hash so :target highlights clear and a reload does not jump again
     history.replaceState(null, "", location.pathname + location.search);
     window.scrollTo({ top, behavior: "auto" });
   }
 
-  if (!visible) return null;
+  function toTop() {
+    origin.current = window.scrollY;
+    const toc = hasToc ? document.getElementById("contents") : null;
+    if (toc instanceof HTMLDetailsElement) {
+      toc.open = true;
+      toc.scrollIntoView({ block: "start" });
+      toc.querySelector("summary")?.focus({ preventScroll: true });
+    } else {
+      window.scrollTo({ top: 0, behavior: "auto" });
+    }
+  }
+
+  if (!backShown && !topShown) return null;
   return (
-    <button type="button" className="lit-back-pill" onClick={back}>
-      ↩ back to where you were
-    </button>
+    <div className="lit-pills">
+      {backShown && (
+        <button type="button" className="lit-pill" onClick={back}>
+          ↩ back to where you were
+        </button>
+      )}
+      {topShown && (
+        <button type="button" className="lit-pill" onClick={toTop}>
+          ↑ {hasToc ? "contents" : "top"}
+        </button>
+      )}
+    </div>
   );
 }

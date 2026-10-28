@@ -8,7 +8,7 @@ import { mdxComponents } from "@/components/mdx";
 import { ThemeToggle } from "@/components/writing/ThemeToggle";
 import { ThemeScript } from "@/components/writing/ThemeScript";
 import { Toc } from "@/components/writing/Toc";
-import { BackPill } from "@/components/writing/BackPill";
+import { ReaderPills } from "@/components/writing/ReaderPills";
 import { extractToc } from "@/lib/toc";
 import { serif } from "@/lib/fonts";
 import "katex/dist/katex.min.css";
@@ -92,7 +92,7 @@ export default async function PostPage({
           />
         </div>
       </article>
-      <BackPill />
+      <ReaderPills hasToc={toc.length > 0} />
     </div>
   );
 }

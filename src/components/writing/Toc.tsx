@@ -3,7 +3,7 @@ import type { TocItem } from "@/lib/toc";
 // Contents for a post: a collapsible block under the header.
 export function Toc({ items }: { items: TocItem[] }) {
   return (
-    <details className="lit-toc lit-toc-inline">
+    <details id="contents" className="lit-toc lit-toc-inline">
       <summary>Contents</summary>
       <ol>
         {items.map((it) => (
