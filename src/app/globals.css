@@ -612,42 +612,17 @@ body {
 /* Anchored things clear the fixed top nav (~80px) when jumped to */
 .literary-prose [id] { scroll-margin-top: 6rem; }
 
-/* Table of contents (posts with toc: true): a rail in the left margin on wide screens,
-   a <details> under the header otherwise */
+/* Table of contents (posts with toc: true): a <details> under the header */
 .writing-literary .lit-toc { font-family: var(--lit-serif); color: var(--lit-muted); font-size: 0.9rem; line-height: 1.35; }
 .writing-literary .lit-toc ol { list-style: none; margin: 0; padding: 0; }
 .writing-literary .lit-toc a { display: block; padding: 0.2rem 0; color: var(--lit-muted); text-decoration: none; transition: color 150ms; }
 .writing-literary .lit-toc a:hover,
-.writing-literary .lit-toc a:focus-visible,
-.writing-literary .lit-toc a[aria-current] { color: var(--lit-link); }
+.writing-literary .lit-toc a:focus-visible { color: var(--lit-link); }
 .writing-literary .lit-toc .lit-toc-sub a { padding-left: 1rem; }
 .writing-literary .lit-toc-inline { margin: 0 0 2.25rem; }
 .writing-literary .lit-toc-inline summary { cursor: pointer; font-variant-caps: all-small-caps; letter-spacing: 0.08em; font-size: 0.95rem; }
 .writing-literary .lit-toc-inline summary:hover { color: var(--lit-link); }
 .writing-literary .lit-toc-inline ol { margin-top: 0.5rem; border-left: 1px solid color-mix(in srgb, var(--lit-text) 20%, transparent); padding-left: 0.75rem; }
-.writing-literary .lit-toc-rail { display: none; }
-/* the rail hugs the 42rem text column, fading in once the inline block has scrolled away */
-@media (min-width: 1280px) {
-  .writing-literary .lit-toc-rail {
-    display: block;
-    position: fixed;
-    top: 6rem;
-    left: calc(50vw + 21rem + 2.5rem);
-    /* shrink to the ticks; open no wider than the margin, so the scroll box never clips the card */
-    width: max-content;
-    max-width: calc(50vw - 21rem - 3.5rem);
-    max-height: calc(100vh - 8rem);
-    overflow-y: auto;
-    scrollbar-width: thin;
-    font-size: 0.85rem;
-    opacity: 0;
-    transition: opacity 250ms;
-  }
-  .writing-literary .lit-toc-rail[data-shown] { opacity: 1; }
-}
-@media (min-width: 1280px) and (prefers-reduced-motion: reduce) {
-  .writing-literary .lit-toc-rail { transition: none; }
-}
 
 /* <Figure>: label line, art and caption; the quiet tint fades when a link lands on it */
 .writing-literary .essay-figure { margin: 2.5rem -0.75rem; padding: 0.75rem; }
@@ -693,8 +668,6 @@ body {
 @keyframes lit-pill-in { from { opacity: 0; transform: translateY(0.5rem); } }
 @media (prefers-reduced-motion: reduce) { .writing-literary .lit-back-pill { animation: none; } }
 
-/* the light-theme rule that keeps the site nav dark matches every nav; the TOC rail is one */
-:root[data-writing-theme="light"] .writing-literary.reading nav.lit-toc-rail { background: transparent; }
 
 /* Essay section headings: serif in the page's own ink, as project bodies already do
    (the shared mono rule hard-codes the dark text colour, invisible on cream) */
@@ -720,54 +693,4 @@ body {
 /* the card only reaches past the text column where there is room for it */
 @media (max-width: 639px) {
   .writing-literary .essay-figure { margin-left: 0; margin-right: 0; padding: 0.85rem 0.8rem; }
-}
-
-/* Collapsed rail: one tick per section, the current one lit; hover or focus opens the titles */
-@media (min-width: 1280px) {
-  .writing-literary .lit-toc-rail ol {
-    display: inline-block;
-    padding: 0.5rem 0.6rem;
-    border: 1px solid transparent;
-    border-radius: 4px;
-    transition: background 200ms, border-color 200ms;
-  }
-  .writing-literary .lit-toc-rail a { display: flex; align-items: center; white-space: nowrap; }
-  .writing-literary .lit-toc-rail a::before {
-    content: "";
-    flex: none;
-    width: 1rem;
-    height: 2px;
-    border-radius: 1px;
-    background: currentColor;
-    opacity: 0.45;
-  }
-  .writing-literary .lit-toc-rail .lit-toc-sub a { padding-left: 0; }
-  .writing-literary .lit-toc-rail .lit-toc-sub a::before { width: 0.55rem; margin-left: 0.45rem; }
-  .writing-literary .lit-toc-rail a[aria-current]::before { opacity: 1; height: 3px; }
-  /* hover brightens to ink, so only the current section wears the accent */
-  .writing-literary .lit-toc-rail a:hover:not([aria-current]),
-  .writing-literary .lit-toc-rail a:focus-visible:not([aria-current]) { color: var(--lit-text); }
-  .writing-literary .lit-toc-rail .lit-toc-label {
-    max-width: 0;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    opacity: 0;
-    transition: max-width 220ms ease, opacity 160ms, margin 220ms ease;
-  }
-  .writing-literary .lit-toc-rail:hover .lit-toc-label,
-  .writing-literary .lit-toc-rail:focus-within .lit-toc-label {
-    /* the margin minus the card's padding, border and tick */
-    max-width: min(16rem, calc(50vw - 21rem - 3.5rem - 3rem));
-    margin-left: 0.6rem;
-    opacity: 1;
-  }
-  .writing-literary .lit-toc-rail:hover ol,
-  .writing-literary .lit-toc-rail:focus-within ol {
-    background: color-mix(in srgb, var(--lit-text) 5%, var(--lit-bg));
-    border-color: color-mix(in srgb, var(--lit-text) 15%, transparent);
-  }
-}
-@media (min-width: 1280px) and (prefers-reduced-motion: reduce) {
-  .writing-literary .lit-toc-rail ol,
-  .writing-literary .lit-toc-rail .lit-toc-label { transition: none; }
 }
