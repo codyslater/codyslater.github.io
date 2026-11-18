@@ -422,7 +422,14 @@ body {
   border-radius: 0;
 }
 .writing-literary .lit-video { background: #000; }
-:root[data-writing-theme="light"] .writing-literary.reading .lit-video { background: #fff; }
+/* Light cuts are rendered on white or on paper; darken turns either into the page's paper and
+   leaves the ink as drawn. One-cut media (screen recordings) are dark, so their frame stays
+   dark and letterboxing never shows as a white mat. */
+:root[data-writing-theme="light"] .writing-literary.reading [data-cut="light"] {
+  background: transparent;
+  mix-blend-mode: darken;
+}
+:root[data-writing-theme="light"] .writing-literary.reading .lit-video[data-cut="shared"] { background: #0b0e0b; }
 .writing-literary .lit-figure { margin: 2rem 0; }
 .writing-literary .lit-clips { display: grid; gap: 1.5rem; margin: 2rem 0; }
 @media (min-width: 768px) { .writing-literary .lit-clips-2 { grid-template-columns: 1fr 1fr; } }
@@ -676,9 +683,9 @@ body {
 :root[data-writing-theme="light"] .writing-literary.reading .lit-cover-light { display: block; }
 :root[data-writing-theme="light"] .writing-literary.reading .lit-cover-dark { display: none; }
 
-.writing-literary .lit-pill-row { display: flex; gap: 0.5rem; }
+.writing-literary .lit-pill-row { display: flex; align-items: center; gap: 0.5rem; }
 /* the light/dark toggle as a round pill beside "contents" */
-.writing-literary .lit-pill-icon { width: auto; height: auto; aspect-ratio: 1; padding: 0; opacity: 1; }
+.writing-literary .lit-pill-icon { width: 2.25rem; height: 2.25rem; padding: 0; opacity: 1; }
 @keyframes lit-pill-in { from { opacity: 0; transform: translateY(0.5rem); } }
 @media (prefers-reduced-motion: reduce) { .writing-literary .lit-pill { animation: none; } }
 

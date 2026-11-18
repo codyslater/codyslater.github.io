@@ -49,6 +49,7 @@ export function ThemedVideo({
     <video
       ref={ref}
       className="lit-video"
+      data-cut={theme ?? "shared"}
       style={{ aspectRatio: ratio }}
       poster={`${stem}_poster.webp`}
       autoPlay={!still}
@@ -76,5 +77,5 @@ export function ThemedImage({
 }) {
   const theme = useLitTheme();
   // eslint-disable-next-line @next/next/no-img-element
-  return <img src={`${base}_${theme}.webp`} alt={alt} className={className} />;
+  return <img src={`${base}_${theme}.webp`} alt={alt} className={className} data-cut={theme} />;
 }
