@@ -28,20 +28,27 @@ export function ThemeToggle() {
   const theme = useLitTheme();
 
   // ThemeScript only runs on a hard load; arriving here by client-side navigation
-  // (index -> post) skips it, so apply the saved choice once on mount.
+  // (index -> post) skips it, so apply the theme once on mount. Until the reader picks
+  // one, follow the device's light/dark setting, live.
   useEffect(() => {
-    try {
-      const saved = localStorage.getItem(KEY);
-      if (
-        (saved === "light" || saved === "dark") &&
-        document.documentElement.dataset.writingTheme !== saved
-      ) {
-        document.documentElement.dataset.writingTheme = saved;
+    const device = window.matchMedia("(prefers-color-scheme: light)");
+    function apply() {
+      let saved: string | null = null;
+      try {
+        saved = localStorage.getItem(KEY);
+      } catch {
+        // storage unavailable: follow the device
+      }
+      const next: Theme =
+        saved === "light" || saved === "dark" ? saved : device.matches ? "light" : "dark";
+      if (document.documentElement.dataset.writingTheme !== next) {
+        document.documentElement.dataset.writingTheme = next;
         window.dispatchEvent(new Event(EVENT));
       }
-    } catch {
-      // storage unavailable: stay on the default
     }
+    apply();
+    device.addEventListener("change", apply);
+    return () => device.removeEventListener("change", apply);
   }, []);
 
   function toggle() {
