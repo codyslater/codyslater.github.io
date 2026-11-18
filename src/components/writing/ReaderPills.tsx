@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useRef, useState } from "react";
+import { ThemeToggle } from "./ThemeToggle";
 
 // Scrolling within this many px of where the reader came from counts as being back.
 const NEAR = 200;
@@ -9,7 +10,8 @@ const NEAR = 200;
 // - "back to where you were", after an in-article hash jump (footnote, figure, contents entry)
 //   or the contents pill. Links that already return (footnote backref, figure "back to text")
 //   never arm it and disarm it.
-// - "contents" (or "top" on a post without one), once the reader is a screen past the top.
+// - "contents" (or "top" on a post without one), once the reader is a screen past the top,
+//   beside a light/dark toggle so the theme is reachable mid-read.
 export function ReaderPills({ hasToc }: { hasToc: boolean }) {
   const origin = useRef<number | null>(null);
   const [backShown, setBackShown] = useState(false);
@@ -78,9 +80,12 @@ export function ReaderPills({ hasToc }: { hasToc: boolean }) {
         </button>
       )}
       {topShown && (
-        <button type="button" className="lit-pill" onClick={toTop}>
-          ↑ {hasToc ? "contents" : "top"}
-        </button>
+        <div className="lit-pill-row">
+          <ThemeToggle className="lit-toggle lit-pill lit-pill-icon" />
+          <button type="button" className="lit-pill" onClick={toTop}>
+            ↑ {hasToc ? "contents" : "top"}
+          </button>
+        </div>
       )}
     </div>
   );

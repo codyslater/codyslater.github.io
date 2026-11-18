@@ -1,3 +1,5 @@
+import { existsSync } from "node:fs";
+import path from "node:path";
 import type { Metadata } from "next";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote-client/rsc";
@@ -12,6 +14,12 @@ import { ReaderPills } from "@/components/writing/ReaderPills";
 import { extractToc } from "@/lib/toc";
 import { serif } from "@/lib/fonts";
 import "katex/dist/katex.min.css";
+
+// A cover may ship a light-theme cut beside it: cover.webp -> cover-light.webp.
+function lightCut(cover: string): string | null {
+  const light = cover.replace(/(\.[a-z0-9]+)$/i, "-light$1");
+  return light !== cover && existsSync(path.join(process.cwd(), "public", light)) ? light : null;
+}
 
 export function generateStaticParams() {
   // External posts live elsewhere and get no page here.
@@ -56,6 +64,7 @@ export default async function PostPage({
   if (slug === "__none__") notFound();
   const post = getPost(slug);
   const toc = post.toc ? extractToc(post.body) : [];
+  const coverLight = post.cover ? lightCut(post.cover) : null;
 
   return (
     <div
@@ -64,12 +73,23 @@ export default async function PostPage({
       <ThemeScript />
       <article className="max-w-2xl mx-auto">
         {post.cover && (
-          // eslint-disable-next-line @next/next/no-img-element
-          <img
-            src={post.cover}
-            alt={post.title}
-            className="w-full mb-8 rounded-none"
-          />
+          <>
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={post.cover}
+              alt={post.title}
+              className={`w-full mb-8 rounded-none${coverLight ? " lit-cover-dark" : ""}`}
+            />
+            {coverLight && (
+              // eslint-disable-next-line @next/next/no-img-element
+              <img
+                src={coverLight}
+                alt={post.title}
+                loading="lazy"
+                className="w-full mb-8 rounded-none lit-cover-light"
+              />
+            )}
+          </>
         )}
         <header className="lit-header mb-10">
           <div className="lit-bar">

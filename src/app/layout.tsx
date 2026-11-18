@@ -41,7 +41,8 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    // ThemeScript sets data-writing-theme on <html> before hydration, on purpose
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${mono.variable} font-mono antialiased`}>
         <AnimatedFavicon />
         <NavBar />

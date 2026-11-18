@@ -586,7 +586,7 @@ body {
 /* GFM footnotes ([^id]): citation markers and the reference list */
 .writing-literary sup a[data-footnote-ref] { text-decoration: none; font-size: 0.8em; padding: 0 0.1em; }
 .writing-literary [data-footnotes] { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid color-mix(in srgb, var(--lit-text) 20%, transparent); font-size: 0.85em; color: var(--lit-muted); }
-.writing-literary [data-footnotes] h2 { font-size: 1rem; margin: 0 0 0.75rem; }
+.writing-literary [data-footnotes] h2 { font-size: 1rem; margin: 0 0 0.75rem; color: var(--lit-text); }
 .writing-literary [data-footnotes] li { margin: 0.35rem 0; }
 .writing-literary [data-footnotes] li p { margin: 0; }
 
@@ -671,6 +671,14 @@ body {
 }
 .writing-literary .lit-pill:hover,
 .writing-literary .lit-pill:focus-visible { color: var(--lit-link); border-color: var(--lit-link); }
+/* a post cover with a light cut shows the one that matches the reading theme */
+.writing-literary .lit-cover-light { display: none; }
+:root[data-writing-theme="light"] .writing-literary.reading .lit-cover-light { display: block; }
+:root[data-writing-theme="light"] .writing-literary.reading .lit-cover-dark { display: none; }
+
+.writing-literary .lit-pill-row { display: flex; gap: 0.5rem; }
+/* the light/dark toggle as a round pill beside "contents" */
+.writing-literary .lit-pill-icon { width: auto; height: auto; aspect-ratio: 1; padding: 0; opacity: 1; }
 @keyframes lit-pill-in { from { opacity: 0; transform: translateY(0.5rem); } }
 @media (prefers-reduced-motion: reduce) { .writing-literary .lit-pill { animation: none; } }
 

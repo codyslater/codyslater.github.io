@@ -24,7 +24,7 @@ export function useLitTheme(): Theme {
   return useSyncExternalStore(subscribe, getSnapshot, getServerSnapshot);
 }
 
-export function ThemeToggle() {
+export function ThemeToggle({ className = "lit-toggle" }: { className?: string }) {
   const theme = useLitTheme();
 
   // ThemeScript only runs on a hard load; arriving here by client-side navigation
@@ -71,7 +71,7 @@ export function ThemeToggle() {
       aria-pressed={theme === "light"}
       aria-label={`Switch to ${target} mode`}
       title={`Switch to ${target} mode`}
-      className="lit-toggle"
+      className={className}
     >
       <svg className="lit-toggle-sun" viewBox="0 0 24 24" aria-hidden="true">
         <circle cx="12" cy="12" r="4" />

@@ -31,6 +31,7 @@ import json
 import math
 import os
 import random
+import re
 import shutil
 import subprocess
 import tempfile
@@ -43,6 +44,53 @@ GOLD = "#d9b77e"
 CREAM = "#e8e2d5"
 MUTED = "#9a9288"
 BASE_FILL = {"A": "#93ab95", "U": "#c39282", "G": "#d9b77e", "C": "#93a4ba"}
+
+# light cut (site light theme, paper #f6f1e7): every dark-theme colour above and in the
+# drawing code maps to a darker ink of the same hue, so one scene renders in both themes
+LIGHT = {
+    "#0a0a0a": "#f6f1e7", "#14110c": "#f6f1e7", "#0c0b09": "#f6f1e7",  # flat paper, no vignette
+    "#d9b77e": "#8a6528", "#e6c488": "#7f5c22", "#ecd6a6": "#94703a", "#d6ad70": "#86602a",  # golds
+    "#e8e2d5": "#4a4136", "#9a9288": "#7a6a52", "#16130e": "#fbf7ee",  # rungs, muted, letters
+    "#93ab95": "#4f7653", "#c39282": "#9a5643", "#93a4ba": "#4c6585",  # base fills
+    "#f3e6c8": "#6b4a18",  # kissing-loop marks
+}
+
+# Light effects that a colour swap cannot fix, applied before the swap. Glows read as light on
+# black but as smudges on paper, so on paper the halo is thinner, fainter and pale wheat, the
+# synapse glow gets a small saturated core, and the soma wash is a faint warm tint.
+LIGHT_EFFECTS = [
+    ('<feGaussianBlur stdDeviation="2.4"/>',
+     '<feGaussianBlur stdDeviation="1.4"/><feComponentTransfer>'
+     '<feFuncR type="linear" slope="0.25" intercept="0.70"/>'
+     '<feFuncG type="linear" slope="0.25" intercept="0.62"/>'
+     '<feFuncB type="linear" slope="0.25" intercept="0.47"/></feComponentTransfer>'),
+    ('<g filter="url(#glow)" opacity="0.34">', '<g filter="url(#glow)" opacity="0.15">'),
+    ('<radialGradient id="syn"><stop offset="0" stop-color="#fff3d6" stop-opacity="0.75"/>'
+     '<stop offset="0.45" stop-color="#e8c98e" stop-opacity="0.24"/>'
+     '<stop offset="1" stop-color="#d9b77e" stop-opacity="0"/></radialGradient>',
+     '<radialGradient id="syn"><stop offset="0" stop-color="#b8801f" stop-opacity="0.9"/>'
+     '<stop offset="0.18" stop-color="#c9963f" stop-opacity="0.45"/>'
+     '<stop offset="0.5" stop-color="#e6cf9f" stop-opacity="0.12"/>'
+     '<stop offset="1" stop-color="#e6cf9f" stop-opacity="0"/></radialGradient>'),
+    ('<radialGradient id="soma"><stop offset="0" stop-color="#d9b77e" stop-opacity="0.22"/>'
+     '<stop offset="0.55" stop-color="#d9b77e" stop-opacity="0.10"/>'
+     '<stop offset="1" stop-color="#d9b77e" stop-opacity="0"/></radialGradient>',
+     '<radialGradient id="soma"><stop offset="0" stop-color="#e3cfa6" stop-opacity="0.35"/>'
+     '<stop offset="0.6" stop-color="#e3cfa6" stop-opacity="0.12"/>'
+     '<stop offset="1" stop-color="#e3cfa6" stop-opacity="0"/></radialGradient>'),
+    # G dots share the backbone gold; a deeper ochre keeps them apart from the strand on paper
+    ('fill="#d9b77e"', 'fill="#b5832a"'),
+]
+
+
+def retheme(svg, theme):
+    if theme != "light":
+        return svg
+    for old, new in LIGHT_EFFECTS:
+        if old not in svg:
+            raise SystemExit(f"light cut: drawing code changed, no match for {old[:60]}…")
+        svg = svg.replace(old, new)
+    return re.sub(r"#[0-9a-fA-F]{6}", lambda m: LIGHT.get(m.group(0).lower(), m.group(0)), svg)
 
 P_RATIO = 1.45  # base-pair rung length / backbone step
 
@@ -1138,13 +1186,13 @@ def make_scene(seed, variant="a"):
     return dict(planes=planes, stats=stats, zoom_c=big["soma_c"], zoom_R=big["soma_R"])
 
 
-def rasterize(svg_path, png_path, w=W, h=H, scale=2):
+def rasterize(svg_path, png_path, w=W, h=H, scale=2, bg=BG):
     chrome = shutil.which("google-chrome") or shutil.which("chromium")
     with tempfile.TemporaryDirectory() as td:
         html = os.path.join(td, "r.html")
         with open(html, "w") as fh:
             fh.write(
-                f'<html><body style="margin:0;background:{BG}">'
+                f'<html><body style="margin:0;background:{bg}">'
                 f'<img src="file://{os.path.abspath(svg_path)}" width="{w}" height="{h}" style="display:block"></body></html>'
             )
         subprocess.run(
@@ -1165,10 +1213,12 @@ def main():
     ap.add_argument("--webp", action="store_true")
     ap.add_argument("--zoom", type=float, default=4.0)
     ap.add_argument("--zoom-at", type=str, default=None, help="x,y (svg coords) for the zoom centre")
+    ap.add_argument("--theme", choices=("dark", "light"), default="dark")
     args = ap.parse_args()
     os.makedirs(args.out_dir, exist_ok=True)
     scene = make_scene(args.seed, args.variant)
-    svg = svg_doc(scene)
+    svg = retheme(svg_doc(scene), args.theme)
+    bg = LIGHT[BG] if args.theme == "light" else BG
     base = os.path.join(args.out_dir, args.name)
     with open(base + ".svg", "w") as fh:
         fh.write(svg)
@@ -1178,12 +1228,12 @@ def main():
         zc = Y(scene["zoom_c"])
         zx, zy = zc[0] + scene["zoom_R"] * 1.25, zc[1] - scene["zoom_R"] * 0.25
     zw, zh = W / args.zoom, H / args.zoom
-    zsvg = svg_doc(scene, viewbox=(zx - zw / 2, zy - zh / 2, zw, zh))
+    zsvg = retheme(svg_doc(scene, viewbox=(zx - zw / 2, zy - zh / 2, zw, zh)), args.theme)
     with open(base + "-zoom.svg", "w") as fh:
         fh.write(zsvg)
     if args.png:
-        rasterize(base + ".svg", base + ".png")
-        rasterize(base + "-zoom.svg", base + "-zoom.png")
+        rasterize(base + ".svg", base + ".png", bg=bg)
+        rasterize(base + "-zoom.svg", base + "-zoom.png", bg=bg)
         os.remove(base + "-zoom.svg")
     if args.webp:
         from PIL import Image
