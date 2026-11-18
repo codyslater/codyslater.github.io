@@ -1,7 +1,7 @@
 #!/usr/bin/env python3
 """Generative cover art: neurons drawn as RNA secondary structures.
 
-Essay: "Musings on how RNA might be important for neurons to compute".
+Essay: "The Neuron's Own RNA World".
 
 Each neuron is ONE RNA molecule drawn the way VARNA / RNAplot draw secondary
 structure: a single continuous backbone, stems as ladders of base-pair rungs,
