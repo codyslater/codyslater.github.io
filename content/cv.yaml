@@ -11,6 +11,9 @@ cv:
   location: New York, NY
   email: cody.slater@columbia.edu
   website: https://codyslater.github.io/
+  social_networks:
+    - network: GitHub
+      username: codyslater
   sections:
     About:
       - "MD student and PhD candidate working where biological and machine intelligence meet. I think the best way to understand a complex system is to learn to control it. I combine machine learning models with transcriptomic engineering to design molecular tools that measure and control cell-type-specific perturbations at scale."
@@ -101,6 +104,10 @@ cv:
         highlights:
           - "Automated the build instructions for jet-engine cable harnesses, generated from the design files."
     Publications & Papers:
+      - title: "ModFormer: A unified structure-aware model of transcriptome-wide A-to-I RNA editing"
+        authors: ["**C. Slater**", "…", S. Vicković]
+        journal: bioRxiv preprint (2026)
+        code: https://github.com/nygctech/ModFormer
       - title: Intraoperative microneurographic recording from the human trigeminal ganglion using standard deep brain stimulation electrodes
         authors: ["**C. Slater**", "…", R. F. Sekula Jr.]
         journal: Submitted (2026)

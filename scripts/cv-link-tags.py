@@ -44,6 +44,9 @@ def main(src: str, dst: str) -> None:
         if href:
             tag = label(href, str(entry.get("journal", "")))
             entry["link_tag"] = f"[\\[{tag}\\]]({href})"
+        if entry.get("code"):
+            code_tag = f"[\\[Code\\]]({entry['code']})"
+            entry["link_tag"] = f"{entry['link_tag']} {code_tag}" if href else code_tag
         # Explain the dagger on the paper that uses it, not in the page footer.
         if any("†" in str(a) for a in entry.get("authors", [])):
             entry["dagger_note"] = "*† equal contribution*"
