@@ -154,6 +154,10 @@ cv:
         date: "2019-03"
         summary: Brief Research in Aging and Interdisciplinary Neurosciences (BRAIN) Program
     Presentations:
+      - name: Patient-derived meningioma slice cultures recapitulate the tumor microenvironment and enable single-cell evaluation of therapeutic responses
+        date: "2026-11"
+        location: Philadelphia, PA
+        summary: Society for Neuro-Oncology. Contributing author.
       - name: Building on RNA foundation models to predict A-to-I editing across the transcriptome
         date: "2026-10"
         location: New York, NY
