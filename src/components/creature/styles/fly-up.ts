@@ -3,7 +3,7 @@ import type { Style } from "../types";
 import { easeOutCubic, pixelsFromGrid, progress } from "./helpers";
 
 // Birth — canvas-wide / below → up / eased tween / bottom-up rows.
-export const flyUp: Style = {
+export const flyUp: Omit<Style, "duration"> = {
   name: "fly-up",
   init(grid, rng, intensity) {
     return pixelsFromGrid(grid).map((p) => ({

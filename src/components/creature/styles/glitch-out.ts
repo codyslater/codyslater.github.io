@@ -6,7 +6,7 @@ const SHEAR_MS = 240; // three 80 ms beats of row shear, then collapse
 
 // Death — local shear → collapse / rows shear horizontally on beats,
 // then everything drops ballistically / row-beat stagger.
-export const glitchOut: Style = {
+export const glitchOut: Omit<Style, "duration"> = {
   name: "glitch-out",
   init(grid, rng, intensity) {
     return pixelsFromGrid(grid).map((p) => ({

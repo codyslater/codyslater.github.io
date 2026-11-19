@@ -4,7 +4,7 @@ import { pixelsFromGrid, progress } from "./helpers";
 
 // Death — canvas-wide / upward / floaty drag with sine wobble, alpha fade /
 // top-down rows.
-export const evaporate: Style = {
+export const evaporate: Omit<Style, "duration"> = {
   name: "evaporate",
   init(grid, rng, intensity) {
     return pixelsFromGrid(grid).map((p) => ({
