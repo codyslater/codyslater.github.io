@@ -431,6 +431,12 @@ body {
   mix-blend-mode: darken;
 }
 :root[data-writing-theme="light"] .writing-literary.reading .lit-video[data-cut="shared"] { background: #0b0e0b; }
+/* Media with a dark and a light cut ships both; the one that matches the reading theme shows (ThemedMedia.tsx).
+   These come after the display rule above so the hidden cut stays hidden. */
+.themed-light,
+.writing-literary .themed-light { display: none; }
+:root[data-writing-theme="light"] .writing-literary.reading .themed-light { display: block; }
+:root[data-writing-theme="light"] .writing-literary.reading .themed-dark { display: none; }
 .writing-literary .lit-figure { margin: 2rem 0; }
 .writing-literary .lit-clips { display: grid; gap: 1.5rem; margin: 2rem 0; }
 @media (min-width: 768px) { .writing-literary .lit-clips-2 { grid-template-columns: 1fr 1fr; } }
