@@ -4,15 +4,14 @@
   "private": true,
   "scripts": {
     "dev": "next dev",
+    "prebuild": "node scripts/check-contact.mjs",
     "build": "next build",
-    "start": "next start",
     "lint": "eslint",
     "cv:pdf": "bash scripts/render-cv.sh",
     "test:publications": "node scripts/test-publications.mjs"
   },
   "dependencies": {
     "@shikijs/rehype": "^4.3.1",
-    "clsx": "^2.1.1",
     "framer-motion": "^12.35.1",
     "github-slugger": "^2.0.0",
     "gray-matter": "^4.0.3",
@@ -25,7 +24,6 @@
     "rehype-katex": "^7.0.1",
     "remark-gfm": "^4.0.1",
     "remark-math": "^6.0.0",
-    "tailwind-merge": "^3.5.0",
     "unist-util-visit": "^5.2.0",
     "yaml": "^2.9.1"
   },
