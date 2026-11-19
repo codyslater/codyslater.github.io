@@ -4,7 +4,7 @@ Personal website built with Next.js 16, deployed to GitHub Pages.
 
 ## Features
 
-- **Opening screen** — the name types over a circuit board that becomes a living graph, then hands over to a nav screen. Add `?skip=1` to the URL to go straight to the nav screen; a returning visitor in the same browser session also skips it.
+- **Opening screen** — the name types over a circuit board that becomes a living graph, then hands over to a nav screen. It plays on every arrival and reload; the site's own links back to home add `?skip=1` to the URL, which goes straight to the nav screen.
 - **Nav screen** — a cycling tagline with terminal-style interactivity (click to type, Tab to autocomplete navigation) above a row of section icons, and a small pixel creature standing on the name. A tap startles it, a drag picks it up and can throw it, and a double tap opens it in `/soup`.
 - **Procedurally generated pixel creatures** — deterministic via seeded PRNG, with a range of birth and ending animations. `/zoo` is an unlisted page that shows a set of specimens.
 - **Interactive graph** at `/graph`.

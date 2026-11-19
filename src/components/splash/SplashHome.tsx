@@ -16,7 +16,7 @@ export function SplashHome() {
   const [revealProgress, setRevealProgress] = useState(0);
   const [phase, setPhase] = useState<Phase>("splash");
   const [canvasOpacity, setCanvasOpacity] = useState(1);
-  // True once the visitor has come through the splash (not ?skip=1, not a returning visit):
+  // True once the visitor has come through the splash (not ?skip=1):
   // the first creature then assembles from the edges, as if from the board's pixels.
   const [cameThrough, setCameThrough] = useState(false);
   const phaseRef = useRef<Phase>("splash");
@@ -29,16 +29,12 @@ export function SplashHome() {
     setRevealProgress(progress);
   }, []);
 
-  // Read the URL and sessionStorage after mount, so the static HTML is the splash, not empty.
-  // Returning visitors in this session (and ?skip=1) go straight to the nav grid.
+  // The splash plays on every arrival and every reload. The site's own links back to home carry ?skip=1 and go
+  // straight to the nav grid. The URL is read after mount, so the static HTML is the splash, not empty.
   useEffect(() => {
-    let skip = false;
-    try {
-      skip = new URLSearchParams(window.location.search).get("skip") === "1" || sessionStorage.getItem("hero-seen") === "1";
-    } catch {}
-    if (skip) {
+    if (new URLSearchParams(window.location.search).get("skip") === "1") {
       phaseRef.current = "nav";
-      // eslint-disable-next-line react-hooks/set-state-in-effect -- URL and sessionStorage are unavailable during SSR
+      // eslint-disable-next-line react-hooks/set-state-in-effect -- the URL is unavailable during SSR
       setPhase("nav");
     }
   }, []);
@@ -48,9 +44,6 @@ export function SplashHome() {
     if (phaseRef.current !== "splash") return;
     phaseRef.current = "transitioning";
     clearTimeout(autoTimer.current);
-    try {
-      sessionStorage.setItem("hero-seen", "1");
-    } catch {}
     fieldRef.current?.leave();
     setCameThrough(true);
     // Reduced motion: an instant swap, in one commit, so there is no frame without the name.
