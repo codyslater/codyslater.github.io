@@ -8,7 +8,6 @@ import { getPost, getPosts } from "@/lib/content";
 import { mdxRemoteOptions } from "@/lib/mdx";
 import { mdxComponents } from "@/components/mdx";
 import { ThemeToggle } from "@/components/writing/ThemeToggle";
-import { ThemeScript } from "@/components/writing/ThemeScript";
 import { Toc } from "@/components/writing/Toc";
 import { ReaderPills } from "@/components/writing/ReaderPills";
 import { extractToc } from "@/lib/toc";
@@ -65,7 +64,6 @@ export default async function PostPage({
     <div
       className={`writing-literary reading min-h-screen pt-20 pb-20 px-4 ${serif.variable}`}
     >
-      <ThemeScript />
       <article className="max-w-2xl mx-auto">
         <p className="lit-date mb-6">
           <Link href="/writing/" className="lit-back">

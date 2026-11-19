@@ -7,7 +7,6 @@ import { coverShareImage, pageMetadata } from "@/lib/metadata";
 import { mdxRemoteOptions } from "@/lib/mdx";
 import { mdxComponents } from "@/components/mdx";
 import { ThemeToggle } from "@/components/writing/ThemeToggle";
-import { ThemeScript } from "@/components/writing/ThemeScript";
 import { ThemedImage, ThemedVideo } from "@/components/writing/ThemedMedia";
 import { CopyCode } from "@/components/writing/CopyCode";
 import { MediaZoom } from "@/components/writing/MediaZoom";
@@ -49,7 +48,6 @@ export default async function ProjectPage({
     <div
       className={`writing-literary reading min-h-screen pt-20 pb-20 px-4 ${serif.variable}`}
     >
-      <ThemeScript />
       <MediaZoom />
       <CopyCode />
       <article className="max-w-2xl mx-auto">
