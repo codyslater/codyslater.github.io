@@ -212,9 +212,21 @@ body {
   --lit-link: #2f6b3a;
   --lit-rule: #1d1b18;
 }
-/* the site nav stays dark and solid over the cream page */
+/* the site nav turns to paper too (CS 20261119): solid, since a translucent bar lets the
+   text show through; a thin rule; grey links that darken on hover with no neon glow.
+   The colors repeat the paper palette above: the nav sits outside .writing-literary. */
 :root[data-writing-theme="light"] body:has(.writing-literary.reading) nav {
-  background: var(--bg-primary);
+  background: #f6f1e7;
+  border-bottom: 1px solid rgba(29, 27, 24, 0.12);
+}
+:root[data-writing-theme="light"] body:has(.writing-literary.reading) nav a {
+  color: #7a7266;
+  text-shadow: none;
+}
+:root[data-writing-theme="light"] body:has(.writing-literary.reading) nav > div > a:first-child,
+:root[data-writing-theme="light"] body:has(.writing-literary.reading) nav a:hover,
+:root[data-writing-theme="light"] body:has(.writing-literary.reading) nav a:focus-visible {
+  color: #1d1b18;
 }
 :root[data-writing-theme="light"] .writing-literary.reading .lit-header {
   padding-bottom: 1.25rem;
