@@ -1,15 +1,12 @@
 import type { Metadata } from "next";
 import { AboutContent } from "@/components/sections/AboutContent";
-import { ogImage } from "@/lib/constants";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "about",
-  openGraph: {
-    title: "about",
-    url: "/about/",
-    images: [ogImage],
-  },
-};
+  description: "MD student and PhD candidate working where biological and machine intelligence meet.",
+  path: "/about/",
+});
 
 export default function AboutPage() {
   return (
