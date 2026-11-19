@@ -57,29 +57,34 @@ export function TimeSlider({ speed, onSpeed }: TimeSliderProps) {
   }, []);
 
   return (
-    <div
-      ref={barRef}
-      className="fixed top-0 left-0 right-0 z-40 flex items-center justify-center gap-6 pt-5 pb-8 transition-opacity duration-500"
-      style={{ opacity: visible ? 1 : 0, pointerEvents: visible ? "auto" : "none" }}
-    >
+    <>
+      {/* the way home stays on screen: the bar below fades away, and a page with no nav needs
+          one visible exit. Same ~/ mark, color, size and hover as the nav on every other inner page, in a 44px target. */}
       <Link
         href="/?skip=1"
-        className="font-mono text-sm text-muted hover:text-foreground transition-colors"
+        aria-label="home"
+        className="fixed top-2 left-2 sm:left-4 z-50 flex items-center justify-center min-w-11 h-11 px-2 font-mono text-sm text-foreground hover:text-accent-green focus-visible:text-accent-green transition-colors [text-shadow:0_0_6px_#000,0_0_2px_#000]"
       >
         ~/
       </Link>
-      <input
-        type="range"
-        min={0}
-        max={100}
-        value={fromSpeed(speed)}
-        onChange={(e) => onSpeed(toSpeed(Number(e.target.value)))}
-        aria-label="simulation speed"
-        className="soup-slider w-48 h-1 cursor-pointer appearance-none rounded bg-border"
-      />
-      <span className="font-mono text-xs text-muted w-12">
-        {speed <= 0 ? "⏸" : `×${speed < 1 ? speed.toFixed(2) : speed.toFixed(1)}`}
-      </span>
-    </div>
+      <div
+        ref={barRef}
+        className="fixed top-0 left-0 right-0 z-40 flex items-center justify-center gap-6 pt-5 pb-8 transition-opacity duration-500"
+        style={{ opacity: visible ? 1 : 0, pointerEvents: visible ? "auto" : "none" }}
+      >
+        <input
+          type="range"
+          min={0}
+          max={100}
+          value={fromSpeed(speed)}
+          onChange={(e) => onSpeed(toSpeed(Number(e.target.value)))}
+          aria-label="simulation speed"
+          className="soup-slider w-48 h-1 cursor-pointer appearance-none rounded bg-border"
+        />
+        <span className="font-mono text-xs text-muted w-12">
+          {speed <= 0 ? "⏸" : `×${speed < 1 ? speed.toFixed(2) : speed.toFixed(1)}`}
+        </span>
+      </div>
+    </>
   );
 }
