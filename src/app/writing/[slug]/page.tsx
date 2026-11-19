@@ -1,10 +1,10 @@
 import { existsSync } from "node:fs";
 import path from "node:path";
 import type { Metadata } from "next";
+import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote-client/rsc";
 import { getPost, getPosts } from "@/lib/content";
-import { ogImage } from "@/lib/constants";
 import { mdxRemoteOptions } from "@/lib/mdx";
 import { mdxComponents } from "@/components/mdx";
 import { ThemeToggle } from "@/components/writing/ThemeToggle";
@@ -12,7 +12,9 @@ import { ThemeScript } from "@/components/writing/ThemeScript";
 import { Toc } from "@/components/writing/Toc";
 import { ReaderPills } from "@/components/writing/ReaderPills";
 import { extractToc } from "@/lib/toc";
-import { serif } from "@/lib/fonts";
+import { publicImageSize } from "@/lib/imageSize";
+import { coverShareImage, pageMetadata } from "@/lib/metadata";
+import { serif } from "@/lib/fonts-serif";
 import "katex/dist/katex.min.css";
 
 // A cover may ship a light-theme cut beside it: cover.webp -> cover-light.webp.
@@ -36,23 +38,13 @@ export async function generateMetadata({
   const { slug } = await params;
   if (slug === "__none__") notFound();
   const post = getPost(slug);
-  return {
+  return pageMetadata({
     title: post.title,
     description: post.summary,
-    openGraph: {
-      title: post.title,
-      description: post.summary,
-      type: "article",
-      url: `/writing/${slug}/`,
-      images: [post.cover ?? ogImage],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: post.title,
-      description: post.summary,
-      images: [post.cover ?? ogImage.url],
-    },
-  };
+    path: `/writing/${slug}/`,
+    image: coverShareImage(post.cover, post.title),
+    type: "article",
+  });
 }
 
 export default async function PostPage({
@@ -65,6 +57,9 @@ export default async function PostPage({
   const post = getPost(slug);
   const toc = post.toc ? extractToc(post.body) : [];
   const coverLight = post.cover ? lightCut(post.cover) : null;
+  // width/height reserve the cover's box (CSS keeps it fluid) so the text below does not jump
+  const coverSize = post.cover ? publicImageSize(post.cover) : null;
+  const coverLightSize = coverLight ? publicImageSize(coverLight) : null;
 
   return (
     <div
@@ -72,12 +67,19 @@ export default async function PostPage({
     >
       <ThemeScript />
       <article className="max-w-2xl mx-auto">
+        <p className="lit-date mb-6">
+          <Link href="/writing/" className="lit-back">
+            ← writing
+          </Link>
+        </p>
         {post.cover && (
           <>
             {/* eslint-disable-next-line @next/next/no-img-element */}
             <img
               src={post.cover}
               alt={post.title}
+              width={coverSize?.width}
+              height={coverSize?.height}
               className={`w-full mb-8 rounded-none${coverLight ? " lit-cover-dark" : ""}`}
             />
             {coverLight && (
@@ -85,6 +87,8 @@ export default async function PostPage({
               <img
                 src={coverLight}
                 alt={post.title}
+                width={coverLightSize?.width}
+                height={coverLightSize?.height}
                 loading="lazy"
                 className="w-full mb-8 rounded-none lit-cover-light"
               />
@@ -99,7 +103,7 @@ export default async function PostPage({
             </p>
             <ThemeToggle />
           </div>
-          <h1 className="lit-title mt-2">
+          <h1 className="lit-title text-balance mt-2">
             {post.title}
           </h1>
         </header>

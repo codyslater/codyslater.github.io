@@ -29,6 +29,7 @@ export const metadata: Metadata = {
     images: [ogImage.url],
   },
   alternates: {
+    canonical: "./", // home (the one page without its own metadata); resolves against the route
     types: {
       "application/rss+xml": "/feed.xml",
     },

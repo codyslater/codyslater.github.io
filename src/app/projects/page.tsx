@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { serif } from "@/lib/fonts";
+import { serif } from "@/lib/fonts-serif";
 import { getProjects } from "@/lib/content";
-import { ogImage } from "@/lib/constants";
+import { indexCover } from "@/lib/imageSize";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "projects",
   description: "Projects by Cody Slater.",
-  openGraph: {
-    title: "projects",
-    description: "Projects by Cody Slater.",
-    url: "/projects/",
-    images: [ogImage],
-  },
-};
+  path: "/projects/",
+});
 
 export default function ProjectsPage() {
   const projects = getProjects();
@@ -41,20 +37,31 @@ export default function ProjectsPage() {
           </FadeIn>
         ) : (
           <ul className="grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-2">
-            {projects.map((project, i) => (
+            {projects.map((project, i) => {
+              const thumb = project.cover ? indexCover(project.cover) : null;
+              return (
               <li key={project.slug}>
                 <FadeIn delay={0.1 + 0.05 * i}>
                   <Link href={`/projects/${project.slug}/`} className="lit-card">
-                    {project.cover ? (
+                    {project.cover && thumb ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={project.cover} alt="" className="lit-cover" />
+                      <img
+                        src={thumb.src}
+                        width={thumb.width}
+                        height={thumb.height}
+                        alt=""
+                        loading={i < 2 ? "eager" : "lazy"}
+                        fetchPriority={i === 0 ? "high" : undefined}
+                        decoding="async"
+                        className="lit-cover"
+                      />
                     ) : (
                       <div className="lit-cover lit-cover-fallback">
                         <span className="lit-cover-title">{project.title}</span>
                       </div>
                     )}
                     <span className="lit-card-text">
-                      <span className="lit-entry-title">{project.title}</span>
+                      <span className="lit-entry-title text-balance">{project.title}</span>
                       <span className="lit-summary">{project.summary}</span>
                       {project.tags.length > 0 && (
                         <span className="lit-date lit-tags">
@@ -65,7 +72,8 @@ export default function ProjectsPage() {
                   </Link>
                 </FadeIn>
               </li>
-            ))}
+              );
+            })}
           </ul>
         )}
       </div>

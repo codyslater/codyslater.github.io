@@ -3,7 +3,7 @@ import Link from "next/link";
 import { notFound } from "next/navigation";
 import { MDXRemote } from "next-mdx-remote-client/rsc";
 import { getProject, getProjects, LINK_LABELS } from "@/lib/content";
-import { ogImage } from "@/lib/constants";
+import { coverShareImage, pageMetadata } from "@/lib/metadata";
 import { mdxRemoteOptions } from "@/lib/mdx";
 import { mdxComponents } from "@/components/mdx";
 import { ThemeToggle } from "@/components/writing/ThemeToggle";
@@ -11,7 +11,7 @@ import { ThemeScript } from "@/components/writing/ThemeScript";
 import { ThemedImage, ThemedVideo } from "@/components/writing/ThemedMedia";
 import { CopyCode } from "@/components/writing/CopyCode";
 import { MediaZoom } from "@/components/writing/MediaZoom";
-import { serif } from "@/lib/fonts";
+import { serif } from "@/lib/fonts-serif";
 
 export function generateStaticParams() {
   const projects = getProjects();
@@ -27,23 +27,12 @@ export async function generateMetadata({
   const { slug } = await params;
   if (slug === "__none__") notFound();
   const project = getProject(slug);
-  return {
+  return pageMetadata({
     title: project.title,
     description: project.summary,
-    openGraph: {
-      title: project.title,
-      description: project.summary,
-      type: "website",
-      url: `/projects/${slug}/`,
-      images: [project.cover ?? ogImage],
-    },
-    twitter: {
-      card: "summary_large_image",
-      title: project.title,
-      description: project.summary,
-      images: [project.cover ?? ogImage.url],
-    },
-  };
+    path: `/projects/${slug}/`,
+    image: coverShareImage(project.cover, project.title),
+  });
 }
 
 export default async function ProjectPage({
@@ -96,7 +85,7 @@ export default async function ProjectPage({
             <p className="lit-date">{project.tags.join(" · ")}</p>
             <ThemeToggle />
           </div>
-          <h1 className="lit-title mt-2">{project.title}</h1>
+          <h1 className="lit-title text-balance mt-2">{project.title}</h1>
           <p className="lit-lede mt-3">{project.summary}</p>
           {links.length > 0 && (
             <p className="lit-date lit-links mt-4">

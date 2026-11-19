@@ -19,6 +19,9 @@ export function AnimatedFavicon() {
   const activeNodeRef = useRef(0);
 
   useEffect(() => {
+    // Reduced motion: leave the static icon in place and never animate.
+    if (window.matchMedia("(prefers-reduced-motion: reduce)").matches) return;
+
     const canvas = document.createElement("canvas");
     canvas.width = 32;
     canvas.height = 32;
@@ -42,7 +45,9 @@ export function AnimatedFavicon() {
       // Background
       ctx.fillStyle = "#0a0a0a";
       ctx.beginPath();
-      ctx.roundRect(0, 0, 32, 32, 6);
+      // roundRect is missing in Safari before 16
+      if (ctx.roundRect) ctx.roundRect(0, 0, 32, 32, 6);
+      else ctx.rect(0, 0, 32, 32);
       ctx.fill();
 
       // Edges

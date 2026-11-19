@@ -1,20 +1,16 @@
 import type { Metadata } from "next";
 import Link from "next/link";
 import { FadeIn } from "@/components/ui/FadeIn";
-import { serif } from "@/lib/fonts";
+import { serif } from "@/lib/fonts-serif";
 import { getPosts } from "@/lib/content";
-import { ogImage } from "@/lib/constants";
+import { indexCover } from "@/lib/imageSize";
+import { pageMetadata } from "@/lib/metadata";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "writing",
   description: "Essays and notes by Cody Slater.",
-  openGraph: {
-    title: "writing",
-    description: "Essays and notes by Cody Slater.",
-    url: "/writing/",
-    images: [ogImage],
-  },
-};
+  path: "/writing/",
+});
 
 export default function WritingPage() {
   const posts = getPosts();
@@ -41,7 +37,9 @@ export default function WritingPage() {
           </FadeIn>
         ) : (
           <ul className="grid grid-cols-1 gap-x-10 gap-y-8 md:grid-cols-2">
-            {posts.map((post, i) => (
+            {posts.map((post, i) => {
+              const thumb = post.cover ? indexCover(post.cover) : null;
+              return (
               <li key={post.slug}>
                 <FadeIn delay={0.1 + 0.05 * i}>
                   <Link
@@ -51,9 +49,18 @@ export default function WritingPage() {
                       ? { target: "_blank", rel: "noopener noreferrer" }
                       : {})}
                   >
-                    {post.cover ? (
+                    {post.cover && thumb ? (
                       // eslint-disable-next-line @next/next/no-img-element
-                      <img src={post.cover} alt="" className="lit-cover" />
+                      <img
+                        src={thumb.src}
+                        width={thumb.width}
+                        height={thumb.height}
+                        alt=""
+                        loading={i < 2 ? "eager" : "lazy"}
+                        fetchPriority={i === 0 ? "high" : undefined}
+                        decoding="async"
+                        className="lit-cover"
+                      />
                     ) : (
                       <div className="lit-cover lit-cover-fallback">
                         {post.tags[0] && (
@@ -63,7 +70,7 @@ export default function WritingPage() {
                       </div>
                     )}
                     <span className="lit-card-text">
-                    <span className="lit-entry-title">{post.title}</span>
+                    <span className="lit-entry-title text-balance">{post.title}</span>
                     <span className="lit-date">
                       {post.date}
                       {post.external && (
@@ -86,7 +93,8 @@ export default function WritingPage() {
                   </Link>
                 </FadeIn>
               </li>
-            ))}
+              );
+            })}
           </ul>
         )}
       </div>

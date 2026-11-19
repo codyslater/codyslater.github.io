@@ -1,19 +1,13 @@
-"use client";
+import type { Metadata } from "next";
+import { GraphPageClient } from "@/components/ui/GraphPageClient";
+import { pageMetadata } from "@/lib/metadata";
 
-import { GraphCanvas } from "@/components/ui/GraphCanvas";
-import { useEffect } from "react";
+export const metadata: Metadata = pageMetadata({
+  title: "graph",
+  description: "an interactive network of nodes that fire signals along their edges as you hover.",
+  path: "/graph/",
+});
 
 export default function GraphPage() {
-  useEffect(() => {
-    document.body.style.overflow = "hidden";
-    return () => {
-      document.body.style.overflow = "";
-    };
-  }, []);
-
-  return (
-    <div className="fixed inset-0 bg-background">
-      <GraphCanvas revealProgress={1} />
-    </div>
-  );
+  return <GraphPageClient />;
 }

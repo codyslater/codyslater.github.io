@@ -329,11 +329,3 @@ export function getProject(slug: string): Project {
   }
   return project;
 }
-
-export function projectPrimaryLink(project: Project): string | null {
-  for (const key of LINK_KEYS) {
-    const href = project.links[key];
-    if (href) return href;
-  }
-  return null;
-}
