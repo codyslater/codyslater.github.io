@@ -205,7 +205,10 @@ body {
 }
 .prose-mono .katex-display {
   margin: 1.5em 0;
+  /* overflow-x: auto also clips vertically, so pad tall fractions and sums clear of the edge */
+  padding: 0.35em 0;
   overflow-x: auto;
+  overflow-y: hidden;
 }
 
 /* Writing section: dark literary look (serif on the site-wide near-black), shared by
