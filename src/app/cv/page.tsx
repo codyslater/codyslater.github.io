@@ -60,6 +60,19 @@ function Entry({ entry }: { entry: CvEntry }) {
                 </a>
               </>
             )}
+            {entry.code && (
+              <>
+                {" "}
+                <a
+                  href={entry.code}
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="whitespace-nowrap text-accent-green hover:underline glow-hover"
+                >
+                  -&gt; code
+                </a>
+              </>
+            )}
             {entry.authors.some((a) => a.includes("†")) && " · † equal contribution"}
           </Meta>
         </>
