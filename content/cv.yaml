@@ -165,6 +165,10 @@ cv:
         date: "2019-03"
         summary: Brief Research in Aging and Interdisciplinary Neurosciences (BRAIN) Program
     Presentations:
+      - name: "Modformer: A unified structure-aware model of transcriptome-wide A-to-I RNA editing"
+        date: "2027-03"
+        location: Orlando, FL
+        summary: AGBT General Meeting. Presenting author.
       - name: Patient-derived meningioma slice cultures recapitulate the tumor microenvironment and enable single-cell evaluation of therapeutic responses
         date: "2026-11"
         location: Philadelphia, PA
