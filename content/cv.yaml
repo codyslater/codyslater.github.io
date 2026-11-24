@@ -105,7 +105,7 @@ cv:
           - "Automated the build instructions for jet-engine cable harnesses, generated from the design files."
     Publications & Papers:
       - title: "ModFormer: A unified structure-aware model of transcriptome-wide A-to-I RNA editing"
-        authors: ["**C. Slater**", E. Nassar, N. Dreesen Bonet, B. Yuan, J. H. Lee, D. Domović, L. Espinosa, M. Garbulowski, A. Daly, S. Vicković]
+        authors: ["**C. Slater**", "E. Nassar", "N. Dreesen Bonet", "B. Yuan", "J. H. Lee", "D. Domović", "L. Espinosa", "M. Garbulowski", "A. Daly", "S. Vicković"]
         journal: bioRxiv preprint (2026)
         code: https://github.com/nygctech/ModFormer
       - title: Intraoperative microneurographic recording from the human trigeminal ganglion using standard deep brain stimulation electrodes
