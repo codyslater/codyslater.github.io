@@ -57,7 +57,11 @@ function Pub({ pub }: { pub: Pub }) {
           <Authors names={pub.authors} />
         </p>
       )}
-      <p className="text-xs text-secondary mt-1">{pub.journal}</p>
+      <p className="text-xs text-secondary mt-1">
+        {pub.journal}
+        {/* same placement as the cv: the note sits on the entry that uses the mark */}
+        {pub.authors.some((a) => a.includes("†")) && " · † equal contribution"}
+      </p>
       {extras.length > 0 && (
         <p className="text-xs mt-1 flex gap-3">
           {extras.map((x) => (
@@ -117,8 +121,6 @@ export default function PublicationsPage() {
         {groupByYear(pubs.filter((p) => !isPreprint(p))).map(([year, list]) => (
           <Block key={year} title={year} pubs={list} />
         ))}
-
-        <p className="text-xs text-secondary">† equal contribution</p>
       </div>
     </div>
   );
