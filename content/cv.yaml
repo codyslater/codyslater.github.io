@@ -45,7 +45,7 @@ cv:
         location: New York, NY
         summary: "*deep learning · PyTorch · GPU HPC · single-cell & spatial transcriptomics · lentivirus · AAV · Cas9 · Cas13*"
         highlights:
-          - "Leading development of large specialized models for RNA modification prediction and generative design."
+          - "Leading development of [ModFormer](https://github.com/nygctech/ModFormer) and other large models for RNA modification prediction and design."
           - "Established the first selection-based functional assay for RNA modifications; 10,000+ construct pools."
           - "Engineering AAV vectors for cell-type-specific perturbation in mouse brain, from prep to tissue processing."
           - "Building a spatial transcriptomics toolset to model in vivo cell-type-specific genetic perturbations."
