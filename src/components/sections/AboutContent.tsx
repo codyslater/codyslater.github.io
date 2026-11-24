@@ -3,6 +3,7 @@
 import { FadeIn } from "@/components/ui/FadeIn";
 import { DownloadIcon } from "@/components/ui/DownloadIcon";
 import { CvDownloadLink } from "@/components/ui/CvDownloadLink";
+import { ContactReveal } from "@/components/ui/ContactReveal";
 import { siteConfig } from "@/lib/constants";
 
 type AboutLink = { label: string; href: string; note?: string; download?: boolean };
@@ -51,6 +52,9 @@ export function AboutContent() {
 
       <FadeIn delay={0.3}>
         <div className="mt-12 space-y-3 font-mono text-sm">
+          <FadeIn delay={0.3}>
+            <ContactReveal />
+          </FadeIn>
           {links.map((link, i) => (
             <FadeIn key={link.label} delay={0.35 + 0.05 * i}>
               <div className="flex items-center gap-1">

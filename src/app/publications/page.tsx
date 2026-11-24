@@ -2,15 +2,16 @@ import type { Metadata } from "next";
 import { FadeIn } from "@/components/ui/FadeIn";
 import { Authors } from "@/components/ui/Inline";
 import { getCv, type CvEntry } from "@/lib/cv";
-import { ogImage, siteConfig } from "@/lib/constants";
+import { siteConfig } from "@/lib/constants";
+import { pageMetadata } from "@/lib/metadata";
 
 const description = "Publications and preprints by Cody Slater.";
 
-export const metadata: Metadata = {
+export const metadata: Metadata = pageMetadata({
   title: "publications",
   description,
-  openGraph: { title: "publications", description, url: "/publications/", images: [ogImage] },
-};
+  path: "/publications/",
+});
 
 type Pub = Extract<CvEntry, { kind: "publication" }>;
 
@@ -33,7 +34,9 @@ const linkClass = "text-accent-green hover:underline glow-hover";
 function Pub({ pub }: { pub: Pub }) {
   const href = pub.doi ? `https://doi.org/${pub.doi}` : pub.url;
   const title = <span className="text-sm font-bold text-foreground">{pub.title}</span>;
+  // the same "-> doi" / "-> bioRxiv" tag the cv puts after the venue line
   const extras = [
+    href && { label: `-> ${/biorxiv/i.test(pub.journal ?? "") ? "bioRxiv" : "doi"}`, href },
     pub.pdf && { label: "PDF", href: pub.pdf },
     pub.code && { label: "code", href: pub.code },
   ].filter((x): x is { label: string; href: string } => Boolean(x));
@@ -58,7 +61,7 @@ function Pub({ pub }: { pub: Pub }) {
       {extras.length > 0 && (
         <p className="text-xs mt-1 flex gap-3">
           {extras.map((x) => (
-            <a key={x.label} href={x.href} target="_blank" rel="noopener noreferrer" className={linkClass}>
+            <a key={x.label} href={x.href} target="_blank" rel="noopener noreferrer" className={`whitespace-nowrap ${linkClass}`}>
               {x.label}
             </a>
           ))}

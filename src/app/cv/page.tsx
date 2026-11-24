@@ -4,15 +4,12 @@ import { Authors, Inline } from "@/components/ui/Inline";
 import { getCv, type CvEntry } from "@/lib/cv";
 import { DownloadIcon } from "@/components/ui/DownloadIcon";
 import { CvDownloadLink } from "@/components/ui/CvDownloadLink";
-import { ogImage } from "@/lib/constants";
+import { ContactReveal } from "@/components/ui/ContactReveal";
+import { pageMetadata } from "@/lib/metadata";
 
 const description = "Curriculum vitae of Cody Slater.";
 
-export const metadata: Metadata = {
-  title: "cv",
-  description,
-  openGraph: { title: "cv", description, url: "/cv/", images: [ogImage] },
-};
+export const metadata: Metadata = pageMetadata({ title: "cv", description, path: "/cv/" });
 
 function Meta({ children }: { children: React.ReactNode }) {
   return <p className="text-xs text-muted mt-1">{children}</p>;
@@ -106,11 +103,19 @@ export default function CvPage() {
   return (
     <div className="min-h-screen pt-20 pb-20 px-4">
       <div className="max-w-3xl mx-auto font-mono">
+        {/* print only: the name is the title, the place its own smaller line (see globals.css) */}
+        <div className="cv-print-title" aria-hidden="true">
+          <p className="cv-print-name">{cv.name}</p>
+          {cv.location && <p className="cv-print-loc">{cv.location}</p>}
+        </div>
         <FadeIn>
           <header className="mb-10">
             <h1 className="text-2xl font-bold text-foreground">cv</h1>
             <p className="text-sm text-secondary mt-3">
               {[cv.name, cv.location].filter(Boolean).join(" · ")}
+              <span className="block mt-2">
+                <ContactReveal variant="inline" />
+              </span>
             </p>
             <p className="text-sm mt-4">
               <CvDownloadLink className="inline-flex items-center gap-2 text-accent-green hover:underline glow-hover">
@@ -122,7 +127,7 @@ export default function CvPage() {
         </FadeIn>
 
         {cv.sections.map((section, s) => (
-          <section key={section.title} className="mb-10">
+          <section key={section.title} className="cv-section mb-10">
             <FadeIn delay={0.05}>
               <h2 className="text-lg font-bold text-accent-green mb-4">
                 {section.title.toLowerCase()}
@@ -131,7 +136,7 @@ export default function CvPage() {
             <div className="space-y-3">
               {section.entries.map((entry, i) => (
                 <FadeIn key={`${s}-${i}`} delay={0.05}>
-                  <div className="border border-border rounded p-4 bg-surface">
+                  <div className="cv-entry border border-border rounded p-4 bg-surface">
                     <Entry entry={entry} />
                   </div>
                 </FadeIn>

@@ -4,6 +4,7 @@ import { mono } from "@/lib/fonts";
 import { ogImage, siteConfig } from "@/lib/constants";
 import { NavBar } from "@/components/layout/NavBar";
 import { AnimatedFavicon } from "@/components/ui/AnimatedFavicon";
+import { ThemeScript } from "@/components/writing/ThemeScript";
 
 import "./globals.css";
 
@@ -29,6 +30,7 @@ export const metadata: Metadata = {
     images: [ogImage.url],
   },
   alternates: {
+    canonical: "./", // home (the one page without its own metadata); resolves against the route
     types: {
       "application/rss+xml": "/feed.xml",
     },
@@ -41,8 +43,10 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en" className="dark">
+    // ThemeScript sets data-writing-theme on <html> before hydration, on purpose
+    <html lang="en" className="dark" suppressHydrationWarning>
       <body className={`${mono.variable} font-mono antialiased`}>
+        <ThemeScript />
         <AnimatedFavicon />
         <NavBar />
         <main>{children}</main>

@@ -6,13 +6,19 @@
   --bg-tertiary: #1a1a1a;
   --text-primary: #f0f0f0;
   --text-secondary: #888888;
-  --text-muted: #7a7a7a;
+  /* 4.6:1 on the card surface (#111), 4.8:1 on the page */
+  --text-muted: #7d7d7d;
   --accent-green: #39ff14;
   --accent-purple: #bf5af2;
   --accent-pink: #ff2d78;
   --accent-orange: #ff6a00;
   --accent-cyan: #00e5ff;
   --border: #222222;
+  /* the reading mode's paper palette, one place: the page, the nav bar and the figures all use it.
+     --paper-muted is 4.9:1 on the paper and 4.5:1 on a figure card */
+  --paper-bg: #f6f1e7;
+  --paper-ink: #1d1b18;
+  --paper-muted: #6f685d;
 }
 
 @theme inline {
@@ -47,6 +53,18 @@ body {
 @keyframes pulse-subtle {
   0%, 100% { opacity: 0.6; }
   50% { opacity: 1; }
+}
+
+/* Reduced motion: the same names, redefined as one steady, fully visible frame. The cursor and
+   the "press enter" prompt set these by name in an inline style, so redefining the keyframes
+   reaches them without touching either component; nothing is ever hidden. */
+@media (prefers-reduced-motion: reduce) {
+  @keyframes blink {
+    from, to { opacity: 1; }
+  }
+  @keyframes pulse-subtle {
+    from, to { opacity: 1; }
+  }
 }
 
 /* Glow effect for links */
@@ -187,7 +205,10 @@ body {
 }
 .prose-mono .katex-display {
   margin: 1.5em 0;
+  /* overflow-x: auto also clips vertically, so pad tall fractions and sums clear of the edge */
+  padding: 0.35em 0;
   overflow-x: auto;
+  overflow-y: hidden;
 }
 
 /* Writing section: dark literary look (serif on the site-wide near-black), shared by
@@ -206,15 +227,28 @@ body {
    sets an attribute on <html>, but only a page that also carries .reading (single
    posts and single project pages) reacts to it. Indexes and every other page stay dark. */
 :root[data-writing-theme="light"] .writing-literary.reading {
-  --lit-bg: #f6f1e7;
-  --lit-text: #1d1b18;
-  --lit-muted: #7a7266;
+  --lit-bg: var(--paper-bg);
+  --lit-text: var(--paper-ink);
+  --lit-muted: var(--paper-muted);
   --lit-link: #2f6b3a;
-  --lit-rule: #1d1b18;
+  --lit-rule: var(--paper-ink);
 }
-/* the site nav stays dark and solid over the cream page */
+/* the site nav turns to paper too: solid, since a translucent bar lets the
+   text show through; a thin rule; grey links that darken on hover with no neon glow.
+   The nav sits outside .writing-literary, so it takes the --paper-* tokens directly. */
 :root[data-writing-theme="light"] body:has(.writing-literary.reading) nav {
-  background: var(--bg-primary);
+  background: var(--paper-bg);
+  border-bottom: 1px solid rgba(29, 27, 24, 0.12);
+}
+:root[data-writing-theme="light"] body:has(.writing-literary.reading) nav a {
+  color: var(--paper-muted);
+  text-shadow: none;
+}
+:root[data-writing-theme="light"] body:has(.writing-literary.reading) nav > div > a:first-child,
+:root[data-writing-theme="light"] body:has(.writing-literary.reading) nav a[aria-current="page"],
+:root[data-writing-theme="light"] body:has(.writing-literary.reading) nav a:hover,
+:root[data-writing-theme="light"] body:has(.writing-literary.reading) nav a:focus-visible {
+  color: var(--paper-ink);
 }
 :root[data-writing-theme="light"] .writing-literary.reading .lit-header {
   padding-bottom: 1.25rem;
@@ -230,7 +264,8 @@ body {
   border: 0;
   background: transparent;
   color: var(--lit-muted);
-  opacity: 0.6;
+  /* quiet but a real control: 0.85 keeps the icon softer than text and above 3:1 in every theme */
+  opacity: 0.85;
   cursor: pointer;
   transition: opacity 150ms, color 150ms;
 }
@@ -379,37 +414,6 @@ body {
 .literary-prose blockquote { color: var(--lit-muted); }
 .literary-prose a { color: var(--lit-link); }
 
-/* Projects: a sibling of the writing look. Same serif, cards and toggle, but
-   on the ANSI Noir ground of the project animations (pure black / pure white, cool
-   greys), so project media made in that system sits on the page seamlessly.
-   The orange rule under the heading is the Prospectus title rule. */
-.writing-literary.projects-noir {
-  --lit-bg: #000000;
-  --lit-text: #e9eef0;
-  --lit-muted: #9aa3a6;
-  --lit-link: #ffff55;
-  --lit-rule: #1b1f21;
-  --lit-hue: #ff8700;
-}
-:root[data-writing-theme="light"] .writing-literary.projects-noir {
-  --lit-bg: #ffffff;
-  --lit-text: #14181a;
-  --lit-muted: #5f6669;
-  --lit-link: #aa8800;
-  --lit-rule: #d0d5d8;
-}
-.projects-noir .lit-bar { position: relative; padding-bottom: 0.9rem; }
-.projects-noir .lit-bar::after {
-  content: "";
-  position: absolute;
-  left: 0;
-  bottom: 0;
-  width: min(60%, 18rem);
-  height: 3px;
-  background: var(--lit-hue);
-}
-.projects-noir .lit-cover { border: 1px solid var(--lit-rule); }
-
 /* Project detail pages (both looks): hero media, lede, links */
 .writing-literary .lit-back { color: var(--lit-muted); }
 .writing-literary .lit-back:hover { color: var(--lit-link); }
@@ -422,7 +426,20 @@ body {
   border-radius: 0;
 }
 .writing-literary .lit-video { background: #000; }
-:root[data-writing-theme="light"] .writing-literary.reading .lit-video { background: #fff; }
+/* Light cuts are rendered on white or on paper; darken turns either into the page's paper and
+   leaves the ink as drawn. One-cut media (screen recordings) are dark, so their frame stays
+   dark and letterboxing never shows as a white mat. */
+:root[data-writing-theme="light"] .writing-literary.reading [data-cut="light"] {
+  background: transparent;
+  mix-blend-mode: darken;
+}
+:root[data-writing-theme="light"] .writing-literary.reading .lit-video[data-cut="shared"] { background: #0b0e0b; }
+/* Media with a dark and a light cut ships both; the one that matches the reading theme shows (ThemedMedia.tsx).
+   These come after the display rule above so the hidden cut stays hidden. */
+.themed-light,
+.writing-literary .themed-light { display: none; }
+:root[data-writing-theme="light"] .writing-literary.reading .themed-light { display: block; }
+:root[data-writing-theme="light"] .writing-literary.reading .themed-dark { display: none; }
 .writing-literary .lit-figure { margin: 2rem 0; }
 .writing-literary .lit-clips { display: grid; gap: 1.5rem; margin: 2rem 0; }
 @media (min-width: 768px) { .writing-literary .lit-clips-2 { grid-template-columns: 1fr 1fr; } }
@@ -471,9 +488,20 @@ body {
   background: #1d1b18 !important;
   border-color: #1d1b18;
 }
-.writing-literary .lit-video,
 .writing-literary .lit-figure {
   border: 1px solid color-mix(in srgb, var(--lit-text) 18%, var(--lit-bg));
+}
+/* A <video> paints its frame over a border that sits on a fractional pixel (a 4:3 box at 390px
+   is 268.5px tall), which swallowed the bottom edge of the frame on phones. An inset outline is
+   painted after the content, so the full frame shows at every width. Keyboard focus keeps a
+   visible ring of its own. */
+.writing-literary .lit-video {
+  outline: 1px solid color-mix(in srgb, var(--lit-text) 18%, var(--lit-bg));
+  outline-offset: -1px;
+}
+.writing-literary .lit-video:focus-visible {
+  outline: 2px solid var(--lit-link);
+  outline-offset: 2px;
 }
 /* Click-to-enlarge (MediaZoom) */
 .writing-literary .lit-hero,
@@ -504,10 +532,6 @@ body {
 .writing-literary .lit-links { display: flex; flex-wrap: wrap; gap: 1.25rem; }
 .writing-literary .lit-links a { color: var(--lit-link); }
 .writing-literary .lit-links a:hover { text-decoration: underline; }
-.projects-noir .lit-cover-fallback {
-  background: var(--lit-bg);
-  border-color: var(--lit-rule);
-}
 
 /* /soup time slider — appearance-none removes the native thumb in
    WebKit/Blink; supply an explicit round thumb. Neutral gray on purpose:
@@ -578,15 +602,12 @@ body {
 .hud-tmux { display: flex; justify-content: space-between; background: #00cd00; color: #000; padding: 0 12px; white-space: pre; line-height: 1.35; }
 .hud-tmux-msg { background: #cdcd00; }
 .hud-controls { margin-top: 0.75rem; font-family: var(--font-mono), monospace; font-size: 0.8rem; }
-.hud-moods { display: flex; flex-wrap: wrap; gap: 0.4rem; }
-.hud-moods button { font: inherit; padding: 0.15rem 0.55rem; border: 1px solid color-mix(in srgb, var(--lit-text) 25%, transparent); border-radius: 999px; background: none; color: var(--lit-muted); cursor: pointer; }
-.hud-moods button[aria-pressed="true"] { color: var(--lit-text); border-color: var(--lit-text); }
 .hud-hint { margin: 0.5rem 0 0; color: var(--lit-muted); font-size: 0.8rem; }
 
 /* GFM footnotes ([^id]): citation markers and the reference list */
 .writing-literary sup a[data-footnote-ref] { text-decoration: none; font-size: 0.8em; padding: 0 0.1em; }
 .writing-literary [data-footnotes] { margin-top: 3rem; padding-top: 1.5rem; border-top: 1px solid color-mix(in srgb, var(--lit-text) 20%, transparent); font-size: 0.85em; color: var(--lit-muted); }
-.writing-literary [data-footnotes] h2 { font-size: 1rem; margin: 0 0 0.75rem; }
+.writing-literary [data-footnotes] h2 { font-size: 1rem; margin: 0 0 0.75rem; color: var(--lit-text); }
 .writing-literary [data-footnotes] li { margin: 0.35rem 0; }
 .writing-literary [data-footnotes] li p { margin: 0; }
 
@@ -594,12 +615,30 @@ body {
 .hud-crowd { display: grid; grid-template-columns: repeat(auto-fill, minmax(min(100%, 13.5rem), 1fr)); gap: 0.75rem; margin: 1.5rem 0 2rem; font-family: var(--font-mono), monospace; }
 .hud-critter { position: relative; display: flex; flex-direction: column; align-items: center; gap: 0.35rem; padding: 0.9rem 0.5rem 0.6rem; background: #0b0d0b; border: 1px solid #2a2d2a; border-radius: 8px; cursor: pointer; font: inherit; color: #d8d8d8; }
 .hud-critter:hover, .hud-critter[aria-pressed="true"] { border-color: #00cdcd; }
+.hud-critter { min-width: 0; }
+/* the dimmest states (the sleeper is xterm 240, 2.7:1 on the tile) are lifted to legibility */
+.hud-critter[data-mood="asleep"] .hud-critter-track { filter: brightness(1.6); }
+.hud-critter[data-mood="idle"] .hud-critter-track { filter: brightness(1.3); }
+/* the tiles are small terminal windows and stay dark in both themes; on paper they get the
+   terminal window's lift (a hairline ring and a soft shadow) so they read as six separate
+   tiles, not one dark slab */
+:root[data-writing-theme="light"] .writing-literary.reading .hud-critter {
+  border-color: #3a3d3a;
+  box-shadow: 0 0 0 1px rgb(29 27 24 / 0.08), 0 6px 16px rgb(29 27 24 / 0.16);
+}
+:root[data-writing-theme="light"] .writing-literary.reading .hud-critter:hover,
+:root[data-writing-theme="light"] .writing-literary.reading .hud-critter[aria-pressed="true"] { border-color: #00cdcd; }
 .hud-critter-track { white-space: pre; font-size: 15px; line-height: 1.35; overflow: hidden; max-width: 100%; }
 .hud-critter-label { font-size: 0.75rem; color: #8a8f8a; }
 .hud-critter-cloud { position: absolute; bottom: calc(100% + 6px); left: 50%; transform: translateX(-50%); z-index: 3; text-align: left; font-size: 12px; line-height: 1.35; width: max-content; max-width: min(46ch, 90vw); white-space: pre-wrap; background: #0b0d0b; }
 @media (max-width: 560px) {
-  .hud-crowd { grid-template-columns: 1fr 1fr; gap: 0.5rem; }
-  .hud-critter-track { font-size: 9px; }
+  /* minmax(0, 1fr): a bare 1fr track will not shrink below its tile's content, which pushed the
+     right column ~9px past the text column on a 390px phone */
+  .hud-crowd { grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 0.5rem; }
+  /* the sprite row is 30 cells wide: 9px where there is room, smaller on narrower phones so it
+     is never clipped by its tile (tile content = viewport/2 - 30px at this padding) */
+  .hud-critter { padding-left: 0.25rem; padding-right: 0.25rem; }
+  .hud-critter-track { font-size: min(9px, calc((100vw - 60px) / 36)); }
   .hud-critter-cloud { font-size: 11px; max-width: calc(200% - 1rem); transform: none; }
   .hud-critter:nth-child(odd) .hud-critter-cloud { left: 0; }
   .hud-critter:nth-child(even) .hud-critter-cloud { left: auto; right: 0; }
@@ -609,3 +648,182 @@ body {
 .writing-literary .project-prose pre { position: relative; padding-top: 2.4rem !important; }
 .copy-code { position: absolute; top: 0.45rem; right: 0.5rem; font-family: var(--font-mono), monospace; font-size: 0.7rem; padding: 0.15rem 0.5rem; border: 1px solid rgb(255 255 255 / 0.25); border-radius: 4px; background: rgb(255 255 255 / 0.06); color: #c8c3b8; cursor: pointer; }
 .copy-code:hover { color: #fff; border-color: rgb(255 255 255 / 0.6); }
+/* Anchored things clear the fixed top nav (~80px) when jumped to */
+.literary-prose [id] { scroll-margin-top: 6rem; }
+
+/* Table of contents (posts with toc: true): a <details> under the header */
+.writing-literary .lit-toc { font-family: var(--lit-serif); color: var(--lit-muted); font-size: 0.9rem; line-height: 1.35; }
+.writing-literary .lit-toc ol { list-style: none; margin: 0; padding: 0; }
+.writing-literary .lit-toc a { display: block; padding: 0.2rem 0; color: var(--lit-muted); text-decoration: none; transition: color 150ms; }
+.writing-literary .lit-toc a:hover,
+.writing-literary .lit-toc a:focus-visible { color: var(--lit-link); }
+.writing-literary .lit-toc .lit-toc-sub a { padding-left: 1rem; }
+.writing-literary .lit-toc-inline { margin: 0 0 2.25rem; scroll-margin-top: 6rem; }
+.writing-literary .lit-toc-inline summary { cursor: pointer; font-variant-caps: all-small-caps; letter-spacing: 0.08em; font-size: 0.95rem; }
+.writing-literary .lit-toc-inline summary:hover { color: var(--lit-link); }
+.writing-literary .lit-toc-inline ol { margin-top: 0.5rem; border-left: 1px solid color-mix(in srgb, var(--lit-text) 20%, transparent); padding-left: 0.75rem; }
+
+/* <Figure>: label line, art and caption; the quiet tint fades when a link lands on it */
+.writing-literary .essay-figure { margin: 2.5rem -0.75rem; padding: 0.75rem; }
+.writing-literary .essay-figure-head { display: flex; align-items: baseline; justify-content: space-between; gap: 1rem; }
+.writing-literary .essay-figure-label { margin: 0; color: var(--lit-text); }
+.writing-literary .essay-figure img { max-width: 100%; height: auto; }
+.writing-literary .essay-figure > :not(.essay-figure-head) { font-size: 0.92em; color: var(--lit-muted); }
+.writing-literary .fig-back { flex: none; font-size: 0.8rem; color: var(--lit-muted); text-decoration: none; white-space: nowrap; }
+.writing-literary .fig-back:hover,
+.writing-literary .fig-back:focus-visible { color: var(--lit-link); }
+.writing-literary .essay-figure:target,
+.writing-literary [data-footnotes] li:target { animation: lit-target-flash 2.4s ease-out; }
+@keyframes lit-target-flash {
+  from { background: color-mix(in srgb, var(--lit-link) 18%, transparent); }
+  to { background: transparent; }
+}
+@media (prefers-reduced-motion: reduce) {
+  .writing-literary .essay-figure:target,
+  .writing-literary [data-footnotes] li:target {
+    animation: none;
+    background: color-mix(in srgb, var(--lit-link) 10%, transparent);
+  }
+}
+
+/* Reader pills (ReaderPills): "back to where you were" stacked over "contents" */
+.writing-literary .lit-pills {
+  position: fixed;
+  right: 1rem;
+  bottom: 1.25rem;
+  z-index: 40;
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  gap: 0.5rem;
+}
+.writing-literary .lit-pill {
+  padding: 0.4rem 0.9rem;
+  font-family: var(--lit-serif);
+  font-size: 0.9rem;
+  color: var(--lit-text);
+  background: color-mix(in srgb, var(--lit-text) 10%, var(--lit-bg));
+  border: 1px solid color-mix(in srgb, var(--lit-text) 28%, var(--lit-bg));
+  border-radius: 999px;
+  cursor: pointer;
+  animation: lit-pill-in 200ms ease-out;
+}
+.writing-literary .lit-pill:hover,
+.writing-literary .lit-pill:focus-visible { color: var(--lit-link); border-color: var(--lit-link); }
+/* a post cover with a light cut shows the one that matches the reading theme */
+.writing-literary .lit-cover-light { display: none; }
+:root[data-writing-theme="light"] .writing-literary.reading .lit-cover-light { display: block; }
+:root[data-writing-theme="light"] .writing-literary.reading .lit-cover-dark { display: none; }
+
+.writing-literary .lit-pill-row { display: flex; align-items: center; gap: 0.5rem; }
+/* the light/dark toggle as a round pill beside "contents" */
+.writing-literary .lit-pill-icon { width: 2.25rem; height: 2.25rem; padding: 0; opacity: 1; }
+@keyframes lit-pill-in { from { opacity: 0; transform: translateY(0.5rem); } }
+@media (prefers-reduced-motion: reduce) { .writing-literary .lit-pill { animation: none; } }
+
+
+/* Essay section headings: serif in the page's own ink, as project bodies already do
+   (the shared mono rule hard-codes the dark text colour, invisible on cream) */
+.writing-literary .literary-prose > h2,
+.writing-literary .literary-prose > h3 {
+  font-family: var(--lit-serif);
+  color: var(--lit-text);
+  font-weight: 600;
+  line-height: 1.25;
+  margin: 2.2em 0 0.6em;
+}
+.writing-literary .literary-prose > h2 { font-size: 1.6rem; }
+.writing-literary .literary-prose > h3 { font-size: 1.3rem; }
+
+/* every figure sits on a quiet card, so it never reads as a quote */
+.writing-literary .essay-figure {
+  padding: 1rem 1.1rem;
+  border-radius: 4px;
+  background: color-mix(in srgb, var(--lit-text) 4%, transparent);
+}
+/* captions sit between muted and ink: plain muted on the card is ~3.9:1 in light */
+.writing-literary .essay-figure > :not(.essay-figure-head) { color: color-mix(in srgb, var(--lit-text) 40%, var(--lit-muted)); }
+/* the card only reaches past the text column where there is room for it */
+@media (max-width: 639px) {
+  .writing-literary .essay-figure { margin-left: 0; margin-right: 0; padding: 0.85rem 0.8rem; }
+}
+
+/* FlowDiagram: the site's dark tokens by default; paper tokens in light reading mode, so the
+   chips are cream cards with ink text and the highlighted step takes the page's link green */
+.flow-box { fill: var(--bg-secondary); stroke: var(--border); }
+.flow-box-on { stroke: var(--accent-green); }
+.flow-text { fill: var(--text-primary); }
+.flow-text-on { fill: var(--accent-green); font-weight: 600; }
+.flow-line { stroke: var(--text-secondary); }
+:root[data-writing-theme="light"] .writing-literary.reading .flow-box {
+  fill: color-mix(in srgb, var(--lit-text) 5%, var(--lit-bg));
+  stroke: color-mix(in srgb, var(--lit-text) 30%, var(--lit-bg));
+}
+:root[data-writing-theme="light"] .writing-literary.reading .flow-box-on {
+  fill: color-mix(in srgb, var(--lit-link) 10%, var(--lit-bg));
+  stroke: var(--lit-link);
+}
+:root[data-writing-theme="light"] .writing-literary.reading .flow-text { fill: var(--lit-text); }
+:root[data-writing-theme="light"] .writing-literary.reading .flow-text-on {
+  /* the link green pulled toward ink: 4.95:1 -> 6.8:1 on its pale chip */
+  fill: color-mix(in srgb, var(--lit-link) 70%, var(--lit-text));
+}
+:root[data-writing-theme="light"] .writing-literary.reading .flow-line { stroke: var(--lit-muted); }
+
+/* the cv's print-only title block: nothing on screen */
+.cv-print-title { display: none; }
+
+/* Print: black on white, no chrome. Everything on the site reads the palette tokens, so print
+   swaps the tokens (the dark ground and neon accents are screen choices) and hides the parts
+   that mean nothing on paper. The cv is the page people print; cards and headings are kept whole. */
+@page { margin: 12mm 14mm; }
+@media print {
+  :root {
+    --bg-primary: #ffffff;
+    --bg-secondary: #ffffff;
+    --bg-tertiary: #ffffff;
+    --text-primary: #000000;
+    --text-secondary: #262626;
+    --text-muted: #4d4d4d;
+    --accent-green: #0b5d1e;
+    --border: #b3b3b3;
+  }
+  .writing-literary,
+  :root[data-writing-theme="light"] .writing-literary.reading {
+    --lit-bg: #ffffff;
+    --lit-text: #000000;
+    --lit-muted: #4d4d4d;
+    --lit-link: #0b5d1e;
+  }
+  body { background: #fff; color: #000; }
+  nav,
+  a[download],
+  p:has(> a[download]) { display: none; }
+  .min-h-screen { min-height: 0; padding-top: 0; padding-bottom: 0; }
+  * { text-shadow: none !important; }
+  a { text-decoration: underline; text-underline-offset: 2px; }
+  /* The cv as a document, not a printed web page. Scoped by what only the cv has (its entries). */
+  html:has(.cv-entry) { font-size: 90%; }
+  /* the name is the title and the place its own smaller line: the page's "cv" label and its
+     name/place line give way to .cv-print-title, which exists only for print */
+  body:has(.cv-entry) header > h1,
+  body:has(.cv-entry) header > h1 + p { display: none; }
+  .cv-print-title { display: block; }
+  .cv-print-name { font-size: 1.6rem; font-weight: 700; line-height: 1.2; color: #000; }
+  .cv-print-loc { font-size: 0.85rem; font-weight: 400; color: #262626; margin-top: 0.15rem; }
+  body:has(.cv-entry) header { margin-bottom: 1rem; }
+  /* sections flow across pages; only a single entry stays whole, and a heading never ends a page */
+  .cv-entry { break-inside: avoid; border: 0; border-radius: 0; background: none; padding: 0; }
+  .cv-section { margin-bottom: 1rem; }
+  .cv-section > div:first-child { break-after: avoid; }
+  .cv-section h2 { color: #000; border-bottom: 1px solid #000; padding-bottom: 0.15rem; margin-bottom: 0.5rem; break-after: avoid; }
+  .cv-section > div:last-child > :not(:last-child) { margin-block-end: 0.5rem; }
+  /* links read as text; a printed DOI link shows its address, since "doi" alone cannot be followed */
+  .cv-entry a { color: #000; text-decoration: none; }
+  .cv-entry a[href^="https://doi.org/"] { font-size: 0; }
+  .cv-entry a[href^="https://doi.org/"]::after {
+    content: attr(href);
+    font-size: 0.75rem;
+    overflow-wrap: anywhere;
+  }
+}

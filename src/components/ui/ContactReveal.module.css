@@ -1,0 +1,59 @@
+/* Hidden by a rule inside <noscript> when scripts are off; the spelled-out fallback shows instead. */
+.live {
+  min-width: 0;
+}
+
+.caret {
+  display: inline-block;
+  width: 0.55em;
+  height: 1.05em;
+  margin-left: 1px;
+  vertical-align: text-bottom;
+  background: currentColor;
+}
+
+/* Touch and small screens: a 44px-tall target without moving any layout. The extra
+   area is an invisible box centered on the control, so rows keep their spacing
+   (the gap between rows is what it extends into). */
+.hit {
+  position: relative;
+}
+
+@media (max-width: 640px), (pointer: coarse) {
+  .hit::after {
+    content: "";
+    position: absolute;
+    left: -6px;
+    right: -6px;
+    top: calc(50% - 22px);
+    height: 44px;
+  }
+}
+
+/* Paper: the address is joined from data attributes by CSS (no script, no literal). */
+.print {
+  display: none;
+}
+
+.printAddr::after {
+  content: attr(data-u) "\000040" attr(data-d) "." attr(data-t);
+}
+
+@media print {
+  .print {
+    display: inline-flex;
+    gap: 0.5rem;
+  }
+
+  .live,
+  .plain,
+  .copy {
+    display: none !important;
+  }
+
+  .ink,
+  .ink a {
+    color: #000 !important;
+    text-shadow: none !important;
+  }
+}

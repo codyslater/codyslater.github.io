@@ -13,6 +13,7 @@ export type Post = {
   summary: string;
   tags: string[];
   draft: boolean;
+  toc: boolean; // true: show a table of contents built from the h2/h3 headings
   external?: string; // http(s) URL; the post lives there, so it has no page here
   body: string; // raw MDX
 };
@@ -147,6 +148,15 @@ function optionalDraft(data: Record<string, unknown>, file: string): boolean {
   return v;
 }
 
+function optionalToc(data: Record<string, unknown>, file: string): boolean {
+  const v = data.toc;
+  if (v === undefined) return false;
+  if (typeof v !== "boolean") {
+    throw new Error(`${file}: frontmatter field "toc" must be true or false`);
+  }
+  return v;
+}
+
 function optionalVideoThemed(data: Record<string, unknown>, file: string): boolean {
   const v = data.video_themed;
   if (v === undefined) return true;
@@ -239,6 +249,7 @@ export function getPosts(): Post[] {
         summary: requireString(data, file, "summary"),
         tags: optionalTags(data, file),
         draft: optionalDraft(data, file),
+        toc: optionalToc(data, file),
         external: optionalExternal(data, file),
         body,
       };
@@ -317,12 +328,4 @@ export function getProject(slug: string): Project {
     throw new Error(`content/projects/${slug}.mdx: project not found`);
   }
   return project;
-}
-
-export function projectPrimaryLink(project: Project): string | null {
-  for (const key of LINK_KEYS) {
-    const href = project.links[key];
-    if (href) return href;
-  }
-  return null;
 }

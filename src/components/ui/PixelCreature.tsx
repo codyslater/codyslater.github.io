@@ -1,21 +1,11 @@
 "use client";
 
-import { useRef, useEffect, useState } from "react";
-import { GRID, PAD, UNITS, CANVAS_W, CANVAS_H } from "@/components/creature/geometry";
-import { mulberry32, generateCreature } from "@/components/creature/generation";
-import { drawGrid, runStyle, type RunHandle } from "@/components/creature/engine";
-import { BIRTHS, DEATHS } from "@/components/creature/styles";
-import { fadeIn, fadeOut } from "@/components/creature/styles/fades";
-import { useIdleLife } from "@/components/creature/useIdleLife";
+import { useRef, useEffect } from "react";
+import { GRID, PAD, UNITS } from "@/components/creature/geometry";
+import { Stage, type Overrides } from "@/components/creature/stage";
 import { usePrefersReducedMotion } from "@/components/creature/usePrefersReducedMotion";
-import {
-  DEATH_CAP_MS, TEMPERAMENTS, deathSpeed, temperamentForSeed, weightedPick,
-} from "@/components/creature/temperaments";
-import type {
-  BirthName, DeathName, Grid, TemperamentName, TicName,
-} from "@/components/creature/types";
+import type { BirthName, DeathName, TemperamentName } from "@/components/creature/types";
 
-// --- Component ---
 export type CreatureDebugOverrides = {
   temperament?: TemperamentName;
   birth?: BirthName;
@@ -30,112 +20,74 @@ interface PixelCreatureProps {
   debugOverrides?: CreatureDebugOverrides;
 }
 
-const TIC_ANIMS: Record<TicName, string> = {
-  jump: "creature-jump 0.35s ease-out",
-  wiggle: "creature-wiggle 0.4s ease-in-out",
-  spin: "creature-spin 0.45s ease-in-out",
-  tilt: "creature-tilt 0.4s ease-in-out",
-  squash: "creature-squash 0.45s ease-in-out",
-};
-
+// A creature that stays where it is: its own small canvas, with room around
+// it for an ending. The nav screen's roaming creature is CreatureStage.
 export function PixelCreature({
   seed, size = 80, melting = false, onDeathComplete, debugOverrides,
 }: PixelCreatureProps) {
   const canvasRef = useRef<HTMLCanvasElement>(null);
-  const gridRef = useRef<Grid | null>(null);
-  const handleRef = useRef<RunHandle | null>(null);
-  const [idle, setIdle] = useState(false);
-
-  const temperament = debugOverrides?.temperament
-    ? TEMPERAMENTS[debugOverrides.temperament]
-    : temperamentForSeed(seed);
-
+  const stageRef = useRef<Stage | null>(null);
   const reduced = usePrefersReducedMotion();
 
-  // ref-stabilized like CyclingTagline's callbacks — must not restart effects
-  const onDeathCompleteRef = useRef(onDeathComplete);
-  onDeathCompleteRef.current = onDeathComplete;
-  const overridesRef = useRef(debugOverrides);
-  overridesRef.current = debugOverrides;
-  const reducedRef = useRef(reduced);
-  reducedRef.current = reduced;
+  // latest values for effects that must not restart when they change
+  const latest = useRef({ onDeathComplete, debugOverrides, reduced });
+  useEffect(() => {
+    latest.current = { onDeathComplete, debugOverrides, reduced };
+  });
 
-  // Display size — creature portion = size, full (padded) canvas scales
-  // proportionally; negative margins pull it back to the same visible
-  // position it held before padding was added.
+  // `size` is the creature's own display size; the padded canvas scales with it,
+  // and negative margins keep the creature itself at the box's top-left.
   const fullDisplay = (size * UNITS) / GRID;
   const margin = -(size * PAD) / GRID;
 
-  // Build-up animation on every seed change (including first)
   useEffect(() => {
-    setIdle(false);
-    const ctx = canvasRef.current?.getContext("2d");
-    if (!ctx) return;
-    handleRef.current?.cancel();
-    const grid = generateCreature(seed);
-    gridRef.current = grid;
-    const t = overridesRef.current?.temperament
-      ? TEMPERAMENTS[overridesRef.current.temperament]
-      : temperamentForSeed(seed);
-    const rng = mulberry32(seed * 3571);
-    const birthName = overridesRef.current?.birth ?? weightedPick(rng, t.birthWeights);
-    const style = reducedRef.current ? fadeIn : BIRTHS[birthName];
-    handleRef.current = runStyle(
-      ctx, style, grid, rng,
-      { intensity: t.intensity, speed: t.speed },
-      () => {
-        drawGrid(ctx, grid);
-        setIdle(true);
-      },
-    );
-    return () => handleRef.current?.cancel();
+    const canvas = canvasRef.current;
+    if (!canvas) return;
+    const stage = new Stage(canvas, {
+      contained: true,
+      reduced: latest.current.reduced,
+      onDeathComplete: () => latest.current.onDeathComplete?.(),
+    });
+    stageRef.current = stage;
+    return () => {
+      stage.destroy();
+      stageRef.current = null;
+    };
+  }, []);
+
+  useEffect(() => {
+    stageRef.current?.setReduced(reduced);
+  }, [reduced]);
+
+  // The birth animation plays on every seed change, the first included.
+  useEffect(() => {
+    const o: Overrides | undefined = latest.current.debugOverrides;
+    stageRef.current?.spawn(seed, { overrides: o });
   }, [seed]);
 
-  // Melt / scatter animation
+  // The ending plays when `melting` turns on.
   useEffect(() => {
-    if (!melting || !gridRef.current) return;
-    setIdle(false);
-    const ctx = canvasRef.current?.getContext("2d");
-    if (!ctx) return;
-    handleRef.current?.cancel();
-    const grid = gridRef.current;
-    const t = overridesRef.current?.temperament
-      ? TEMPERAMENTS[overridesRef.current.temperament]
-      : temperamentForSeed(seed);
-    const rng = mulberry32(seed * 7919);
-    const deathName = overridesRef.current?.death ?? weightedPick(rng, t.deathWeights);
-    const style = reducedRef.current ? fadeOut : DEATHS[deathName];
-    handleRef.current = runStyle(
-      ctx, style, grid, rng,
-      { intensity: t.intensity, speed: deathSpeed(t.speed), maxMs: DEATH_CAP_MS },
-      () => onDeathCompleteRef.current?.(),
-    );
-    return () => handleRef.current?.cancel();
+    if (!melting) return;
+    stageRef.current?.kill({ overrides: latest.current.debugOverrides });
   }, [melting, seed]);
 
-  const { tic, breathStyle } = useIdleLife({
-    active: idle && !melting, seed, temperament, reduced, canvasRef, gridRef,
-  });
-
   return (
-    <div style={{ width: size, height: size, overflow: "visible", ...breathStyle }}>
-      <div style={tic ? { animation: TIC_ANIMS[tic] } : undefined}>
-        <canvas
-          ref={canvasRef}
-          width={CANVAS_W}
-          height={CANVAS_H}
-          aria-hidden="true"
-          style={{
-            width: fullDisplay,
-            height: fullDisplay,
-            marginLeft: margin,
-            marginTop: margin,
-            imageRendering: "pixelated",
-            pointerEvents: "none",
-          }}
-          className="rounded-sm"
-        />
-      </div>
+    <div style={{ width: size, height: size, overflow: "visible" }}>
+      <canvas
+        ref={canvasRef}
+        width={UNITS * 8}
+        height={UNITS * 8}
+        aria-hidden="true"
+        style={{
+          width: fullDisplay,
+          height: fullDisplay,
+          marginLeft: margin,
+          marginTop: margin,
+          imageRendering: "pixelated",
+          pointerEvents: "none",
+        }}
+        className="rounded-sm"
+      />
     </div>
   );
 }

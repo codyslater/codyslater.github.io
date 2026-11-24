@@ -16,6 +16,7 @@ export function ZooClient() {
   const [killSignal, setKillSignal] = useState(0);
   const [overrides, setOverrides] = useState<CreatureDebugOverrides>({});
 
+  // eslint-disable-next-line react-hooks/set-state-in-effect -- random seeds are made after mount so they cannot differ from the prerendered HTML
   useEffect(() => { setSeeds(newSeeds()); }, []);
 
   const extinction = useCallback(() => setKillSignal((k) => k + 1), []);

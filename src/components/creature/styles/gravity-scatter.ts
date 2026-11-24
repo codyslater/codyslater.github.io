@@ -3,7 +3,7 @@ import type { Style } from "../types";
 import { pixelsFromGrid } from "./helpers";
 
 // Death — canvas-wide / downward / ballistic / bottom-up rows.
-export const gravityScatter: Style = {
+export const gravityScatter: Omit<Style, "duration"> = {
   name: "gravity-scatter",
   init(grid, rng, intensity) {
     return pixelsFromGrid(grid).map((p) => ({

@@ -4,7 +4,7 @@ import { pixelsFromGrid, progress } from "./helpers";
 
 // Birth — off-screen / all four edges → inward / impulse + drag decay /
 // radial stagger (innermost first).
-export const implodeFromEdges: Style = {
+export const implodeFromEdges: Omit<Style, "duration"> = {
   name: "implode-from-edges",
   init(grid, rng, intensity) {
     return pixelsFromGrid(grid).map((p) => {

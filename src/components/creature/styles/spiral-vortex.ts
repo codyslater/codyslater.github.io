@@ -1,39 +1,62 @@
 import { CENTER } from "../geometry";
-import type { Style } from "../types";
-import { easeOutCubic, pixelsFromGrid, progress } from "./helpers";
+import { darker, mix } from "../palette";
+import type { PixelAnim, Style } from "../types";
+import { clamp01, easeOutCubic, pixelsFromGrid } from "./helpers";
 
-// Birth — canvas-wide / circular orbit shrinking onto the body / floaty
-// angular drift / staggered by angular position.
+const DURATION = 880;
+const ECHO_LAG = [48, 100]; // the trailing arc: two echoes behind every cell
+
+// Birth — the cells arrive along a spiral, winding in from beyond the body
+// about its middle, each with a short trailing arc of dimmer echoes behind
+// it, so the spiral itself is visible. Each cell lands on its own spot.
+// Scratch: phase = final angle, vr = final radius, vc = turns still to unwind
+// (radians), keep = an echo's lag in ms (0 for the cell itself).
 export const spiralVortex: Style = {
   name: "spiral-vortex",
-  init(grid, rng, intensity) {
+  duration: DURATION,
+  init(grid, rng) {
     const spin = rng() < 0.5 ? 1 : -1;
-    return pixelsFromGrid(grid).map((p) => {
+    const turn = (0.8 + rng() * 0.4) * Math.PI * 2;
+    const body = pixelsFromGrid(grid).map((p) => {
       const dr = p.targetR - CENTER;
       const dc = p.targetC - CENTER;
+      const ang = Math.atan2(dr, dc);
       return {
         ...p,
-        phase: Math.atan2(dr, dc), // final angle
-        vr: Math.hypot(dr, dc), // final radius (scratch reuse)
-        vc: spin * (1.5 + rng()) * Math.PI * intensity, // extra angle to unwind
-        delay: ((Math.atan2(dr, dc) + Math.PI) / (2 * Math.PI)) * 200,
-        duration: 450 + rng() * 100,
+        phase: ang,
+        vr: Math.hypot(dr, dc),
+        vc: spin * turn,
+        delay: ((ang + Math.PI) / (2 * Math.PI)) * 170,
+        duration: 480 + rng() * 80,
+        keep: 0,
       };
     });
+    const echoes: PixelAnim[] = [];
+    for (const p of body) {
+      ECHO_LAG.forEach((lag, i) => {
+        echoes.push({ ...p, keep: lag, alpha: 0, color: darker(p.base, 0.35 + i * 0.2) });
+      });
+    }
+    return [...body, ...echoes];
   },
   step(pixels, elapsed) {
-    let running = false;
     for (const p of pixels) {
-      const t = progress(p, elapsed);
-      if (t < 1) running = true;
-      if (elapsed < p.delay) { p.alpha = 0; continue; }
-      p.alpha = 1;
+      const lag = p.keep ?? 0;
+      const t = clamp01((elapsed - lag - p.delay) / p.duration);
+      if (elapsed - lag < p.delay) { p.alpha = 0; continue; }
       const e = easeOutCubic(t);
       const ang = p.phase + p.vc * (1 - e);
-      const rad = p.vr + (CENTER + 2 - p.vr) * (1 - e); // spiral in from beyond edge
+      const rad = p.vr + (10.5 - p.vr) * (1 - e); // winds in from a ring around the body
       p.r = CENTER + Math.sin(ang) * rad;
       p.c = CENTER + Math.cos(ang) * rad;
+      if (lag > 0) {
+        // an echo: dim while it flies, gone when it reaches its place
+        p.alpha = t >= 1 ? 0 : lag < 70 ? 0.6 : 0.3;
+      } else {
+        p.alpha = 1;
+        p.color = t < 0.55 ? mix(p.base, "#ffffff", 0.4) : p.base;
+      }
     }
-    return running;
+    return elapsed < DURATION;
   },
 };

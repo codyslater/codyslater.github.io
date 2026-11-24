@@ -4,6 +4,8 @@ export type NavItem = {
   icon: string;
   color?: string;
   external?: boolean;
+  /** Side space inside the icon glyph, in em: trimmed so the visible gaps between links are equal. */
+  inkTrim?: number;
 };
 
 // The single source of truth for navigation. Consumed by NavBar, NavGrid,
@@ -13,6 +15,7 @@ const nav: NavItem[] = [
   { label: "publications", href: "/publications", icon: "[]" },
   { label: "projects", href: "/projects", icon: "/>" },
   { label: "writing", href: "/writing", icon: ">>" },
+  { label: "cv", href: "/cv", icon: "::", inkTrim: 0.27 },
 ];
 
 // Share-card image for every page (page-level openGraph replaces the layout's, so each page lists it).

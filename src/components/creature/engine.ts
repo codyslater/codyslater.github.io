@@ -1,64 +1,85 @@
-import { CANVAS_H, CANVAS_W, GRID, PAD, SCALE } from "./geometry";
-import type { Grid, PixelAnim, Rng, Style } from "./types";
+import { PAD } from "./geometry";
+import type { PixelAnim, Remain, StyleEnv } from "./types";
 
-export type RunHandle = { cancel: () => void };
+// Drawing, shared by every canvas the creature appears on. Positions are in
+// units (one unit = one sprite cell = `k` canvas pixels). Everything is drawn
+// on the creature's own pixel grid: a pixel sits on a whole cell, never in
+// between, and fades in a few steps, never smoothly, so edges stay sharp.
 
-// Draw the resting creature (used after a birth settles and for blink repaints).
-export function drawGrid(ctx: CanvasRenderingContext2D, grid: Grid) {
-  ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
-  for (let r = 0; r < GRID; r++) {
-    for (let c = 0; c < GRID; c++) {
-      if (grid[r][c]) {
-        ctx.fillStyle = grid[r][c]!;
-        ctx.fillRect((c + PAD) * SCALE, (r + PAD) * SCALE, SCALE, SCALE);
-      }
-    }
-  }
-}
-
-export function drawPixels(ctx: CanvasRenderingContext2D, pixels: PixelAnim[]) {
-  ctx.clearRect(0, 0, CANVAS_W, CANVAS_H);
+// Pixel animations live in sprite-canvas rows and columns (PAD included);
+// (oy, ox) is where the sprite's own top-left sits on the stage, in units.
+export function drawPixels(
+  ctx: CanvasRenderingContext2D,
+  pixels: PixelAnim[],
+  ox: number,
+  oy: number,
+  k: number,
+  groundPx: number,
+) {
+  // nothing is drawn below the ground line: debris lands behind it
+  ctx.save();
+  ctx.beginPath();
+  ctx.rect(-8192, -8192, 16384, 8192 + groundPx);
+  ctx.clip();
+  const cell = Math.round(k);
   for (const p of pixels) {
     if (p.done || p.alpha <= 0) continue;
-    ctx.globalAlpha = p.alpha > 1 ? 1 : p.alpha;
+    const a = stepAlpha(p.alpha);
+    if (a <= 0) continue;
+    ctx.globalAlpha = a;
     ctx.fillStyle = p.color;
-    ctx.fillRect(Math.round(p.c * SCALE), Math.round(p.r * SCALE), SCALE, SCALE);
+    ctx.fillRect((ox + Math.round(p.c) - PAD) * cell, (oy + Math.round(p.r) - PAD) * cell, cell, cell);
   }
-  ctx.globalAlpha = 1;
+  ctx.restore();
 }
 
-// One rAF loop per active animation. speed > 1 slows the style down
-// (elapsed is divided by it); maxMs is a WALL-CLOCK hard stop (death cap).
-export function runStyle(
+// Four levels of see-through, no more: a fade reads as steps, like the rest.
+function stepAlpha(a: number): number {
+  if (a >= 0.88) return 1;
+  if (a >= 0.6) return 0.75;
+  if (a >= 0.34) return 0.5;
+  if (a >= 0.12) return 0.25;
+  return 0;
+}
+
+// Nothing is cut by the edge of the stage: a pixel that nears the top or a
+// side fades out over its last four cells instead of being clipped.
+export function fitToStage(pixels: PixelAnim[], env: StyleEnv) {
+  for (const p of pixels) {
+    if (p.done || p.alpha <= 0) continue;
+    const r = Math.round(p.r);
+    const c = Math.round(p.c);
+    const room = Math.min(r - env.topR, c - env.leftC, env.rightC - 1 - c);
+    if (room < 4) p.alpha *= room < 0 ? 0 : (room + 1) / 5;
+  }
+}
+
+// How far outside the stage a set of pixels reaches, in cells (0 = inside).
+export function overshoot(pixels: PixelAnim[], env: StyleEnv): number {
+  let worst = 0;
+  for (const p of pixels) {
+    if (p.alpha <= 0.12) continue;
+    const r = Math.round(p.r);
+    const c = Math.round(p.c);
+    worst = Math.max(worst, env.topR - r, env.leftC - c, c - (env.rightC - 1));
+  }
+  return worst;
+}
+
+// Loose points already in stage units (the leftovers of an ending, fading).
+export function drawRemains(
   ctx: CanvasRenderingContext2D,
-  style: Style,
-  grid: Grid,
-  rng: Rng,
-  opts: { intensity: number; speed: number; maxMs?: number },
-  onDone: () => void,
-): RunHandle {
-  const pixels = style.init(grid, rng, opts.intensity);
-  let raf = 0;
-  let cancelled = false;
-  const start = performance.now();
-
-  const frame = (now: number) => {
-    if (cancelled) return;
-    const wall = now - start;
-    const running = style.step(pixels, wall / opts.speed);
-    drawPixels(ctx, pixels);
-    if (running && !(opts.maxMs !== undefined && wall >= opts.maxMs)) {
-      raf = requestAnimationFrame(frame);
-    } else {
-      onDone();
-    }
-  };
-  raf = requestAnimationFrame(frame);
-
-  return {
-    cancel: () => {
-      cancelled = true;
-      if (raf) cancelAnimationFrame(raf);
-    },
-  };
+  pts: Remain[],
+  alpha: number,
+  k: number,
+) {
+  const a = stepAlpha(alpha);
+  if (a <= 0) return;
+  const cell = Math.round(k);
+  ctx.globalAlpha = a;
+  for (const p of pts) {
+    ctx.fillStyle = p.color;
+    ctx.fillRect(Math.round(p.c) * cell, Math.round(p.r) * cell, cell, cell);
+  }
+  ctx.globalAlpha = 1;
 }

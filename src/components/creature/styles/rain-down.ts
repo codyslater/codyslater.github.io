@@ -3,7 +3,7 @@ import { pixelsFromGrid, progress } from "./helpers";
 
 // Birth — off-screen / above → down / accelerating fall with one small
 // bounce on landing / random stagger.
-export const rainDown: Style = {
+export const rainDown: Omit<Style, "duration"> = {
   name: "rain-down",
   init(grid, rng, intensity) {
     return pixelsFromGrid(grid).map((p) => ({

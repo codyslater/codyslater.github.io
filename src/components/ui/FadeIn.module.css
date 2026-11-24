@@ -1,0 +1,29 @@
+/*
+ * Entrance animation for FadeIn. The element is fully visible in the static
+ * HTML: the animation is an enhancement that only runs when the browser can
+ * play it, so text never ships hidden behind a script (or a print/reduced-
+ * motion setting). `both` holds the 0% keyframe during the delay.
+ */
+@keyframes fade-in {
+  from {
+    opacity: 0;
+    transform: translateY(var(--fade-y, 0px));
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .fade {
+    animation: fade-in 0.6s ease-out both;
+    animation-delay: var(--fade-delay, 0s);
+  }
+}
+
+@media print {
+  .fade {
+    animation: none;
+  }
+}

@@ -4,15 +4,20 @@ import { useEffect, useRef, useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { BlinkingCursor } from "./BlinkingCursor";
 import { siteConfig } from "@/lib/constants";
+import { usePrefersReducedMotion } from "@/components/creature/usePrefersReducedMotion";
 
-const WORDS = [
-  "engineer",
-  "scientist",
-  "medical student",
-  "thinker",
-  "curious",
-  "dreamer",
-  "committed to helping humanity thrive",
+// One phrase on the line. The five fields carry their own color; every other
+// phrase stays text-secondary. The last phrase is special: it is never deleted
+// letter by letter, the line just clears and starts over.
+type Phrase = { text: string; color?: string };
+
+const WORDS: Phrase[] = [
+  { text: "prototyping executable biology" },
+  { text: "engineer" },
+  { text: "scientist" },
+  { text: "medical student" },
+  ...siteConfig.interests.map(({ label, color }) => ({ text: label, color })),
+  { text: "committed to helping humanity thrive" },
 ];
 
 const DIRS = siteConfig.nav.map((item) => item.label);
@@ -23,33 +28,34 @@ const DIR_HREFS: Record<string, string> = Object.fromEntries(
 const TYPE_SPEED = 70;
 const DELETE_SPEED = 40;
 const PAUSE_AFTER_TYPE = 1500;
+const FIRST_PAUSE = 3000; // the opening phrase holds twice as long, once
 const PAUSE_AFTER_DELETE = 300;
-const MELT_LEAD = 500; // ms before word transition to fire melt
 
 interface CyclingTaglineProps {
-  onWordChange?: () => void;
-  onDeletingStart?: () => void;
+  /** The word is gone and the next phrase is about to type; `color` is that phrase's own color, if it has one. */
+  onWordChange?: (next: { color?: string }) => void;
 }
 
-export function CyclingTagline({ onWordChange, onDeletingStart }: CyclingTaglineProps) {
+export function CyclingTagline({ onWordChange }: CyclingTaglineProps) {
   const [displayed, setDisplayed] = useState("");
+  const [color, setColor] = useState<string | undefined>(undefined);
+  const seenFirstRef = useRef(false);
   const [cursorBlinking, setCursorBlinking] = useState(true);
   const [interactive, setInteractive] = useState(false);
   const [input, setInput] = useState("");
   const inputRef = useRef<HTMLInputElement>(null);
   const timeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-  const meltTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
   const router = useRouter();
+  const reduced = usePrefersReducedMotion();
+  const [fade, setFade] = useState(1);
 
-  // Stable refs for callbacks — avoids restarting the cycling effect
+  // A ref for the callback, so a new function does not restart the cycling effect
   const onWordChangeRef = useRef(onWordChange);
   onWordChangeRef.current = onWordChange;
-  const onDeletingStartRef = useRef(onDeletingStart);
-  onDeletingStartRef.current = onDeletingStart;
 
   // Cycling animation
   useEffect(() => {
-    if (interactive) return;
+    if (interactive || reduced) return;
 
     let wordIndex = 0;
     let charIndex = 0;
@@ -58,22 +64,20 @@ export function CyclingTagline({ onWordChange, onDeletingStart }: CyclingTagline
 
     function tick() {
       if (cancelled) return;
-      const word = WORDS[wordIndex];
+      const { text: word, color: wordColor } = WORDS[wordIndex];
+      const nextColor = WORDS[(wordIndex + 1) % WORDS.length].color;
 
       if (!isDeleting) {
         charIndex++;
         setDisplayed(word.slice(0, charIndex));
+        setColor(wordColor);
         setCursorBlinking(false);
 
         if (charIndex === word.length) {
           setCursorBlinking(true);
           const isLast = wordIndex === WORDS.length - 1;
-
-          // Fire melt MELT_LEAD ms before the word transitions
-          if (meltTimeoutRef.current) clearTimeout(meltTimeoutRef.current);
-          meltTimeoutRef.current = setTimeout(() => {
-            if (!cancelled) onDeletingStartRef.current?.();
-          }, PAUSE_AFTER_TYPE - MELT_LEAD);
+          const pause = wordIndex === 0 && !seenFirstRef.current ? FIRST_PAUSE : PAUSE_AFTER_TYPE;
+          if (wordIndex === 0) seenFirstRef.current = true;
 
           timeoutRef.current = setTimeout(() => {
             if (cancelled) return;
@@ -81,13 +85,13 @@ export function CyclingTagline({ onWordChange, onDeletingStart }: CyclingTagline
               charIndex = 0;
               setDisplayed("");
               wordIndex = 0;
-              onWordChangeRef.current?.();
+              onWordChangeRef.current?.({ color: nextColor });
               timeoutRef.current = setTimeout(tick, PAUSE_AFTER_DELETE);
             } else {
               isDeleting = true;
               tick();
             }
-          }, PAUSE_AFTER_TYPE);
+          }, pause);
           return;
         }
 
@@ -101,7 +105,7 @@ export function CyclingTagline({ onWordChange, onDeletingStart }: CyclingTagline
         if (charIndex === 0) {
           isDeleting = false;
           wordIndex = (wordIndex + 1) % WORDS.length;
-          onWordChangeRef.current?.();
+          onWordChangeRef.current?.({ color: nextColor });
           timeoutRef.current = setTimeout(tick, PAUSE_AFTER_DELETE);
           return;
         }
@@ -115,9 +119,37 @@ export function CyclingTagline({ onWordChange, onDeletingStart }: CyclingTagline
     return () => {
       cancelled = true;
       if (timeoutRef.current) clearTimeout(timeoutRef.current);
-      if (meltTimeoutRef.current) clearTimeout(meltTimeoutRef.current);
     };
-  }, [interactive]);
+  }, [interactive, reduced]);
+
+  // Reduced motion: no typing and no cursor. The whole phrase is shown, held,
+  // faded out, and the next one faded in; it opens on the first phrase.
+  useEffect(() => {
+    if (interactive || !reduced) return;
+    let i = 0;
+    let cancelled = false;
+    const timers: ReturnType<typeof setTimeout>[] = [];
+    const later = (fn: () => void, ms: number) => timers.push(setTimeout(() => { if (!cancelled) fn(); }, ms));
+    const show = () => {
+      setDisplayed(WORDS[i].text);
+      setColor(WORDS[i].color);
+      setFade(1);
+      later(() => {
+        setFade(0);
+        later(() => {
+          i = (i + 1) % WORDS.length;
+          onWordChangeRef.current?.({ color: WORDS[i].color });
+          show();
+        }, 350);
+      }, i === 0 && !seenFirstRef.current ? FIRST_PAUSE : PAUSE_AFTER_TYPE + 1000);
+      if (i === 0) seenFirstRef.current = true;
+    };
+    show();
+    return () => {
+      cancelled = true;
+      timers.forEach(clearTimeout);
+    };
+  }, [interactive, reduced]);
 
   const handleClick = useCallback(() => {
     if (interactive) return;
@@ -187,14 +219,19 @@ export function CyclingTagline({ onWordChange, onDeletingStart }: CyclingTagline
 
   return (
     <span
-      className="font-mono text-sm cursor-text"
+      className="font-mono text-xs min-[380px]:text-sm whitespace-nowrap cursor-text"
       onClick={handleClick}
     >
       <span className="text-accent-green">$ </span>
-      <span className="text-secondary">{displayed}</span>
-      <BlinkingCursor
-        className={cursorBlinking ? "" : "!animate-none !opacity-100"}
-      />
+      <span
+        className={color ? undefined : "text-secondary"}
+        style={{ ...(color ? { color } : {}), ...(reduced ? { opacity: fade, transition: "opacity 300ms ease" } : {}) }}
+      >{displayed}</span>
+      {!reduced && (
+        <BlinkingCursor
+          className={cursorBlinking ? "" : "!animate-none !opacity-100"}
+        />
+      )}
     </span>
   );
 }

@@ -22,10 +22,6 @@ export function Specimen({
   const [seed, setSeed] = useState(initialSeed);
   const [melting, setMelting] = useState(false);
 
-  // Parent key changes normally remount us on reroll; this reset is a
-  // safety net in case the key coupling ever changes.
-  useEffect(() => { setSeed(initialSeed); setMelting(false); }, [initialSeed]);
-
   useEffect(() => {
     if (killSignal === 0) return;
     const t = setTimeout(() => setMelting(true), killDelay);

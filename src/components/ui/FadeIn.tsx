@@ -1,31 +1,35 @@
-"use client";
-
-import { motion } from "framer-motion";
+import type { CSSProperties, ReactNode } from "react";
+import styles from "./FadeIn.module.css";
 
 interface FadeInProps {
-  children: React.ReactNode;
+  children: ReactNode;
   delay?: number;
   className?: string;
   direction?: "up" | "down" | "none";
+  /** Keep `delay` as given. Without it the delay is capped at MAX_DELAY so a
+   *  long list's stagger never holds text back. Only the nav screen opts in. */
+  stagger?: boolean;
 }
+
+const MAX_DELAY = 0.5;
 
 export function FadeIn({
   children,
   delay = 0,
   className = "",
   direction = "up",
+  stagger = false,
 }: FadeInProps) {
   const y = direction === "up" ? 16 : direction === "down" ? -16 : 0;
+  const d = stagger ? delay : Math.min(delay, MAX_DELAY);
+  const style = {
+    "--fade-y": `${y}px`,
+    "--fade-delay": `${d}s`,
+  } as CSSProperties;
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y }}
-      whileInView={{ opacity: 1, y: 0 }}
-      viewport={{ once: true, margin: "-50px" }}
-      transition={{ duration: 0.6, delay, ease: "easeOut" }}
-      className={className}
-    >
+    <div className={`${styles.fade} ${className}`.trim()} style={style}>
       {children}
-    </motion.div>
+    </div>
   );
 }

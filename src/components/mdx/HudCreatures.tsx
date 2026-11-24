@@ -62,6 +62,7 @@ export function HudCreatures({ src }: { src: string }) {
           key={c.id}
           type="button"
           className="hud-critter"
+          data-mood={c.id}
           aria-pressed={open === c.id}
           onClick={(e) => {
             e.stopPropagation();
