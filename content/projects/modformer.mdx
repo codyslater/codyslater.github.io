@@ -1,0 +1,118 @@
+---
+title: ModFormer
+summary: One structure-aware model that predicts which adenosines in a transcript are A-to-I edited, and by how much.
+tags: [rna editing, deep learning, pytorch, rna structure]
+links:
+  github: https://github.com/nygctech/ModFormer
+order: 0
+video: /projects/modformer/cover
+video_themed: false
+video_ratio: 1640 / 1205
+cover: /projects/modformer/cover.webp
+draft: false
+---
+
+ADAR enzymes convert adenosine to inosine (A-to-I) in double-stranded RNA, and the cell reads
+inosine as guanosine. One edit can change a protein without touching the genome: the Q/R site of
+the glutamate receptor GluR-B is edited in nearly every transcript, and mice that cannot edit it
+die of seizures. I wrote about why this matters for neurons in
+[RNA and neural computation](/writing/2025-05-12-rna-and-neural-computation/). That essay ended on
+a need: better methods to survey the whole transcriptome for functionally active A-to-I sites.
+
+ModFormer is my answer to that need. Earlier predictors were each trained on one dataset, one
+species, or one question: is this site edited, or how much? ModFormer is one model for all of
+them. It reads sequence and RNA structure together, and returns two numbers for every adenosine:
+how much the site resembles observed editing sites, and the predicted edited fraction.
+
+## The model reads a transcript as sequence and as structure
+
+The animation above follows one region of human APP pre-mRNA through the model.
+
+1. **Embed.** The RNA language model [RiNALMo](https://github.com/lbcb-sci/RiNALMo) turns the sequence into a learned representation.
+2. **Fold.** [ViennaRNA](https://www.tbi.univie.ac.at/RNA/) predicts how the transcript pairs with itself.
+3. **Pair.** A 64-nucleotide window around each candidate adenosine enters with the stretch it pairs to, as a single track and a pair track.
+4. **Attend.** 24 [Pairformer](https://doi.org/10.1038/s41586-024-07487-w) blocks, the architecture AlphaFold 3 uses for pairs of residues, mix the two tracks.
+5. **Predict.** Two heads score every adenosine: an editing-site score from 0 to 1, and a predicted editing rate from 0 to 1.
+
+Editing depends on the duplex an adenosine sits in, not only on its neighbors. That is why the
+pair track exists: the model sees the base opposite each adenosine and the shape of the duplex.
+
+## It beats published predictors on sites they were built for
+
+I compared ModFormer with five published editing-site predictors and a simple neighbor-base rule
+on four benchmarks. The score is the area under the ROC curve (AUC): 0.5 is chance, 1 is a perfect
+ranking of edited over unedited sites.
+
+| Benchmark | Sites | ModFormer | Best other method |
+|---|---|---|---|
+| Human Alu duplexes | 729 | 0.93 | 0.94 (AdarEdit) |
+| InoDREAM | 17,956 | 0.94 | 0.96 (InoDREAM, its own benchmark) |
+| Invertebrates | 1,678 | 0.83 | 0.80 (AdarEdit) |
+| Mouse Neuro-2a and brain | 21,667 | 0.97 | 0.66 (InoDREAM) |
+| **Mean of the four** | | **0.92** | 0.77 (AdarEdit) |
+
+ModFormer is close to the best method on each specialist's home ground, and far ahead on mouse.
+Its lowest score across the four, 0.83, is higher than every other method's mean.
+
+## One model transfers across species and substrates
+
+<img src="/projects/modformer/fig2.webp" alt="Figure 2 of ModFormer: editing-site AUC and rate correlation on five test sets, zero-shot and after one epoch of fine-tuning, against training ablations and other architectures." className="lit-figure" />
+
+The base model was pretrained on human data only: REDIportal sites and HEK293FT long-read
+measurements. Without seeing a mouse example, it scores mouse Neuro-2a sites at an AUC of 0.96.
+One epoch of joint fine-tuning over eight sources then helps most where the base model was
+weakest. On invertebrate duplexes the AUC rises from 0.75 to 0.82, and the correlation between
+predicted and measured rates rises from 0.48 to 0.66.
+
+## It picks up how ADAR chooses its substrates
+
+<img src="/projects/modformer/fig3.webp" alt="Figure 3 of ModFormer: recovery of highly edited Alu sites, sequence and opposing-base enrichment around high-scoring adenosines, and predicted effects of creating or removing mismatches opposite the adenosine." className="lit-figure" />
+
+Ranked by ModFormer, highly edited Alu sites come up sooner than when ranked by the language model
+alone. High-scoring adenosines carry the sequence and opposing-base preferences known for ADAR.
+In computational edits, the model responds to creating or removing a mismatch opposite the
+adenosine more than to nearby changes that keep the pairing.
+
+## It predicts what a mutation does to editing
+
+<img src="/projects/modformer/fig4.webp" alt="Figure 4: variant effects on RNA modification, with correlation across five cellular conditions and prioritization of responsive sites." className="lit-figure" />
+
+A library of thousands of mutated RNA duplexes, expressed in cells and measured, provides
+ground truth for what a mutation does to modification rates. The model predicts which sites
+respond, and in which direction, well enough to pick responsive sites before the experiment.
+Across five cellular conditions, its top-ranked sites show increased modification more often
+than random, and the effect holds for endogenous substrates.
+
+## Try it on any gene in a few seconds
+
+The command line scores a gene by name, with optional species, isoform, and cellular context:
+
+```bash
+modformer APP --region 67248-69295       # score human APP pre-mRNA
+modformer APP --species mouse --site 1494
+```
+
+```python
+import modformer
+table = modformer.predict(sequence)      # one row per adenosine
+```
+
+Each row gives a score (resemblance to observed sites, 0 to 1) and a predicted rate (0 to 1).
+Install with one line on Linux or Apple-silicon Mac, Python 3.10 to 3.14:
+
+```bash
+curl -LsSf https://raw.githubusercontent.com/nygctech/ModFormer/main/install.sh | sh
+```
+
+## Talks
+
+- **AGBT 2027** (Orlando, March 2027). Presenting author.
+- **AI x Biology Summit** (New York Genome Center, October 2026). Selected abstract spotlight: "Building on RNA foundation models to predict A-to-I modification across the transcriptome."
+- **Irving Institute for Cancer Dynamics** (Columbia University, October 2026). Speaker.
+
+## Weights, data, and reproducibility
+
+Both the base and fine-tuned checkpoints are on [Zenodo](https://doi.org/10.5281/zenodo.24300574)
+(CC BY-NC 4.0). Training labels, data splits, and all figure source tables are in a
+[separate record](https://doi.org/10.5281/zenodo.24300820). The code is MIT-licensed. Six
+Jupyter notebooks reproduce the figures from the source tables.
