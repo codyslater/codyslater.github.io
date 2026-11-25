@@ -107,6 +107,7 @@ cv:
       - title: "ModFormer: A unified structure-aware model of transcriptome-wide A-to-I RNA editing"
         authors: ["**C. Slater**", "…", "S. Vicković"]
         journal: bioRxiv preprint (2026)
+        doi: 10.64898/2026.11.23.768611
         code: https://github.com/nygctech/ModFormer
       - title: Intraoperative microneurographic recording from the human trigeminal ganglion using standard deep brain stimulation electrodes
         authors: ["**C. Slater**", "…", R. F. Sekula Jr.]
