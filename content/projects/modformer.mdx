@@ -3,6 +3,7 @@ title: ModFormer
 summary: One structure-aware model that predicts which adenosines in a transcript are A-to-I edited, and by how much.
 tags: [rna editing, deep learning, pytorch, rna structure]
 links:
+  paper: https://doi.org/10.64898/2026.11.23.768611
   github: https://github.com/nygctech/ModFormer
 order: 0
 video: /projects/modformer/cover
@@ -23,6 +24,8 @@ ModFormer is my answer to that need. Earlier predictors were each trained on one
 species, or one question: is this site edited, or how much? ModFormer is one model for all of
 them. It reads sequence and RNA structure together, and returns two numbers for every adenosine:
 how much the site resembles observed editing sites, and the predicted edited fraction.
+The full study is out as a preprint on bioRxiv:
+[ModFormer: A unified structure-aware model of transcriptome-wide A-to-I RNA editing](https://doi.org/10.64898/2026.11.23.768611).
 
 ## The model reads a transcript as sequence and as structure
 

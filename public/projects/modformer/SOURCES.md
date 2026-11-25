@@ -12,11 +12,10 @@ figure canvas.
 | Data and figure source tables | https://doi.org/10.5281/zenodo.24300820 | public, CC BY-NC 4.0, published 2026-11-17 |
 | AI x Biology Summit agenda | https://aisummit2026.nygenome.org/agenda | public listing, Oct 21 2026, no abstract or recording |
 | CS's RNA essay | /writing/2025-05-12-rna-and-neural-computation/ | on the site |
+| bioRxiv preprint | https://doi.org/10.64898/2026.11.23.768611 | public, posted 2026-11-24 (bioRxiv API) |
 
 ## Not found as public (do not cite)
 
-- bioRxiv preprint: no DOI, no Europe PMC hit, no Crossref hit as of 20261124. The repo cites it
-  as "bioRxiv (2026)" with no link. Page therefore carries no paper link.
 - AGBT 2027 program or abstract: not posted yet.
 - "Grounding RNA prediction models in structure and function" (Irving Institute, Oct 2026): no
   public listing.
